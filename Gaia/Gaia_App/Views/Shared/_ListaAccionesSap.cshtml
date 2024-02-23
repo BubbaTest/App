@@ -1,0 +1,64 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+        table.cell-border th {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        table.cell-border thead th {
+            text-align: center;
+            background: #66a9bd;
+        }
+
+        table.cell-border tbody td {
+            text-align: center;
+        }
+
+    td {
+        font-size: 12px;
+    }
+</style>
+
+<div id="documentosAccSap">
+    <table id="dtListasAccSap" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column">Tipo Acción</th>
+                <th class="sortable-column">Descripción</th>
+                <th class="sortable-column">PorDefecto</th>
+                <th class="sortable-column">Grupo</th>
+                <th class="sortable-column">DeBaja</th>
+                <th class="sortable-column">Orden</th>
+                <th class="sortable-column">Activo</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function obtenerAccSap(obj) {
+                showalertify();
+                vidaccionId = $(obj).attr('id');
+                var url = obtenerURL('/Mantenimiento/ObteneAccSap?IdAccion=' + vidaccionId);
+                $.getJSON(url)
+                    .done(function (data) {
+                        iniciarValoresAccGaleno(data);
+                    })
+                closealertify();
+            }
+        </script>
+    , true);
+}

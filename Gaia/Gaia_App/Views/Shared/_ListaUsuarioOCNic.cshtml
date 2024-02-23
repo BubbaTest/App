@@ -1,0 +1,54 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+        table.cell-border th {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        table.cell-border thead th {
+            text-align: center;
+            background: #66a9bd;
+        }
+
+        table.cell-border tbody td {
+            text-align: center;
+        }
+
+    td {
+        font-size: 12px;
+    }
+</style>
+
+<div id="documentosCargoOrgano">
+    <table id="dtListasCargoOrgano" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Cargo</th>                
+                <th class="sortable-column">Organo</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function Cheqea(obj) {
+                var llavec = $(obj).attr('id');
+                $("#hftxtCargoOrgano").val(llavec);                
+                $('#documentosCargoOrgano input[type=checkbox]').prop("checked", false);
+                $("#" + llavec).prop("checked", true);
+            }
+        </script>
+     , true);
+}

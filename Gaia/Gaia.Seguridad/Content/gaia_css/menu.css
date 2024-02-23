@@ -1,0 +1,240 @@
+/********************
+ ******* MENU *******
+ ********************/
+
+*{
+    margin:0;
+    padding:0;
+    text-decoration:none;
+}
+
+.menugaia .toggleee,
+.menugaia [id^=drop] {
+    display: none;
+}
+
+.menugaia nav {
+    margin:0;
+    padding: 0;
+    background-color: #07c;
+    font-family: Arial, sans-serif;
+}
+
+.menugaia nav:after {
+    content:"";
+    display:table;
+    clear:both;
+}
+
+.menugaia nav ul {
+    float: left;
+    padding:0;
+    margin:0;
+    list-style: none;
+    position: relative;
+}
+
+.menugaia nav ul li {
+    margin: 0px;
+    display: inline;
+    float: left;
+    background-color: #07c;
+}
+
+.menugaia nav a {
+    display:block;
+    padding:14px 20px;
+    color:#FFF;
+    text-decoration:none;
+    font-size: 15px; /* Tamaño de todos los menú */
+}
+
+.menugaia nav ul li ul li:hover { background: #2E9AFE; }
+
+.menugaia nav a:hover {
+    background-color: #2E9AFE;
+}
+
+.menugaia nav ul ul {
+    display: none;
+    position: absolute;
+    top: 45px; /* Top de los submenú */
+}
+
+.menugaia nav ul li:hover > ul {
+    display:inherit;
+}
+
+.menugaia nav ul ul li {
+    width:170px;
+    float:none;
+    display:list-item;
+    position: relative;
+}
+
+.menugaia nav ul ul ul li {
+    position: relative;
+    top:-45px; /* Top de los submenú */
+    left:170px;
+}
+
+.menugaia li > a:after { content:  ' +'; }
+.menugaia li > a:only-child:after { content: ''; }
+
+/*******************************/
+/* MENU DEL PERFIL DEL USUARIO */
+/*******************************/
+
+#ulPerfil{
+    float: right;
+}
+
+#liPerfil{
+    background-color: #2E9AFE;
+}
+
+#liPerfil li:hover{
+    background: #07c !important;
+}
+
+#menuperfil {
+    width: 220px;
+    height: 300px;
+    font-size: 13px;
+    right: 100px;
+    /*RIGHT: 62%;*/
+}
+
+#tdFoto {
+    text-align: center;
+    padding: 10px;
+}
+
+#tdFoto img {
+    height: 103px;
+    width: 80px;
+}
+
+#tdBotones {
+    width: 70%;
+}
+
+#datosPerfil{
+    width: 100%;
+    padding: 5px;
+    color: white;
+    font-size: 12px;
+}
+
+.btnMenu {
+    width: 90%;
+    background-color: #caccc6;
+    border: none;
+    color: #0b4059;
+    margin: 10px;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 12px;
+}
+
+#menucorreo {
+    word-break: break-all;
+}
+
+/*********************/
+/*** RESPONSIVE ******/
+/*********************/
+
+/* Media Queries
+--------------------------------------------- */
+@media screen and (max-width:700px){
+    /*@media all and (max-width : 700px) {*/
+
+    .menugaia nav {
+        margin: 0;
+    }
+
+    .menugaia .toggleee + a,
+    .menugaia .menuResponsive{
+        display: none;
+    }
+
+    .menugaia .toggleee {
+        display: block;
+        background-color: #07c;
+        padding:14px 20px;
+        color:#FFF;
+        font-size:17px;
+        text-decoration:none;
+        border:none;
+    }
+
+    .menugaia .toggleee:hover {
+        background-color: #2E9AFE;
+    }
+
+    .menugaia [id^=drop]:checked + ul {
+        display: block;
+    }
+
+    .menugaia nav ul li {
+        display: block;
+        width: 100%;
+    }
+
+    .menugaia nav ul ul .toggleee,
+    .menugaia nav ul ul a {
+        padding: 0 40px;
+    }
+
+    .menugaia nav ul ul ul a {
+        padding: 0 80px;
+    }
+
+    .menugaia nav ul li ul li .toggleee,
+    .menugaia nav ul ul a,
+    .menugaia nav ul ul ul a{
+        padding:14px 20px;
+        color:#FFF;
+        font-size:17px;
+    }
+
+    .menugaia nav ul li ul li .toggleee,
+    .menugaia nav ul ul a {
+        /*background-color: #07c;*/
+        background-color: #00356a;
+    }
+
+    .menugaia nav ul ul {
+        float: none;
+        position:static;
+        color: #ffffff;
+    }
+
+    .menugaia nav ul ul li:hover > ul,
+    .menugaia nav ul li:hover > ul {
+        display: none;
+    }
+
+    .menugaia nav ul ul li {
+        display: block;
+        width: 100%;
+    }
+
+    .menugaia nav ul ul ul li {
+        position: static;
+    }
+
+    #ulPerfil{
+        float: left;
+        margin-right: 300px;
+    }
+
+    #liPerfil ul{
+        margin-left: 100px;
+        width: 100px;
+    }
+
+} /* Fin del Responsive */

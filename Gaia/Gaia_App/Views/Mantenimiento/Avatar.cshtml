@@ -1,0 +1,9 @@
+﻿<div class="frame"><img src="@ViewBag.ImageData" id="idavatar" name="avatar" class="imagen-circle" /></div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+        </script>
+    , true);
+}

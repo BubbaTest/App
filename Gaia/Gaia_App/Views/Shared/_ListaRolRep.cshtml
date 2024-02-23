@@ -1,0 +1,110 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+        table.cell-border th {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        table.cell-border thead th {
+            text-align: center;
+            background: #66a9bd;
+        }
+
+        table.cell-border tbody td {
+            text-align: center;
+        }
+</style>
+
+<div id="documentosRolRe">
+    <table id="dtListasRolR" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">ReporteId</th>
+                @*<th class="sortable-column">Descripcion</th>*@
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function eliminarelReporteRol(obj) {
+                vrolId = $(obj).attr('id');
+
+                alertify.defaults.theme.ok = "button warning";
+                alertify.defaults.theme.cancel = "button primary";
+                alertify.confirm().destroy();
+                alertify.confirm('Advertencia', 'Esta seguro de querer Eliminar la Relacion?'
+                , function () { //onOk
+                    var url = obtenerURL('/Mantenimiento/eliminaRelacion?tabla=dbo.relRolReporte' + "&Id=" + vrolId + "&Id2=" + vreporteId);
+                    $.post(url)
+                       .done(function (data) {
+                           var listado = JSON.parse(data);
+                           if (listado.Resultado === "true") {
+                               alertify.alert().destroy();
+                               alertify.alert('Confirmación', listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                               $('#reporterol').empty();
+                               var url = obtenerURL("/Mantenimiento/_ListaRolRep");
+                               $('#reporterol').load(url, function (response, status, xhr) {
+                                   if (status === "success") {
+                                       table = $('#dtListasRolR').dataTable({
+                                           ajax: {
+                                               url: obtenerURL('/Mantenimiento/ObtenerRelacionRepRol?reporteId=' + vreporteId),
+                                               dataSrc: "",
+                                           },
+                                           rowId: 'RolId',
+                                           retrieve: true,
+                                           columns: [
+                                               {
+                                                   'data': null,
+                                                   'render': function (data, type, row) {
+                                                       return '<span id="' + row.RolId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelReporteRol(this)"></span>'
+                                                   }
+                                               },
+                                               { data: "RolId" }
+                                               //{ data: "Descripcion" }
+                                           ],
+                                           columnDefs: [
+                                               //{
+                                               //    targets: [1],
+                                               //    visible: false
+                                               //},
+                                           ],
+                                           language: { url: obtenerURL("/Json/Spanish.json") },
+                                           lengthMenu: [5],
+                                           bLengthChange: false,
+                                           searching: true
+                                       });
+
+                                       $('#dtListasRolR tbody').on('click', 'tr', function () {
+                                           $("#dtListasRolR tr.selected").removeClass();
+                                           $(this).addClass('selected');
+                                       });
+                                   }
+                               })
+                           }
+                           else {
+                               alertify.alert().destroy();
+                               alertify.alert('Advertencia', listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                           }
+                       })
+                }
+                , function () { })//onCancel
+                .set('labels', { ok: '< Si >', cancel: '< No >' });
+            }
+        </script>
+     , true);
+}

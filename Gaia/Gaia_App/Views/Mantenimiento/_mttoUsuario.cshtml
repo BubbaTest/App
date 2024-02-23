@@ -1,0 +1,28 @@
+﻿<div class="panel">
+    <div class="heading">
+        <span class="title">Mantenimiento de Usuarios</span>
+    </div>
+</div>
+<div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+    <ul class="tabs">
+        <li class="active"><a href="#frUsuario">Usuario</a></li>        
+    </ul>
+    <div class="frames">
+        <div class="frame" id="frUsuario" style="display: block;">
+            @Html.Partial("ListaUsuario")
+        </div>                
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            var vusuarioId;
+            var vrolId;            
+            var ventidadId;
+            var vsistemaId;
+        </script>
+    , true);
+}
+

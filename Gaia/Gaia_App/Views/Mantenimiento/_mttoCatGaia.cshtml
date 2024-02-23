@@ -1,0 +1,61 @@
+﻿@*@Styles.Render("~/Content/css/metro")
+        @Styles.Render("~/Content/css/app")
+        @Styles.Render("~/Content/css/tools")
+
+    @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/tools")
+        @Scripts.Render("~/bundles/metro")
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/app")*@
+
+@Html.Hidden("txtProyecto", (object)ViewBag.Proyecto.ToString())
+@Html.Hidden("OpcionIdtxt")
+<div class="panel">
+    <div class="heading">
+        <span class="title">Catálogos de Gaia, Proyecto</span><span class="title" id="stitulo"></span>
+    </div>
+</div>
+<div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+    <ul class="tabs">        
+        <li class="active"><a href="#frRoles">Roles</a></li>
+        <li><a href="#frOpcAso">Opciones</a></li>
+        @*<li><a href="#frEntidad">Entidad</a></li>*@
+    </ul>
+    <div class="frames">        
+        <div class="frame" id="frRoles" style="display: none;">
+            @Html.Partial("ListaRol")
+        </div>
+        <div class="frame" id="frOpcAso" style="display: none;">
+            @Html.Partial("ListaOpcAso")
+        </div>
+        @*<div class="frame" id="frEntidad" style="display: none;">
+            @Html.Partial("ListaEntidad")
+        </div>*@
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            var vusuarioId;
+            var vrolId;
+            var vopcionId;
+            var ventidadId;
+
+            $(document).ready(function () {
+                var inc = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Descripcion))';
+                inc = JSON.parse(inc);
+                $.each(inc, function (index, data) {                    
+                    $('#stitulo').text(data.Descripcion);
+                    $('#OpcionIdtxt').val(data.OpcionId);
+                });
+            })
+        </script>
+    , true);
+}
+
+
+
+
+

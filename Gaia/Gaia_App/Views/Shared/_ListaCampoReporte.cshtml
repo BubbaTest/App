@@ -1,0 +1,83 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+        table.cell-border th {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        table.cell-border thead th {
+            text-align: center;
+            background: #66a9bd;
+        }
+
+        table.cell-border tbody td {
+            text-align: center;
+        }
+</style>
+
+<div id="documentosCampoReporte">
+    <table id="dtListasCampoReporte" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column">Tipo Objeto</th>
+                <th class="sortable-column">Placeholder</th>
+                <th class="sortable-column">Titulo </th>
+                <th class="sortable-column">Parametro</th>
+                <th class="sortable-column">Activo</th>
+                <th class="sortable-column">Principal</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function eliminarCampoReporte(obj) {
+                vcamporeporteId = $(obj).attr('id');
+
+                var url = obtenerURL('/Mantenimiento/eliminaCampoReporte?camporeportejson=' + vcamporeporteId);
+                $.post(url)
+                    .done(function (data) {
+                        var listado = JSON.parse(data);
+
+                        if (listado.Resultado === "true") {
+                            $('#frCamRep').empty();
+                            $('#frCamRep').load(obtenerURL("/Mantenimiento/ListaCampoReporte"));
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación' , listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia' , listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+            }
+
+            function obtenerCampoReporte(obj) {
+                vcamporeporteId = $(obj).attr('id');
+
+                var url = obtenerURL('/Mantenimiento/ObtenerCampoReporte?CampoReporteId=' + vcamporeporteId);
+                $.getJSON(url)
+                    .done(function (data) {
+                        encabezdo = (data);
+                        iniciarValoresCampoReporte();
+                    })
+            }
+        </script>
+     , true);
+}

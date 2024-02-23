@@ -1,0 +1,121 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+        table.cell-border th {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        table.cell-border thead th {
+            text-align: center;
+            background: #66a9bd;
+        }
+
+        table.cell-border tbody td {
+            text-align: center;
+        }
+</style>
+
+<div id="documentosEntidadR">
+    <table id="dtListasEntidadR" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>                
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column">Descripción</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+    {
+        Html.AddScriptBlock(
+            @<script type="text/javascript">
+                function eliminarelEntidad(obj) {                
+                    ventidadId = $(obj).attr('id');                
+                    alertify.defaults.theme.ok = "button warning";
+                    alertify.defaults.theme.cancel = "button primary";
+                    alertify.confirm().destroy();
+                    alertify.confirm('Advertencia', 'Esta seguro de querer Eliminar la Relacion?'
+                    , function () { //onOk   
+                        showalertify();
+                        var url = obtenerURL('/Mantenimiento/eliminarelEntidad?Id=' + ventidadId + "&Id2=" + vrolId);
+                        $.post(url)
+                            .done(function (data) {
+                                var listado = JSON.parse(data);
+                                if (listado.Resultado === "true") {
+                                    alertify.alert().destroy();
+                                    alertify.alert('Confirmación', listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                    $('#rre').empty();
+                                    var url = obtenerURL("/Mantenimiento/_ListaEntidadR");
+                                    $('#rre').load(url, function (response, status, xhr) {
+                                        if (status === "success") {
+                                            table = $('#dtListasEntidadR').dataTable({
+                                                ajax: {
+                                                    url: obtenerURL('/Mantenimiento/ObtenerRelacionEntidad?RolId=' + vrolId),
+                                                    dataSrc: "",
+                                                    complete: closealertify(),
+                                                },
+                                                rowId: 'EntidadId',
+                                                retrieve: true,
+                                                columns: [
+                                                    { data: "EntidadId" },                                                   
+                                                    {
+                                                        'data': null,
+                                                        'render': function (data, type, row) {
+                                                            return '<span id="' + row.EntidadId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelEntidad(this)"></span>'
+                                                        }
+                                                    },
+                                                    { data: "Descripcion" }
+                                                ],
+                                                columnDefs: [],
+                                                dom: 'Bfrtip',
+                                                buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                                fnInitComplete: function (settings, json) {
+                                                    var table = $('#dtListasEntidadR').DataTable();
+                                                    var rowCount = table.data().count();
+                                                    if (rowCount == 0) { $("#btnrelEntidad").show();}
+                                                    else { $("#btnrelEntidad").hide();}
+                                                },
+                                                language: { url: obtenerURL("/Json/Spanish.json") },
+                                                lengthMenu: [5],
+                                                bLengthChange: false,
+                                                searching: true
+                                            });
+
+                                            $('#dtListasEntidadR tbody').on('click', 'tr', function () {
+                                                $("#dtListasEntidadR tr.selected").removeClass();
+                                                $(this).addClass('selected');
+                                            });
+                                        }
+                                    })
+                                }
+                                else {
+                                    alertify.alert().destroy();
+                                    alertify.alert('Advertencia', listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                }
+                            })
+                        closealertify();
+                    }
+                    , function () { }) //onCancel                
+                    .set('labels', { ok: '< Si >', cancel: '< No >' });                                    
+                }
+        </script>
+    , true);
+}
+
+
+
+
+
+

@@ -1,0 +1,102 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleVarCon">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetVarCon">Detalle</a></li>
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetVarCon">
+                @Html.Partial("_VariableControlMant")
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            $(document).ready(function () {
+                $('#gridDetalleVarCon').empty();
+                $("#gridDetalleVarCon").load(obtenerURL("/Mantenimiento/ObtenerListaVariableControl"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasVariableControl').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObtenerVariableControl"),
+                                dataSrc: "",
+                                beforeSend: showalertify(),
+                                complete: closealertify(),
+                            },
+                            rowId: 'VariableControlId',
+                            retrieve: true,
+                            columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.VariableControlId + '" class="icon mif-pencil mif-1x fg-green" onclick="obtenerVariableControl(this)"></span>'
+                                            }
+                                        },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.VariableControlId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminaVariableControl(this)"></span>'
+                                            }
+                                        },                                        
+                                        { data: "VariableControlId" },
+                                        { data: "Descripcion" },
+                                        { data: "Cadena", width: '200px' },
+                                        { data: "Fecha" },
+                                        { data: "Numerico" },
+                                        { data: "TablaRel" },
+                                        { data: "CampoRel" },
+                                        { data: "Activo" }
+                            ],
+                            columnDefs: [
+                                {
+                                    render: function (data, type,row, full, meta) {
+                                        return "<div class='width-200'>" + data + ' ' + row[5] + "</div>";
+                                    },
+                                    targets: 4
+                                },
+                                {
+                                    targets: [5],
+                                    type: Date,
+                                    render: function (data) {
+                                        if (data === null) {
+                                            return "";
+                                        }
+                                        else {
+                                            var date = new Date(data);
+                                            var month = date.getMonth() + 1;
+                                            var day = date.getUTCDate();
+                                            return ((day < 10 ? '0' + day : '' + day) + "/" + (month < 10 ? '0' + month : '' + month) + "/" + date.getFullYear());
+                                        }
+                                    }
+                                },
+                            ],
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf',orientation: 'landscape', pageSize: 'LEGAL'} ,{ extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }
+                            ],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasVariableControl tbody').on('click', 'tr', function () {
+                            $("#dtListasVariableControl tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+, true);
+}

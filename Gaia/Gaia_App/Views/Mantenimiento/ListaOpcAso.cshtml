@@ -1,0 +1,104 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleOpcAso">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetOpcAso">Detalle</a></li>            
+        </ul>
+        <div class="frames">            
+            <div class="frame" id="frDetOpcAso">
+                @Html.Partial("_OpcAsoMant")
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+    {
+        Html.AddScriptBlock(
+            @<script type="text/javascript">
+                $(document).ready(function () {
+                    $('#gridDetalleOpcAso').empty();                
+                    $("#gridDetalleOpcAso").load(obtenerURL("/Mantenimiento/ObtenerListaOpcAso"), function (response, status, xhr) {
+                        if (status === "success") {
+                            table = $('#dtListasOpcAso').dataTable({
+                                ajax: {
+                                    url: obtenerURL("/Mantenimiento/ObtenerOpcAso?Proyecto=" + $('#txtProyecto').val()),
+                                    dataSrc: "",
+                                    beforeSend: showalertify(),
+                                    complete: closealertify(),
+                                },
+                                rowId: 'OpcionId',
+                                retrieve: true,
+                                columns: [                                        
+                                            {
+                                                'data': null,
+                                                'render': function (data, type, row) {
+                                                    return '<span id="' + row.OpcionId + '" class="icon mif-pencil mif-1x fg-red" onclick="obtenerOpcAso(this)"></span>'
+                                                }
+                                            },
+                                            {
+                                                'data': null,
+                                                'render': function (data, type, row) {
+                                                    return '<span id="' + row.OpcionId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminaOpcAso(this)"></span>'
+                                                }
+                                            },                                        
+                                            { data: "OpcionId" },
+                                            { data: "Nivel" },
+                                            { data: "PadreId" },
+                                            { data: "Opcion" },
+                                            { data: "OpcionTipo" },
+                                            { data: "Mapeo" },
+                                            { data: "NombreIcono" },
+                                            { data: "DescripcionGeneral" },
+                                            { data: "Activo" }
+                                ],
+                                columnDefs: [{ targets: [10], type: Date, render: function (data) { if (data === true) { return "Activo"; } else { return "Pasivo"; } } },],                                
+                                dom: 'Bfrtip',
+                                buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                fnInitComplete: function (settings, json) {
+                                    var table = $('#dtListasOpcAso').DataTable();
+                                    $('#dtListasOpcAso thead tr:eq(1)').hide();
+                                    var g = "false"
+                                    table.columns().every(function (index) {
+                                        $('#dtListasOpcAso thead tr:eq(0) th:eq(' + index + ')').on('click', function () {
+                                            if (g == "true") {                                                                                    
+                                                $('#dtListasOpcAso thead tr:eq(1)').hide();
+                                                g = "false";
+                                            }
+                                            else {
+                                                $('#dtListasOpcAso thead tr:eq(1)').show();
+                                                g = "true";
+                                            }
+                                            $('#dtListasOpcAso thead tr:eq(1) th:eq(' + index + ') input').show();                                                                                
+                                        });
+                                        $('#dtListasOpcAso thead tr:eq(1) th:eq(' + index + ') input').on('keyup change', function () {
+                                            table.column($(this).parent().index() + ':visible')
+                                                .search(this.value)
+                                                .draw();
+                                        });
+                                    });                                                                
+                                },
+                                dom: 'Bfrtip',
+                                buttons: [{extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf',orientation: 'landscape', pageSize: 'LEGAL'} ,{ extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                language: { url: obtenerURL("/Json/Spanish.json") },
+                                lengthMenu: [5],
+                                bLengthChange: false,
+                                searching: true
+                            });
+
+                            $('#dtListasOpcAso tbody').on('click', 'tr', function () {
+                                $("#dtListasOpcAso tr.selected").removeClass();
+                                $(this).addClass('selected');
+                            });
+                        }
+                    })
+                })
+        </script>
+    , true);
+}

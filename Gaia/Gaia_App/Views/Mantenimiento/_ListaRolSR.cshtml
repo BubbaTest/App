@@ -1,0 +1,113 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+</style>
+
+<div id="documentosRolSR">
+    <table id="dtListasRolSR" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Descripción</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function eliminarelUsuarioRolS(obj) {
+                var values = $(obj).attr('id').split("/");
+                vrolsId = values[0];
+                var vusurolId = values[1];
+                alertify.defaults.theme.ok = "button warning";
+                alertify.defaults.theme.cancel = "button primary";
+                alertify.confirm().destroy();
+                alertify.confirm('Advertencia', 'Esta seguro de querer Eliminar la Relacion?'
+                , function () { //onOk
+                    showalertify();
+                    var fechabaja = formatFechaHoras(new Date);
+                    var reljson = JSON.stringify({ "id_usuario": vidusuario, "id_rol": vrolsId, "DeBaja": "1", "FechaBaja": fechabaja, "blnActivo": "1" });
+                    
+                    var url = obtenerURL('/Mantenimiento/EliminarUsuarioRolS?reljson=' + reljson + '&IdUsuarioRol=' + vusurolId);
+                    $.post(url)
+                       .done(function (data) {
+                           var listado = JSON.parse(data);
+                           if (listado.Resultado === "true") {
+                               alertify.alert().destroy();
+                               alertify.alert('Confirmación', listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+
+                               $('#baba').empty();
+                               var url = obtenerURL("/Mantenimiento/_ListaRolSR");
+                               $('#baba').load(url, function (response, status, xhr) {
+                                   if (status === "success") {
+                                       table = $('#dtListasRolSR').dataTable({
+                                           ajax: {
+                                               url: obtenerURL('/Mantenimiento/ObtenerRelacionRolUsuarioS?UsuarioId=' + vidusuario),
+                                               dataSrc: "",
+                                           },
+                                           rowId: 'Id_Usuario_Rol',
+                                           retrieve: true,
+                                           columns: [
+                                               { data: "id_rol" },
+                                               {
+                                                   'data': null,
+                                                   'render': function (data, type, row) {
+                                                       return '<span id="' + row.id_rol + "/" + row.Id_Usuario_Rol + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioRolS(this)"></span>'
+                                                   }
+                                               },
+                                               { data: "descripcion" }
+                                           ],
+                                           columnDefs: [{ targets: [0], visible: false },],
+                                           language: { url: obtenerURL("/Json/Spanish.json") },
+                                           lengthMenu: [5],
+                                           bLengthChange: false,
+                                           searching: true
+                                       });
+
+                                       $('#dtListasRolSR tbody').on('click', 'tr', function () {
+                                           $("#dtListasRolSR tr.selected").removeClass();
+                                           $(this).addClass('selected');
+                                       });
+                                   }
+                               })
+                           }
+                           else {
+                               alertify.alert().destroy();
+                               alertify.alert('Advertencia'
+                                   , listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                           }
+                       })
+                    closealertify();
+                }
+                , function () { })//onCancel
+                .set('labels', { ok: '< Si >', cancel: '< No >' });
+            }
+        </script>
+     , true);
+}

@@ -1,0 +1,341 @@
+﻿@model  Gaia.DAL.Model.Usuario
+
+<div class="content">
+    <div class="flex-grid">
+        <div class="row padding10 flex-jus-center">
+            <div class="cell size8 padding10 no-padding-left">
+                <div data-role="window" class="window">
+                    <div class="window-caption">
+                        <span class="window-caption-title">Usuario</span>
+                    </div>
+                    <div class="window-content">
+                        <div class="row flex-just-center">
+                            <div class="cell size12">
+                                <div class="row flex-just-center">
+                                    <div class="cell size6">
+                                        <label class="input-control text full-size">
+                                            @Html.TextBoxFor(model => model.UsuarioId, new { id = "txtUsuarioId", PlaceHolder = "UsuarioId" })
+                                            @Html.ValidationMessage("usuarioid", "* Campo Requerido *", new { id = "lblusuarioid", @style = "color:red; display: none;" })
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row flex-just-center">
+                                    <div class="cell size6">
+                                        <label class="input-control text full-size">
+                                            @Html.DropDownListFor(model => model.CodMunicipio, new SelectList(ViewBag.Procedencia as System.Collections.IEnumerable, "TipoIdentificadorId", "Descripcion"),
+                                            "Selecciona Procedencia", new { id = "ddlProcedencia", @class = "tetss" })
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row flex-just-center">
+                                    <div class="cell size6">
+                                        <label class="input-control text full-size">                                            
+                                            <select id="txtEmpleadoId"></select>
+                                            @Html.ValidationMessage("empleadoid", "* Campo Requerido *", new { id = "lblempleadoid", @style = "color:red; display: none;" })                                            
+                                                <button class="button" id="btnFiltrar" onclick="filtrar()"><span class="icon mif-search mif-lg"></span></button>                                            
+                                        </label>
+                                        
+                                    </div>
+                                </div>                                                              
+                                @*<div class="row flex-just-center">
+                                    <div class="cell size6">
+                                        <label class="input-control password full-size">
+                                            @Html.TextBoxFor(model => model.Password, new { id = "txtPassword", type = "password", PlaceHolder = "Contraseña" })
+                                            @Html.ValidationMessage("password", "* Campo Requerido *", new { id = "lblcontrasena", @style = "color:red; display: none;" })
+                                        </label>
+                                    </div>
+                                </div>*@
+                                <div class="row flex-just-center">
+                                    <div class="cell size6">
+                                        <label class="input-control text full-size">
+                                            @Html.TextBoxFor(model => model.Correo, new { id = "txtCorreo", PlaceHolder = "Correo" })
+                                            @Html.ValidationMessage("correo", "* Campo Requerido *", new { id = "lblcorreo", @style = "color:red; display: none;" })
+                                        </label>
+                                    </div>
+                                </div>                               
+                                <div class="row flex-just-center">
+                                    <div class="cell size6">
+                                        <label class="input-control text full-size">
+                                            @Html.DropDownListFor(model => model.EstadoId, new SelectList(ViewBag.Estado as System.Collections.IEnumerable, "Value", "Text"),
+                                            "Selecciona Estado", new { id = "ddlUEstadoId", @class = "tets" })
+                                        </label>
+                                    </div>
+                                </div>                                
+                            </div>
+                            <div class="cell size6">
+                                <div class="tile-square" data-role="tile">
+                                    <div class="row flex-just-center">
+                                        <div class="image-container" id="Avatar" style="display:contents">
+                                            <div class="frame"><img id = "idavatar" src="anonymous.png" class="imagen-circle"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row flex-just-center">
+                                        <div class="input-control file" data-role="input">
+                                            <input type = "file" name="file" id="file" onchange="MostrarImagen()" accept="image/x-png" />
+                                            <button class="button"><span class="mif-folder"></span></button>                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="toolbar">
+                                <div class="toolbar-section">
+                                    <button class="image-button ribbed-darkBlue" data-tabcontinuar="data-tabcontinuar" onclick="AgregarUsuario()" id="btnGuardaUsuario"> 
+                                        <span class="fg-white">Guardar</span>
+                                        <span class="icon mif-floppy-disk fg-white bg-darkBlue"></span>
+                                    </button>
+                                    <button class="image-button ribbed-darkOrange" data-tabcontinuar="data-tabcontinuar" id="btnActualizarUsuario" style="display: none" onclick="ActualizarUsuario('Actualiza')">
+                                        <span class="fg-white">Actualizar</span>
+                                        <span class="icon mif-pencil fg-white bg-darkOrange"></span>
+                                    </button>
+                                    <button class="image-button ribbed-darkEmerald" data-tabcontinuar="data-tabcontinuar" id="btnNuevoUsuario" onclick="NuevaUsuario()">
+                                        <span class="fg-white">Nuevo</span>
+                                        <span class="icon mif-plus fg-white bg-darkEmerald"></span>
+                                    </button>
+                                    @*<button class="image-button ribbed-darkBlue" data-tabcontinuar="data-tabcontinuar" id="btnActualizarPassword" style="display: none" onclick="ActualizarUsuario('Resetea')">
+                                        <span class="fg-white">Resetear Password</span>
+                                        <span class="icon mif-pencil fg-white bg-darkBlue"></span>
+                                    </button>*@
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function filtrar() {
+                var contenido;
+                var div = $("#ModalGenerico");
+                alertify.defaults.theme.ok = "success button";
+                alertify.defaults.theme.cancel = "danger button";
+                alertify.confirm().destroy();
+                div.load(obtenerURL("/Mantenimiento/_FiltraEmpleado"), function () {
+                    contenido = div.html();
+                    div.empty();
+                    var modal = alertify.confirm()
+                        .setHeader('<h4>Busqueda de Usuario</h4> ')
+                        .setContent(contenido)
+                        .set({ 'startMaximized': false, 'maximizable': false, 'false': true, 'labels': { ok: '< Buscar >', cancel: '< Salir >' } })
+                                .resizeTo(200, 260)
+                        .set('oncancel', function (closeEvent) { })
+                        .set('onok', function (closeEvent) { ObtenerEmpleadoFiltrado()})
+                        .show();                                      
+                })
+            }
+
+            function ObtenerEmpleadoFiltrado(Nombre, Apellido, tipo) {
+                objAcotacionesJSON = '[{"NOMBRES": {"Valor":"' + $.trim($("#txtNombre").val()) + '", "TipoDdato":"sLike"},"APELLIDOS": {"Valor":"' + $.trim($("#txtApellido").val()) + '", "TipoDdato":"sLike"}}]';
+                
+                var sssUrl = obtenerURL("/Mantenimiento/txtEmpleadoIdFiltra?Acotaciones=" + objAcotacionesJSON + '&tipo=' + $("#ddlProcedencia").val());
+                $.get(sssUrl, function (response, status, xhr) {                    
+                    if (response == "") {
+                        alertify.error('La Busqueda No Produjo Resultados')
+                        $('#txtEmpleadoId').select2({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/FiltrarEmpleado"),
+                                dataType: 'json',
+                                delay: 250,
+                                type: "GET",
+                                data: function (params) {return { nombre: params.term, tipo: $("#ddlProcedencia").val() };},
+                                processResults: function (data) {
+                                    return {
+                                        results: $.map(data, function (obj) { return { id: obj.Identificador, text: obj.strNombreCompleto }; })                                
+                                    };
+                                }
+                            },
+                            width: '387px', minimumInputLength: 9, placeholder: "La busqueda No produjo Resultados", allowClear: true                            
+                        });
+                    }
+                    else {                         
+                        alertify.success('Seleccione Empleado del Listado');
+                        $("#txtEmpleadoId").empty().append(response);
+                        $('#txtEmpleadoId').select2({
+                            placeholder: "Seleccione un Empleado"
+                        });                        
+                    }                    
+                });                
+            }
+
+            $(document).ready(function () {
+                $("#idavatar").attr("src", obtenerURL('/Content/Images/anonymous.png'));
+
+                $('#txtEmpleadoId').select2({                    
+                    ajax: {
+                        url: obtenerURL("/Mantenimiento/FiltrarEmpleado"),
+                        dataType: 'json',
+                        delay: 250,
+                        type: "GET",
+                        data: function (params) {return { nombre: params.term, tipo: $("#ddlProcedencia").val() };},
+                        processResults: function (data) {
+                            return {
+                                results: $.map(data, function (obj) { return { id: obj.Identificador, text: obj.strNombreCompleto }; })                                
+                            };
+                        }
+                    },
+                    width: '387px', minimumInputLength: 9, placeholder: "Seleccione un Empleado", allowClear: true
+                });
+
+                $(".tetss").select2({
+                    placeholder: "Seleccione Procedencia", dropdownAutoWidth: true, tags: true, width: '100%',
+                });
+
+                $(".tets").select2({
+                    placeholder: "Seleccione un Estado", dropdownAutoWidth: true, tags: true, width: '100%',
+                });
+            });
+
+            function ActualizarUsuario(estado) {
+                var bandera = true;
+                var Identificativo;
+                if ($('#txtUsuarioId').val().toString().length < 1) {
+                    $("#lblusuarioid").show();
+                    bandera = false;
+                }
+                if (bandera == true) {
+                    showalertify();
+                    $("#lblusuarioid").hide();                                        
+                    var request;
+                    if (estado == 'Actualiza') {
+                        var usuariojson = JSON.stringify({ "UsuarioId": $('#txtUsuarioId').val().toString(), "Identificador": $('#txtEmpleadoId').val().toString(), "Correo": $('#txtCorreo').val().toString(), "EstadoId": $("#ddlUEstadoId").val().toString(), "TipoIdentificadorId": $("#ddlProcedencia").val().toString() }); //"Password": $('#txtPassword').val().toString(),
+                    }
+                    else {
+                        var usuariojson = JSON.stringify({ "UsuarioId": $('#txtUsuarioId').val().toString(), "Identificador": $('#txtEmpleadoId').val().toString(), "Correo": $('#txtCorreo').val().toString(), "EstadoId": $("#ddlUEstadoId").val().toString(), "TipoIdentificadorId": $("#ddlProcedencia").val().toString() }); //"Password": $('#txtPassword').val().toString(),
+                    }
+                    
+                    var data = new FormData();
+                    var files = $("#file").get(0).files;
+                    if (files.length > 0) {
+                        data.append("usuariojson", usuariojson);
+                        data.append("file", files[0]);
+                    }
+                    else {data.append("usuariojson", usuariojson);}
+
+                    request = $.ajax({
+                        url: '@Url.Action("ActualizarUsuario", "Mantenimiento")',
+                        type: "POST",
+                        processData: false,
+                        contentType: false,
+                        data: data
+                    });
+                    request.done(function (response, textStatus, jqXHR) {
+                        var listado = JSON.parse(response);
+                        if (listado.Resultado === "true") {
+                            $('#frUsuario').empty();
+                            $('#frUsuario').load(obtenerURL("/Mantenimiento/ListaUsuario"))
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+                    closealertify();
+                }
+            }
+            
+            function AgregarUsuario() {
+                var bandera = true;
+                var Identificativo;
+                if ($('#txtUsuarioId').val().toString().length < 1) {
+                    $("#lblusuarioid").show();
+                    bandera = false;
+                }                
+                if (bandera == true) {
+                    showalertify();
+                    $("#lblusuarioid").hide();                 
+                    var request;
+                    var usuariojson = JSON.stringify({ "UsuarioId": $('#txtUsuarioId').val().toString(), "Identificador": $('#txtEmpleadoId').val().toString(), "Correo": $('#txtCorreo').val().toString(), "Avatar": "", "EstadoId": $("#ddlUEstadoId").val().toString(), "TipoIdentificadorId": $("#ddlProcedencia").val().toString() }); //"Password": $('#txtPassword').val().toString(),
+                    var data = new FormData();
+                    var files = $("#file").get(0).files;
+                    if (files.length > 0) {
+                        data.append("usuariojson", usuariojson);
+                        data.append("file", files[0]);
+                    }
+                    else {data.append("usuariojson", usuariojson);}
+                    request = $.ajax({
+                        url: '@Url.Action("AgregarUsuario","Mantenimiento")',
+                        type: "POST",
+                        processData: false,
+                        contentType: false,
+                        data: data
+                    });
+                    request.done(function (response, textStatus, jqXHR){
+                        var listado = JSON.parse(response);
+                        if (listado.Resultado === "true") {                            
+                            vusuarioId = $('#txtUsuarioId').val().toString();
+                            $('#frUsuario').empty();
+                            $('#frUsuario').load(obtenerURL("/Mantenimiento/ListaUsuario"));
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación', listado.Mensaje + ". Agregar al Usuario Creado las Relaciones Rol y Entidad");
+                            alertify.alert().setting('modal', true);
+                            moverTab();
+                            relUsuRolesEntidad();
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+                    closealertify();
+                }
+            }
+
+            function moverTab() {                
+                $("#usurolentidad").show()
+                var idFrame = "#frRelRoles";
+                var tabs = $(idFrame).parent().parent().children('.tabs'); 
+                var frames = $(idFrame).parent().children('.frame');
+                tabs.children('li').removeClass('active');   
+                frames.css({ display: "none" });                             
+                var newTab = tabs.children('li:has(a[href="' + idFrame + '"])');
+                newTab.addClass('active');
+                $(idFrame).css({ display: "block" });
+                relUsuRoles();
+            };
+            
+            function NuevaUsuario() {
+                $("#idavatar").attr("src", obtenerURL('/Content/Images/anonymous.png'))
+                $('#txtUsuarioId').prop("disabled", false);
+                $('#txtUsuarioId').val("");                
+                $('#txtEmpleadoId').prop("disabled", false);
+                $('#txtEmpleadoId').select2("val", "ca");
+                //$('#txtPassword').prop("disabled", false);
+                //$('#txtPassword').val("");
+                $('#txtCorreo').val("");
+                $('#txtAvatar').val("");                                
+                $('#ddlUEstadoId').select2("val", "ca");                                
+                $('#btnActualizarUsuario').hide();
+                $('#btnActualizarPassword').hide();                
+                $('#btnGuardaUsuario').show();
+            }
+
+            function MostrarImagen() {                
+                $("#Avatar").empty();
+                var files = $("#file").get(0).files[0];
+                //for (var i = 0, f; f = files[i]; i++) {                    
+                    var reader = new FileReader();
+                    reader.onload = (function (theFile) {
+                        return function (e) {
+                            document.getElementById("Avatar").innerHTML = ['<div class="frame"><img class="thumb" id="idavatar" name="avatar" src="', e.target.result, '" /></div>'].join('');
+                        };
+                    })(files);//(f)
+                    reader.readAsDataURL(files);//(f)
+                //}
+            }
+        </script>
+    , true);
+}
+

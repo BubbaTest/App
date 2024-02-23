@@ -1,0 +1,27 @@
+﻿@{ 
+    Layout = null;
+
+    string TipoIdentificadorId = ViewBag.TipoIdentificadorId;
+    string Celular = ViewBag.Celular;
+    string Correo = ViewBag.Correo;
+}
+
+<form id="frmVerificacionSMS">
+    <input type="hidden" value="@TipoIdentificadorId" id="hTipoIdentificadorId" />
+    <input type="hidden" value="@Celular" id="hCelularPIN" />
+    <input type="hidden" value="@Correo" id="hCorreoPIN" />
+
+    <div class="form-group">
+
+        <label for="txtCodigoPIN">Ingresar Código:</label>
+        <br />
+        <br />
+        <input type="text" id="txtCodigoPIN" min="4" max="6" style="width: 50%;height: 40px;" disabled="disabled">
+        <input type="button" id="btnEnviarCodigo" value="Enviar PIN" onclick="EnviarCodigoSMS()">
+        <br />
+        <br />
+        <p>
+            <small style="font-style: italic;opacity: 50%;" id="codigoHelp">Favor ingresar el código de confirmación enviado a su celular.</small>
+        </p>        
+    </div>
+</form>

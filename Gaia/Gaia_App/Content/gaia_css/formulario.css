@@ -1,0 +1,93 @@
+
+.formularioresponsive label {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+}
+
+.formularioresponsive input[type=text], input[type=password], select, textarea{
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.formularioresponsive {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+    font-size: 17px;
+    font-family: Arial;
+    color: #444444;
+}
+
+.formularioresponsive #titulo{
+    background-color: #00356a;
+    padding: 10px;
+    color: #FFF;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.formularioresponsive .col-25 {
+    float: left;
+    width: 25%;
+    margin-top: 6px;
+}
+
+.formularioresponsive .col-75 {
+    float: left;
+    width: 75%;
+    margin-top: 6px;
+}
+
+/* Clear floats after the columns */
+.formularioresponsive .row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* BOTONES */
+
+.formularioresponsive input[type=button],input[type=submit]  {
+    /*background-color: #4CAF50;*/
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    /*float: right;*/
+    font-family: Arial;
+    font-size: 16px;
+    width: 130px;
+}
+
+.formularioresponsive #btnPrimary  {
+    background-color: #2086bf;
+}
+
+.formularioresponsive #btnSuccess  {
+    background-color: #60a917;
+}
+
+.formularioresponsive #btnInfo  {
+    background-color: #59cde2;
+}
+
+.formularioresponsive #btnDanger  {
+    background-color: #ce352c;
+}
+
+.formularioresponsive input[type=button],input[type=submit]:hover {
+    background-color: #45a049;
+}
+
+/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+@media (max-width: 600px) {
+    .formularioresponsive .col-25, .col-75, input[type=button],input[type=submit] {
+        width: 100%;
+        margin-top: 0;
+    }
+}

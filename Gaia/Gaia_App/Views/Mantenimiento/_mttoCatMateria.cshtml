@@ -1,0 +1,25 @@
+﻿<div class="panel">
+    <div class="heading">
+        <span class="title">Catálogo Materia</span>
+    </div>
+</div>
+<div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+    <ul class="tabs">
+        <li class="active"><a href="#frMateria">Materia</a></li>
+    </ul>
+    <div class="frames">
+        <div class="frame" id="frMateria" style="display:none;">
+            @Html.Partial("ListaMateria")
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            var vmateriaId;
+        </script>
+, true);
+}
+

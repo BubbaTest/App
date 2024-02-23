@@ -1,0 +1,30 @@
+﻿@model Gaia.DAL.Model.UsuarioRolEntidad
+
+<div class="content">
+    <div class="flex-grid">
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control select full-size" data-placeholder="Seleccione una Rol" data-allow-clear="true">
+                    @Html.DropDownListFor(model => model.RolId, new SelectList(ViewBag.RolNo as System.Collections.IEnumerable, "Id", "Descripcion"),
+                                    "Selecciona Rol", new { id = "ddlrelRolG", @style = "width:400px;" })
+                </div>
+            </div>
+        </div>
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control select full-size" data-placeholder="Seleccione Entidad IML" data-allow-clear="true">
+                    @Html.DropDownListFor(model => model.RolId, new SelectList(ViewBag.EntIML as System.Collections.IEnumerable, "IdEntidadIML", "strNombreEntidadIML"),
+                                    "Selecciona Entidad IML", new { id = "ddlrelEntG", @style = "width:400px;" })
+                </div>
+            </div>
+        </div> 
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+        </script>
+     , true);
+}

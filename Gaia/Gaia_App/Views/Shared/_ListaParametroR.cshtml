@@ -1,0 +1,115 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+        table.cell-border th {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        table.cell-border thead th {
+            text-align: center;
+            background: #66a9bd;
+        }
+
+        table.cell-border tbody td {
+            text-align: center;
+        }
+</style>
+
+<div id="documentosParametroR">
+    <table id="dtListasParametroR" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">FormatoId</th>
+                <th class="sortable-column">Descripcion</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function eliminarelReporteParametro(obj) {
+                vparametroId = $(obj).attr('id');
+
+                alertify.defaults.theme.ok = "button warning";
+                alertify.defaults.theme.cancel = "button primary";
+                alertify.confirm().destroy();
+                alertify.confirm('Advertencia', 'Esta seguro de querer Eliminar la Relacion?'
+                , function () { //onOk
+                    showalertify();
+                    var url = obtenerURL('/Mantenimiento/eliminaRelacion?tabla=dbo.relReporteParametro' + "&Id=" + vreporteId + "&Id2=" + vparametroId);
+                    $.post(url)
+                       .done(function (data) {
+                           var listado = JSON.parse(data);
+                           if (listado.Resultado === "true") {
+                               alertify.alert().destroy();
+                               alertify.alert('Confirmación', listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                               $('#reporteparametro').empty();
+                               var url = obtenerURL("/Mantenimiento/_ListaParametroR");
+                               $('#reporteparametro').load(url, function (response, status, xhr) {
+                                   if (status === "success") {
+                                       table = $('#dtListasParametroR').dataTable({
+                                           ajax: {
+                                               url: obtenerURL('/Mantenimiento/ObtenerRelacionRepPar?reporteId=' + vreporteId), //+ '&Proyecto=' + $('#txtProyecto').val()
+                                               dataSrc: "",
+                                           },
+                                           rowId: 'ParametroId',
+                                           retrieve: true,
+                                           columns: [
+                                               {
+                                                   'data': null,
+                                                   'render': function (data, type, row) {
+                                                       return '<span id="' + row.ParametroId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelReporteParametro(this)"></span>'
+                                                   }
+                                               },
+                                               { data: "ParametroId" },
+                                               { data: "Descripcion" }
+                                           ],
+                                           columnDefs: [
+                                               {
+                                                   targets: [1],
+                                                   visible: false
+                                               },
+                                           ],                                           
+                                           dom: 'Bfrtip',
+                                           buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                           language: { url: obtenerURL("/Json/Spanish.json") },
+                                           lengthMenu: [5],
+                                           bLengthChange: false,
+                                           searching: true
+                                       });
+
+                                       $('#dtListasParametroR tbody').on('click', 'tr', function () {
+                                           $("#dtListasParametroR tr.selected").removeClass();
+                                           $(this).addClass('selected');
+                                       });
+                                   }
+                               })
+                           }
+                           else {
+                               alertify.alert().destroy();
+                               alertify.alert('Advertencia'
+                                   , listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                           }
+                       })
+                    closealertify();
+                }
+                , function () { })//onCancel
+                .set('labels', { ok: '< Si >', cancel: '< No >' });
+            }
+        </script>
+     , true);
+}

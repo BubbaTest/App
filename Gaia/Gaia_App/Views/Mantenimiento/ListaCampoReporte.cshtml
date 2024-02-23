@@ -1,0 +1,77 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleCampoReporte">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetCamRep">Detalle</a></li>
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetCamRep">
+                @Html.Partial("_CampoReporteMant")
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            $(document).ready(function () {
+                $('#gridDetalleCampoReporte').empty();
+                $('#gridDetalleCampoReporte').load(obtenerURL("/Mantenimiento/ObtenerListaCampoReporte"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasCampoReporte').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObtenerCampoReporte"),
+                                dataSrc: "",
+                            },
+                            rowId: 'CampoReporteId',
+                            retrieve: true,
+                            columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.CampoReporteId + '" class="icon mif-pencil mif-1x fg-green" onclick="obtenerCampoReporte(this)"></span>'
+                                            }
+                                        },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.CampoReporteId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarCampoReporte(this)"></span>'
+                                            }
+                                        },
+                                        { data: "CampoReporteId" },
+                                        { data: "descripciont" },
+                                        { data: "Placeholder" },
+                                        { data: "Titulo" },
+                                        { data: "descripcionp" },
+                                        { data: "Activo" },
+                                        { data: "IsPrincipal" }
+                            ],
+                            columnDefs: [{ targets: [7], type: Date, render: function (data) { if (data === true) { return "Activo"; } else { return "Inactivo"; } } }, { targets: [8], type: Date, render: function (data) { if (data === true) { return "Si"; } else { return "No"; } } }],
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf',orientation: 'landscape', pageSize: 'LEGAL'} ,{ extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }
+                            ],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasCampoReporte tbody').on('click', 'tr', function () {
+                            $("#dtListasCampoReporte tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+, true);
+}

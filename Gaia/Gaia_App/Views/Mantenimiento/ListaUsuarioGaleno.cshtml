@@ -1,0 +1,177 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleUsuarioGaleno">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetUsuarioGaleno">Detalle</a></li>            
+            <li id="usurol" style="display: none"><a href="#frDetUsuGRol">RelUsuarioRol</a></li>            
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetUsuarioGaleno">
+                @Html.Partial("_UsuarioGalenoMant")
+            </div>
+            <div class="frame" id="frDetUsuGRol">
+                <div class="container">
+                    <div class="example">
+                        <div class="flex-grid">
+                            <h5 style="align-self:center" id="btnUsuarioGRoles">
+                                Relación Usuario Roles
+                                <button class="image-button ribbed-darkGreen" data-tabcontinuar="data-tabcontinuar" id="btnrelRoles" onclick="relUsuGRoles()">
+                                    <span class="fg-white">Agregar</span>
+                                    <span class="icon mif-plus fg-white bg-darkGreen"></span>
+                                </button>
+                            </h5>
+                            <div class="row flex-just-center">
+                                <div class="cell size8" id="baba">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function GuardaUsuarioRol() {
+                showalertify();
+                var reljson = JSON.stringify({ "IdRolPersonal": $("#ddlrelRolG").val(), "chrCodEmpleado": vchrcodempleado, "IdEntidadIML": $("#ddlrelEntG").val() });
+                var url = obtenerURL('/Mantenimiento/GuardarRelUsuarioRolG?reljson=' + reljson);
+                $.post(url)
+                   .done(function (data) {
+                       var listado = JSON.parse(data);
+                       if (listado.Resultado === "true") {
+                           alertify.alert().destroy();
+                           alertify.alert('Confirmación', listado.Mensaje);
+                           alertify.alert().setting('modal', true);
+                           $('#baba').empty();
+                           var url = obtenerURL("/Mantenimiento/_ListaRolGR");
+                           $('#baba').load(url, function (response, status, xhr) {
+                               if (status === "success") {
+                                   table = $('#dtListasRolGR').dataTable({
+                                       ajax: {
+                                           url: obtenerURL('/Mantenimiento/ObtenerRelacionRolUsuarioG?UsuarioId=' + vchrcodempleado),
+                                           dataSrc: "",
+                                       },
+                                       rowId: 'IdRolPersonal',
+                                       retrieve: true,
+                                       columns: [
+                                           { data: "IdRolPersonal" },
+                                           {
+                                               'data': null,
+                                               'render': function (data, type, row) {
+                                                   return '<span id="' + row.strRol + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioRolG(this)"></span>'
+                                               }
+                                           },
+                                           { data: "strRol" }
+                                       ],
+                                       columnDefs: [{ targets: [0], visible: false },],
+                                       language: { url: obtenerURL("/Json/Spanish.json") },
+                                       lengthMenu: [5],
+                                       bLengthChange: false,
+                                       searching: true
+                                   });
+
+                                   $('#dtListasRolGR tbody').on('click', 'tr', function () {
+                                       $("#dtListasRolGR tr.selected").removeClass();
+                                       $(this).addClass('selected');
+                                   });
+                               }
+                           })
+                       }
+                       else {
+                           alertify.alert().destroy();
+                           alertify.alert('Advertencia', listado.Mensaje);
+                           alertify.alert().setting('modal', true);
+                       }
+                   })
+                closealertify();
+            }
+
+            function relUsuGRoles() {
+                var contenido;
+                var div = $("#ModalGenerico");
+                alertify.defaults.theme.ok = "success button";
+                alertify.defaults.theme.cancel = "danger button";
+                alertify.confirm().destroy();
+                div.load(obtenerURL("/Mantenimiento/_RolUsuarioG?chrcodempleado=" + vchrcodempleado), function () {
+                    contenido = div.html();
+                    div.empty();
+                    var modal = alertify.confirm()
+                        .setHeader('<h4> Relacionar Usuario a Rol</h4> ')
+                        .setContent(contenido)
+                        .set({ 'startMaximized': false, 'maximizable': true, 'resizable': true, 'labels': { ok: '< Guardar >', cancel: '< Salir >' } })
+                                    .resizeTo(200, 260)
+                        .set('oncancel', function (closeEvent) {})
+                        .set('onok', function (closeEvent) {GuardaUsuarioRol();})
+                        .show();
+                    var select2 = $(modal.elements.root).find("select");
+                    select2.select2().on("select2:open", function (e) {
+                        var id = e.target.id;
+                        var div_results = "#select2-" + id + "-results";
+                        $(div_results).parents(".select2-container").css({ 'z-index': '3000' });
+                    });
+                })
+            }
+
+            $(document).ready(function () {
+                $('#gridDetalleUsuarioGaleno').empty();
+                $("#gridDetalleUsuarioGaleno").load(obtenerURL("/Mantenimiento/ObtenerListaUsuarioGaleno"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasUsuarioGaleno').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObtenerUsuarioGaleno"),
+                                dataSrc: "",
+                            },
+                            rowId: 'CodEmpleado',
+                            retrieve: true,
+                            columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.CodEmpleado + '" class="icon mif-pencil mif-1x fg-blue" onclick="obtenerUsuarioGaleno(this)"></span>'
+                                            }
+                                        },
+                                        { data: "CodEmpleado" },
+                                        { data: "strNombreCompleto" },
+                                        { data: "strLogin" },
+                                        { data: "strCargo" },
+                                        { data: "Delegacion" },
+                                        { data: "blDelegaciones" },
+                                        { data: "Estado" },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return (data ? '<button id="' + row.CodEmpleado + '"class="button rounded bg-blue fg-white" onclick=ResetearPassword(this)> Resetear Password</button>' : '')
+                                            }, width: "5%"
+                                        }
+                            ],
+                            columnDefs: [{ targets: [6], type: Date, render: function (data) { if (data === "1") { return "Si"; } else { return "No"; } } },
+                                        { targets: [7], type: Date, render: function (data) { if (data === "1") { return "Activo"; } else { return "Pasivo"; } } }],
+                            dom: 'Bfrtip',
+                            buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasUsuarioGaleno tbody').on('click', 'tr', function () {
+                            $("#dtListasUsuarioGaleno tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+, true);
+}

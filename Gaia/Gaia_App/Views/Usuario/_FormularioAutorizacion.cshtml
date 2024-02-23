@@ -1,0 +1,66 @@
+﻿@model  Gaia.DAL.Model.UsuarioSistema
+
+
+@*@{ Layout = null; }*@
+
+@*<input type="hidden" id="hfAccionModulo" value="@ViewBag.hfAccionModulo" />*@
+
+<div class="login-form padding20 block-shadow">
+    <form id="frmAutorizacion">
+        
+        <div class="input-control text full-size" data-role="input">
+
+            <span class="mif-user prepend-icon"></span>
+            @Html.TextBoxFor(u => u.UsuarioId, new { @class = "form-control", @placeholder = "Usuario", @id = "UsuarioAutorizacion" })
+            <button class="button helper-button clear"><span class="mif-cross"></span></button>
+
+        </div>
+        <div class="input-control password full-size" data-role="input">
+
+            <span class="mif-key prepend-icon"></span>
+            @Html.PasswordFor(u => u.Password, new { @class = "form-control", @placeholder = "Contraseña", @id = "PasswordAutorizacion" })
+
+            <button class="button helper-button reveal"><span class="mif-looks"></span></button>
+
+        </div>
+    </form>
+    @*@using (Ajax.BeginForm("_FormularioAutorizacion", "Usuario", new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "frmAutorizacion" }))
+    {*@
+        @*@Html.AntiForgeryToken();*@
+
+        @*<h2 class="text-light">Autorización</h2>
+                    <hr class="thin" />
+                    <br />*@
+
+                    
+
+                    @*<button type="submit" class="button primary input-control full-size" value="_FormularioAutorizacion">
+                        <span class="mif-user-check"></span>
+                        Autenticar
+                    </button>*@
+
+        @*if (!ViewData.ModelState.IsValid)
+        {
+            <div class="popover marker-on-top bg-amber">
+                <div class="fg-white">
+                    @Html.ValidationSummary(true)
+                    @Html.ValidationMessageFor(u => u.UsuarioId)
+                    @Html.ValidationMessageFor(u => u.Password)
+                </div>
+            </div>
+
+        }*@
+    @*}*@
+</div>
+
+@*<form id="FormularioAutorizacion">
+    <fieldset>
+        <label> Usuario: </label>
+        <input type="text" />
+
+        <label> Password </label>
+        <input type="password" value="password" />
+
+        <input type="submit" value="Login" />
+    </fieldset>
+</form>*@

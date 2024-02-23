@@ -1,0 +1,27 @@
+﻿<div class="panel">
+    <div class="heading">
+        <span class="title">Mantenimiento de Entidad</span>
+    </div>
+</div>
+<div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+    <ul class="tabs">
+        <li class="active"><a href="#frEntidad">Entidad</a></li>
+    </ul>
+    <div class="frames">
+        <div class="frame" id="frEntidad" style="display: block;">
+            @Html.Partial("ListaEntidad")
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            var vsistemaId;
+            var vusuarioId;
+            var ventidadId;
+            var vmateriaId;
+        </script>
+    , true);
+}

@@ -1,0 +1,59 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+        table.cell-border th {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        table.cell-border thead th {
+            text-align: center;
+            background: #66a9bd;
+        }
+
+        table.cell-border tbody td {
+            text-align: center;
+        }
+
+    td {
+        font-size: 12px;
+    }
+</style>
+
+<div id="documentosSirufj">
+    <table id="dtListasSirufj" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column">ExpEmpleado_ID</th>
+                <th class="sortable-column">Cédula</th>
+                <th class="sortable-column">Nombre Completo</th>
+                <th class="sortable-column">Situación Administrativa</th>
+                <th class="sortable-column">No Empleado</th>
+            </tr>
+        </thead>
+        <thead id="ConsultaFilter">
+            <tr>
+                <th>ExpEmpleado_ID</th>
+                <th>Cédula</th>
+                <th>Nombre Completo</th>
+                <th>Situación Administrativa</th>
+                <th>No Empleado</th>                
+            </tr>
+        </thead>        
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">                
+        </script>
+    , true);
+}

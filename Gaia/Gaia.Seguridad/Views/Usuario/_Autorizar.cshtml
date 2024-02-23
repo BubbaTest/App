@@ -1,0 +1,210 @@
+﻿<div class="grid-fluid">
+    <div class="row">
+        <div class="cell">
+            <div class="login-form padding20 block-shadow">
+                <h3 class="text-center">
+                    <span class="icon mif-security bg-white">
+                    </span>Autorización
+                </h3>
+                <div class="input-control text full-size" data-role="input">
+                    <span class="mif-user prepend-icon">
+                    </span>
+                    <input type="text" id="txtModalUsuarioId" />
+                    <button class="button helper-button clear">
+                        <span class="mif-cross">
+                        </span>
+                    </button>
+                </div>
+                <div class="input-control password full-size" data-role="input">
+                    <span class="mif-key prepend-icon">
+                    </span>
+                    <input type="password" id="txtPasswordModal" />
+                    <button class="button helper-button reveal">
+                        <span class="mif-looks">
+                        </span>
+                    </button>
+                </div>
+                <button class="button primary input-control full-size" id="btnVmodalGuardar">
+                    <span class="mif-user-check">
+                    </span>Autorizar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+$("#btnExpedienteJudicial").on("click", function(e){
+
+                    var contenido;
+                    var div=$("#ModalGenerico");
+
+                    alertify.defaults.theme.ok = "success button";
+                    alertify.defaults.theme.cancel = "danger button";
+
+                    alertify.confirm().destroy();
+
+                    div.load("Nicarao/NautiusIndex",function(){
+                    contenido=div.html();
+                    div.empty();
+                        var modal = alertify.confirm()
+                            .setHeader('<h4> <span class="mif-search mif-ani-float mif-ani-slow"></span>Busqueda de Expedientes</h4> ')
+                            .setContent(contenido)
+                            .set({'startMaximized':true,'maximizable': true,'resizable': true,'labels': {ok:'< Seleccionar >', cancel:'< Salir >'}})
+                            .set('oncancel', function(closeEvent){
+                            } )
+                            .set('onok', function(closeEvent){
+                                var root= this.elements.root;
+                                var Sede = $(root).find("#dllSede");
+                                var elementsel =  $(root).find(".element-selected");
+                                var asuntoId =  $(root).find(".element-selected .title");
+                                url = ('/Nicarao/ObtenerInterviniente');
+                                var OrdenId = [];
+                                var AsuntoJson = "";
+
+                                $.each(elementsel, function (index, item) {
+                                    OrdenId.push(parseInt(item.id));
+                                });
+
+                                if (asuntoId.attr("id") === "" || asuntoId.attr("id") === undefined) {
+                                    alertify.alert().destroy();
+                                    alertify.alert("Advertencia", "Debe seleccionar un interviniente")
+
+                                    return false;
+                                }
+                                else {
+                                    $.getJSON("/Nicarao/ValidarAsuntoNic?AsuntoNicarao=" + asuntoId.attr("id") + "&SedeId=" + Sede.val()).done(function (dataval) {
+                                        var datos = JSON.parse(dataval);
+
+                                        if (datos.Retorno === "0")
+                                        {
+                                            alertify.alert().destroy();
+                                            alertify.alert("Advertencia", datos.Mensaje, function(){modal.show()});
+                                        }else
+                                        {
+                                                var jsParametros = { "Asunto": asuntoId.attr("id"), "Orden": OrdenId };
+
+                                                $.ajax({
+                                                    url: url,
+                                                    type: 'get',
+                                                    dataType: 'json',
+                                                    data: {"Sede": Sede.val(), "jsParametros": JSON.stringify(jsParametros)},
+                                                    beforeSend: function(){ showPreloader("dialogPreloader"); },
+                                                    complete: function () { closePreloader("dialogPreloader"); },
+                                                }).done(function(data){
+                                                    var json = JSON.parse(data);
+                                                    var jsAsunto = json[0]["Asunto"];
+
+                                                    $("#ddlAsuntoModalMateria").val(jsAsunto["MATERIA"]).trigger("change");
+                                                    $("#txtAsuntoSolicitud").val(jsAsunto["ASUNTO"]);
+                                                    $("#txtSedeJudicial").val(Sede.val());
+
+                                                    cargarSelect2("/Nicarao/JsonClase?ClaseId=" + jsAsunto["CLASE"], "ddlAsuntoModalClase", jsAsunto["CLASE"]);
+                                                    cargarSelect2("/Nicarao/JsonMotivo?MotivoId=" + jsAsunto["MOTIVO"], "ddlAsuntoModalMotivo", jsAsunto["MOTIVO"])
+
+                                                    var url = "../Solicitud/_SolPaso2";
+                                                    $("#pPaso2").load(url, function (response, status, xhr) {
+                                                        if (status === "success") {
+
+                                                            if ($('#rdUsuario').is(':checked')) {
+                                                                var element = $('#paso1')
+                                                                if (!element.hasClass('collapsed')) {
+                                                                    element.toggleClass('collapsed');
+                                                                }
+                                                            }
+
+                                                            element = $('#paso3')
+                                                            if (!element.hasClass('collapsed')) {
+                                                                element.toggleClass('collapsed');
+                                                            }
+
+                                                            element = $('#paso4')
+                                                            if (!element.hasClass('collapsed')) {
+                                                                element.toggleClass('collapsed');
+                                                            }
+
+                                                            origen = "2";
+
+                                                            var elem = $("#usuario");
+                                                            elem.show();
+                                                            var s;
+
+                                                            $("#txtUsuarioServicioId").val(0);
+
+                                                            $.each(json[0]["DetalleTabla"], function(x, it){
+                                                            s += "<tr id='" + JSON.stringify(json[0]["Interviniente"][x].OrdenIntervinienteNicarao) + "'>
+    ";
+    s += "
+    <td><a><span id='[" + JSON.stringify(json[0]["Interviniente"][x]) + "]' = class='mif-pencil mif-1x fg-red' onclick='irUsuario((this).id)'></span></a></td>";
+    s += "
+    <td>" + it.Nombre + "</td>";
+    s += "
+    <td>" + it.TipoIdentificativo + "</td>";
+    s += "
+    <td>" + it.Identificativo + "</td>";
+    s += "
+    <td>" + it.CalidadProcesal + "</td>";
+    s += "
+    <td>" + it.Edad + "</td>";
+    s += "
+    <td>" + it.Sexo + "</td>";
+    s += "
+    <td class='status'></td>";
+    s += "
+    <td></td>";
+    s += "
+</tr>";
+                                                            });
+
+                                                            s += "</table>";
+                                                            elem.append(s);
+                                                            s = "";
+
+                                                            $('td.status').each(function () {
+                                                                $('.status:contains("Rechazado")').css('color', 'red');
+                                                            });
+
+                                                            objPresupuestoJSON = '[{"ActividadEconomicaId": "NULL","PeriodoPagoId": "NULL","Monto": "NULL"}]';
+                                                            objAgendaJSON = '[{"TelefoniaId": "NULL","TelefoniaDesc_CNI": "NULL","TelefonoTipoId": "NULL","TipoDesc_CNI": "NULL", "NumeroTelefonico": "NULL", "Extension": "NULL", "Email": "NULL"}]';
+                                                            objCuestionarioJSON = "null";
+                                                            objSolicitudRequisito = "null";
+                                                        }
+                                                    });
+                                                });
+
+                                                $(".js-select").prop("disabled", true);
+
+                                                return true;
+                                            }
+                                    });
+                                }
+                            })
+                            .show();
+
+                        var select2 = $(modal.elements.root).find("select");
+
+                        $(".tabs li").removeClass("active");
+                        $(".tabs li a#InterAvanzado").parents("li").addClass("active");
+                        $("#btnAvanzado").addClass("active");
+                        $("#frmIntervinientes").css({ display: "block" });
+
+                        select2.select2().on("select2:open", function (e) {
+                            var id = e.target.id;
+                            var div_results = "#select2-" + id + "-results"; //obtener dinamicamente el id del select2
+                            $(div_results).parents(".select2-container").css({'z-index':'3000'}); //buscar el select2 y aplicar un index mayor a los demas controles
+                        });
+                        $("#dllSede").val("14").trigger("change");
+
+                $("#dllSede").change(function () {
+                    var SedeId = $(this).val();
+                    var SedeDescripcion = $("#dllSede :selected").text();
+                    $("#SedeDescripcion").text(SedeDescripcion);
+                }).trigger("change");
+                        tabChange();
+                    });
+                });
+        </script>
+, true);
+}

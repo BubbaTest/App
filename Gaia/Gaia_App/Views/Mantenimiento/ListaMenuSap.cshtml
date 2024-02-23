@@ -1,0 +1,73 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleMenSap">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetMenSap">Detalle</a></li>
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetMenSap">
+                @Html.Partial("_MenSapMant")
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            $(document).ready(function () {
+                $('#gridDetalleMenSap').empty();
+                $("#gridDetalleMenSap").load(obtenerURL("/Mantenimiento/ObtenerListaMenSap"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasMenSap').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObteneMenSap"),
+                                dataSrc: "",
+                            },
+                            rowId: 'id_menu',
+                            retrieve: true,
+                            columns: [
+                                {
+                                    'data': null,
+                                    'render': function (data, type, row) {
+                                        return '<span id="' + row.id_menu + '" class="icon mif-pencil mif-1x fg-blue" onclick="obtenerMenSap(this)"></span>'
+                                    }
+                                },
+                                { data: "id_menu" },
+                                { data: "DecpModulo" },
+                                { data: "menu_padre" },
+                                { data: "codigo" },
+                                { data: "nombre" },
+                                { data: "descripcion" },
+                                { data: "url" },
+                                { data: "tipo" },
+                                { data: "estado" },
+                                { data: "orden" },
+                                { data: "nivel" }
+                            ],                            
+                            columnDefs: [ { targets: [9], type: Date, render: function (data) { if (data === "0") { return "Pasivo"; } else { return "Activo"; } } },],
+                            dom: 'Bfrtip',
+                            buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasMenSap tbody').on('click', 'tr', function () {
+                            $("#dtListasMenSap tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+    , true);
+}

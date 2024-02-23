@@ -1,0 +1,40 @@
+﻿<div class="panel">
+    <div class="heading">
+        <span class="title">Mantenimiento Configuración Reportes</span>
+    </div>
+</div>
+<div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+    <ul class="tabs">
+        <li class="active"><a href="#frParametro">Parametro</a></li>
+        <li><a href="#frReporte">Reporte</a></li>
+        <li><a href="#frTipObj">Tipo Objeto</a></li>
+        <li><a href="#frCamRep">Campo Reporte</a></li>
+    </ul>
+    <div class="frames">
+        <div class="frame" id="frParametro" style="display: block;">            
+            @Html.Partial("ListaParametro")
+        </div>
+        <div class="frame" id="frReporte" style="display: none;">                        
+            @Html.Partial("ListaReporte")
+        </div>
+        <div class="frame" id="frTipObj" style="display: none;">
+            @Html.Partial("ListaTipoObjeto")
+        </div>
+        <div class="frame" id="frCamRep" style="display: none;">
+            @Html.Partial("ListaCampoReporte")
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            var vparametroId;
+            var vreporteId;  
+            var vtipoobjetoId;
+            var vcamporeporteId;
+            var vrolId;
+        </script>
+    , true);
+}

@@ -1,0 +1,199 @@
+﻿@model  Gaia.DAL.Model.vwAuditoria
+
+@{
+    Layout = null;
+}
+
+<div class="example">
+    <div class="flex-grid">
+        <div class="row cell-auto-size">
+            <div class="panel full-size">
+                <div class="heading bg-darkCobalt">
+                    <span class="title">Datos de la Búsqueda</span>
+                </div>
+                <div class="content padding5">
+                    <div class="flex-grid">
+                        <div class="row cell-auto-size">
+                            <div class="cell size1">
+                                <div class="content padding10">
+                                    @Html.Label("Proyecto?", new { @style = "color: darkBlue" })
+                                </div>
+                            </div>
+                            <div class="cell size2">
+                                <div class="input-control text" data-role="select" data-placeholder="Seleccione un Proyecto" data-allow-clear="true">
+                                    <span data-role="hint" data-hint-mode="2" data-hint="Proyecto" data-hint-position="top">
+                                        @Html.DropDownList("proyecto", new SelectList(ViewBag.Sistema as System.Collections.IEnumerable, "SistemaId", "Descripcion"),
+                                                 "Selecciona proyecto", new { id = "ddlProyecto" })
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="cell size1">
+                                <div class="content padding10">
+                                    @Html.Label("Entidad?", new { @style = "color: darkBlue" })
+                                </div>
+                            </div>
+                            <div class="cell size3">
+                                <div class="input-control text full-size" data-role="select" data-placeholder="Seleccione un Entidad" data-allow-clear="true">
+                                    <span data-role="hint" data-hint-mode="2" data-hint="Entidad" data-hint-position="top">
+                                        @Html.DropDownList("entidad", new SelectList(ViewBag.Entidad as System.Collections.IEnumerable, "EntidadId", "Descripcion"),
+                                                 "Selecciona entidad", new { id = "ddlEntidad" })
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="cell size1">
+                                <div class="content padding10">
+                                    @Html.Label("Empleado?", new { @style = "color: darkBlue" })
+                                </div>
+                            </div>
+                            <div class="cell size3">                                
+                                <label class="input-control text full-size">
+                                    <select id="txtUsuarioId"></select>
+                                    @Html.ValidationMessage("usuarioid", "* Campo Requerido *", new { id = "lblusuarioid", @style = "color:red; display: none;" })
+                                </label>                                
+                            </div> 
+                        </div>
+                        <div class="row cell-auto-size">
+                            <div class="cell size1">
+                                <div class="content padding10">
+                                    @Html.Label("Fecha?", new { @style = "color: darkBlue" })
+                                </div>
+                            </div>
+                            <div class="cell size2">
+                                <div class="input-control text full-size" data-role="datepicker" data-format="dd/mm/yyyy" data-locale="es">
+                                    @Html.TextBoxFor(model => model.FechaRegistro, new { id = "txtFechaRegistro", PlaceHolder = "Fecha Registro" })
+                                    <button class="button"><span class="mif-calendar"></span></button>
+                                </div>
+                            </div>                            
+                            <div class="cell size1">
+                                <div class="content padding10">
+                                    @Html.Label("Otros?", new { @style = "color: darkBlue" })
+                                </div>
+                            </div>
+                            <div class="cell size4">
+                                <div class="content">
+                                    <div class="input-control full-size text">
+                                        <input type="text" id="DetalleSeleccionBUSQUEDA" />
+                                        <div class="button-group">
+                                            <button class="button" id="btnFiltrar" onclick="filtrar(DetalleSeleccionBUSQUEDA.value, ddlProyecto.value, ddlEntidad.value, txtUsuarioId.value, txtFechaRegistro.value)"><span class="icon mif-search mif-lg"></span></button>
+                                            <button class="button" id="btnLimpiar" onclick="limpiar()"><span class="icon mif-bin mif-lg"></span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalles">
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+
+            function limpiar() {
+                $("#ddlProyecto").val(null).trigger("change");
+                $("#ddlEntidad").val(null).trigger("change");
+                $("#txtUsuarioId").val(null).trigger("change");
+                $("#txtFechaRegistro").val("");
+                $("#DetalleSeleccionBUSQUEDA").val("");
+            }
+
+            function filtrar(DetalleSeleccionBUSQUEDA, Proyecto, Entidad, Usuario, Fecha) {
+                DetalleSeleccionBUSQUEDA = $.trim(DetalleSeleccionBUSQUEDA)
+                DetalleSeleccionBUSQUEDA = DetalleSeleccionBUSQUEDA.replace(/  /g, ' ');
+                Proyecto = $.trim(Proyecto)
+                Entidad = $.trim(Entidad)
+                Usuario = $.trim(Usuario)
+                Fecha = $.trim(Fecha)
+
+                $('#gridDetalles').empty();
+                var url = obtenerURL("/Auditoria/_ListaAuditoria");                
+
+                $("#gridDetalles").load(url, function (response, status, xhr) {
+                    if (status === "success") {                                                
+                        url = obtenerURL("/Auditoria/FiltrarAuditoria?UsuarioId=" + Usuario + '&Proyecto=' + Proyecto + '&Entidad=' + Entidad + '&Fecha=' + Fecha + '&BUSQUEDA=' + DetalleSeleccionBUSQUEDA);                                                
+                        table = $('#dtListasAuditoria').dataTable({
+                            ajax: {
+                                url: url,
+                                dataType:"json",
+                                type: "POST"
+                            },
+                            rowId: 'AuditoriaId',                            
+                            retrieve: true,
+                            columns: [
+                                        { data: "AuditoriaId", width: "5%" },
+                                        { data: "SessionID", width: "5%" },
+                                        { data: "NombreUsuario", width: "5%" },
+                                        { data: "RolId", width: "5%" },
+                                        { data: "DescripcionCorta", width: "5%" },
+                                        { data: "FechaRegistro", width: "5%" },                                        
+                                        { data: "PaginaAccedida", width: "5%" },
+                                        { data: "NombreControlador", width: "5%" },
+                                        { data: "NombreAccion", width: "5%" },
+                                        { data: "Host", width: "5%" }
+                            ],
+                            columnDefs: [{ targets: [0], visible: false }, { targets: [1], visible: false }, ],
+                            //fnInitComplete: function (settings, json) {
+                            //    var table = $('#dtListasAuditoria').DataTable();
+                            //    table.columns().every(function (index) {
+                            //        $('#dtListasAuditoria thead tr:eq(0) th:eq(' + index + ') input').on('keyup change', function () {
+                            //            table.column($(this).parent().index() + ':visible')
+                            //                .search(this.value)
+                            //                .draw();
+                            //        });
+                            //    })
+                            //},
+                            dom: 'Bfrtip',
+                            processing: true,
+                            serverSide: true,
+                            buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [15],
+                            bLengthChange: false,
+                            searching: false
+                        });
+
+                        $('#dtListasAuditoria tbody').on('click', 'tr', function () {
+                            $("#dtListasAuditoria tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                    else {
+                        closealertify();
+                        alertify.alert().destroy();
+                        alertify.alert('Advertencia', listado.Mensaje);
+                        alertify.alert().setting('modal', true);
+                    }
+                });
+            }
+
+            $(document).ready(function () {
+                $('#txtUsuarioId').select2({
+                    ajax: {
+                        url: obtenerURL("/Auditoria/FiltrarUsuarios"),
+                        dataType: 'json',
+                        delay: 250,
+                        type: "GET",
+                        data: function (params) { return { nombre: params.term }; },
+                        processResults: function (data) {
+                            return {
+                                results: $.map(data, function (obj) { return { id: obj.USUARIOID, text: obj.NOMBRE }; })
+                            };
+                        }
+                    },
+                    width: '400px', minimumInputLength: 9, placeholder: "Seleccione un Usuario", allowClear: true
+                });
+            })
+        </script>
+    , true);
+}

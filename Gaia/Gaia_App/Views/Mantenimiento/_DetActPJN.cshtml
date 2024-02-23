@@ -1,0 +1,286 @@
+﻿@model  Gaia.DAL.Model.Usuario
+
+@{ Layout = null; }
+
+<div class="content">
+    <div class="flex-grid">
+        <div class="row" style="padding-left: 10px; padding-right: 10px">
+            <div class="cell colspan1">
+            </div>
+            <div class="cell colspan4">
+                <div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+                    <ul class="tabs">
+                        <li class="active"><a href="#frTabDSirufj">Detalle SIRUFJ</a></li>
+                    </ul>
+                    <div class="frames">
+                        <div class="frame" id="frTabDSirufj" style="display: none;">
+                            <div class="row flex-just-center">
+                                @Html.Hidden("hfEstado")
+                                @Html.Hidden("hfCodigoEmpleadoS")
+                                <div class="cell colspan12">
+                                    @Html.Label("ExpEmpleado_ID", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtExpEmpleado_IDS", PlaceHolder = "Empleado Id", disabled = "disabled" })
+                                        @Html.ValidationMessage("expempleado_ids", "* Campo Requerido *", new { id = "lblexpempleado_ids", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                <div class="cell colspan12">
+                                    @Html.Label("No Cédula", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtNoCedulaS", PlaceHolder = "No Cédula", disabled = "disabled" })
+                                        @Html.ValidationMessage("nocedulas", "* Campo Requerido *", new { id = "lblnocedulas", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                <div class="cell colspan12">
+                                    @Html.Label("Nombres", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtNombresS", PlaceHolder = "Nombres", disabled = "disabled" })
+                                        @Html.ValidationMessage("nombres", "* Campo Requerido *", new { id = "lblnombres", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                <div class="cell colspan12">
+                                    @Html.Label("Apellidos", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtApellidosS", PlaceHolder = "Apellidos", disabled = "disabled" })
+                                        @Html.ValidationMessage("apellidoss", "* Campo Requerido *", new { id = "lblapellidoss", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                @Html.Hidden("hfCargoIdS")
+                                <div class="cell colspan12">
+                                    @Html.Label("Cargo", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtCarcoDescripcionS", PlaceHolder = "Cargo", disabled = "disabled" })
+                                        @Html.ValidationMessage("cargos", "* Campo Requerido *", new { id = "lblcargos", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                @Html.Hidden("hfEntidadIdS")
+                                <div class="cell colspan12">
+                                    @Html.Label("Entidad", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtEntidadDescripcionS", PlaceHolder = "Entidad", disabled = "disabled" })
+                                        @Html.ValidationMessage("entidads", "* Campo Requerido *", new { id = "lblentidads", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                <div class="cell colspan12">
+                                    @Html.Label("Fecha Inicio", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtFechaInicioS", PlaceHolder = "Fecha Inicio", disabled = "disabled" })
+                                        @Html.ValidationMessage("fechainicios", "* Campo Requerido *", new { id = "lblfechainicios", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                <div class="cell colspan12">
+                                    @Html.Label("Fecha Fin", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtFechaFinS", PlaceHolder = "Fecha Fin", disabled = "disabled" })
+                                        @Html.ValidationMessage("fechafins", "* Campo Requerido *", new { id = "lblfechafins", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cell colspan2">
+            </div>
+            <div class="cell colspan4">
+                <div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+                    <ul class="tabs">
+                        <li class="active"><a href="#frTabPJN">Detalle PJN</a></li>
+                    </ul>
+                    <div class="frames">
+                        <div class="frame" id="frTabPJN" style="display: none;">
+                            <div class="row flex-just-center">
+                                @Html.Hidden("hfCodigoEmpleadoP")
+                                <div class="cell colspan12">
+                                    @Html.Label("ExpEmpleado_ID", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtExpEmpleado_IDP", PlaceHolder = "Empleado Id", disabled = "disabled" })
+                                        @Html.ValidationMessage("expempleado_idp", "* Campo Requerido *", new { id = "lblexpempleado_idp", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                <div class="cell colspan12">
+                                    @Html.Label("No Cédula", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtNoCedulaP", PlaceHolder = "No Cédula", disabled = "disabled" })
+                                        @Html.ValidationMessage("nocedulap", "* Campo Requerido *", new { id = "lblnocedulap", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                <div class="cell colspan12">
+                                    @Html.Label("Nombres", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtNombresP", PlaceHolder = "Nombres", disabled = "disabled" })
+                                        @Html.ValidationMessage("nombrep", "* Campo Requerido *", new { id = "lblnombrep", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                <div class="cell colspan12">
+                                    @Html.Label("Apellidos", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtApellidosP", PlaceHolder = "Apellidos", disabled = "disabled" })
+                                        @Html.ValidationMessage("apellidosp", "* Campo Requerido *", new { id = "lblapellidosp", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                @Html.Hidden("hfCargoIdP")
+                                <div class="cell colspan12">
+                                    @Html.Label("Cargo", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtCarcoDescripcionP", PlaceHolder = "Cargo", disabled = "disabled" })
+                                        @Html.ValidationMessage("cargop", "* Campo Requerido *", new { id = "lblcargop", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                @Html.Hidden("hfEntidadIdP")
+                                <div class="cell colspan12">
+                                    @Html.Label("Entidad", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtEntidadDescripcionP", PlaceHolder = "Entidad", disabled = "disabled" })
+                                        @Html.ValidationMessage("entidadp", "* Campo Requerido *", new { id = "lblentidadp", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                <div class="cell colspan12">
+                                    @Html.Label("Fecha Inicio", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtFechaInicioP", PlaceHolder = "Fecha Inicio", disabled = "disabled" })
+                                        @Html.ValidationMessage("fechainiciosp", "* Campo Requerido *", new { id = "lblfechainiciop", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row flex-just-center">
+                                <div class="cell colspan12">
+                                    @Html.Label("Fecha Fin", new { @style = "color: darkBlue; " })
+                                    <label class="input-control text full-size">
+                                        @Html.TextBoxFor(model => model.CodMunicipio, new { id = "txtFechaFinP", PlaceHolder = "Fecha Fin", disabled = "disabled" })
+                                        @Html.ValidationMessage("fechafinp", "* Campo Requerido *", new { id = "lblfechafinp", @style = "color:red; display: none;" })
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cell colspan1">
+            </div>
+        </div>
+        <div class="row" id="btnSirufjPjn" style="display:none">
+            <div class="cell colspan10">
+            </div>
+            <div class="cell colspan2">
+                <div class="toolbar">
+                    <div class="toolbar-section">
+                        <button class="image-button ribbed-darkBlue" data-tabcontinuar="data-tabcontinuar" id="btnGuardaDatGen" onclick="ActualizaDatosPJN()">
+                            <span class="fg-white">Actualizar</span>
+                            <span class="icon mif-floppy-disk fg-white bg-darkBlue"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            $(document).ready(function () {
+                $("#txtNoCedulaS").inputmask("999-999999-9999A");
+                $("#txtNoCedulaP").inputmask("999-999999-9999A");
+                $("#txtFechaInicioS").inputmask("99/99/9999");
+                $("#txtFechaFinS").inputmask("99/99/9999");
+                $("#txtFechaInicioP").inputmask("99/99/9999");
+                $("#txtFechaFinP").inputmask("99/99/9999");
+            })
+
+            function Validar() {
+                var bandera = true;
+                if ($.trim($('#txtNoCedulaS').val()) != $.trim($('#txtNoCedulaP').val())) {
+                    bandera = false;
+                }
+
+                if ($.trim($('#txtNombresS').val()) != $.trim($('#txtNombresP').val())) {
+                    bandera = false;
+                }
+
+                if ($.trim($('#txtApellidosS').val()) != $.trim($('#txtApellidosP').val())) {
+                    bandera = false;
+                }
+
+                if ($.trim($('#hfCargoIdS').val()) != $.trim($('#hfCargoIdP').val())) {
+                    bandera = false;
+                }
+
+                if ($.trim($('#hfEntidadIdS').val()) != $.trim($('#hfEntidadIdP').val())) {
+                    bandera = false;
+                }
+
+                if ($.trim($('#txtFechaInicioS').val()) != $.trim($('#txtFechaInicioP').val())) {
+                    bandera = false;
+                }
+
+                if ($.trim($('#txtFechaFinS').val()) != $.trim($('#txtFechaFinP').val())) {
+                    bandera = false;
+                }
+
+                if (bandera == false) {
+                    $("#btnSirufjPjn").show();
+                }
+            }
+
+            function ActualizaDatosPJN() {
+                var pjnson;
+                var cod = $('#txtExpEmpleado_IDS').val();
+                if ($('#txtExpEmpleado_IDP').val().toString().length < 1) {
+                    pjnjson = JSON.stringify({ "Accion": "0", "ExpEmpleado_ID": $('#txtExpEmpleado_IDS').val(), "CodEmpleado": $('#hfCodigoEmpleadoS').val(), "CID": $('#txtNoCedulaS').val(), "NombresFuncionario": $('#txtNombresS').val(), "ApellidosFuncionario": $('#txtApellidosS').val(), "codCargo": $("#hfCargoIdS").val(), "intCodEntidadPJ": $("#hfEntidadIdS").val(), "FechaIni": $('#txtFechaInicioS').val(), "FechaFin": $('#txtFechaFinS').val(), "Estado": $("#hfEstado").val() });
+                }
+                else {
+                    pjnjson = JSON.stringify({ "Accion": "1", "ExpEmpleado_ID": $('#txtExpEmpleado_IDS').val(), "CodEmpleado": $('#hfCodigoEmpleadoS').val(), "CID": $('#txtNoCedulaS').val(), "NombresFuncionario": $('#txtNombresS').val(), "ApellidosFuncionario": $('#txtApellidosS').val(), "codCargo": $("#hfCargoIdS").val(), "intCodEntidadPJ": $("#hfEntidadIdS").val(), "FechaIni": $('#txtFechaInicioS').val(), "FechaFin": $('#txtFechaFinS').val(), "Estado": $("#hfEstado").val() });
+                }
+                var url = obtenerURL('/Mantenimiento/ActualizaPJN?pjnjson=' + pjnjson);
+                $.ajax({
+                    url: url,
+                    method: "get",
+                    //async: false,
+                    dataType: "json",
+                    success: function (jsondatos) {
+                        var obj = JSON.parse(jsondatos);
+                        if (obj.Retorno == "0") {
+                            CargaDetalleDatos(cod);
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación', obj.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia', obj.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    }
+                })
+            }
+        </script>
+    , true);
+}

@@ -1,0 +1,114 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+        table.cell-border th {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        table.cell-border thead th {
+            text-align: center;
+            background: #66a9bd;
+        }
+
+        table.cell-border tbody td {
+            text-align: center;
+        }
+</style>
+
+<div id="documentosUsuarioNic">
+    <table id="dtListasUsuarioNic" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>                
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Rol</th>
+                <th class="sortable-column">Entidad</th>
+                <th class="sortable-column">Sede</th>
+                <th class="sortable-column">UsuarioNic</th>
+                <th class="sortable-column">Organo</th>
+                <th class="sortable-column">Cargo</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function eliminarelUsuarioNicarao(obj) {
+                var values = $(obj).attr('id').split(";");                
+                alertify.defaults.theme.ok = "button warning";
+                alertify.defaults.theme.cancel = "button primary";
+                alertify.confirm().destroy();
+                alertify.confirm('Advertencia', 'Esta seguro de querer Eliminar la Relacion?'
+                , function () { //onOk
+                    var url = obtenerURL('/Mantenimiento/eliminarelUsuarioNicarao?Id=' + values[0] + "&Id2=" + values[1] + "&Id3=" + values[2]);
+                    $.post(url)
+                       .done(function (data) {
+                           var listado = JSON.parse(data);
+                           if (listado.Resultado === "true") {
+                               alertify.alert().destroy();
+                               alertify.alert('Confirmación', listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                               $('#babanic').empty();
+                               var url = obtenerURL("/Mantenimiento/_ListaUsuarioNic");
+                               $('#babanic').load(url, function (response, status, xhr) {
+                                   if (status === "success") {
+                                       table = $('#dtListasUsuarioNic').dataTable({
+                                           ajax: {
+                                               url: obtenerURL('/Mantenimiento/ObtenerUsuarioNicarao?UsuarioId=' + vusuarioId),
+                                               dataSrc: "",
+                                           },
+                                           retrieve: true,
+                                           columns: [
+                                               {
+                                                   'data': null,
+                                                   'render': function (data, type, row) {
+                                                       return '<span id="' + row.relGUID + ";" + row.Sede + ";" + row.UsuarioNic + ";" + row.OrganoNic + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioNicarao(this)"></span>'
+                                                   }
+                                               },
+                                               { data: "RolDescripcion" },
+                                               { data: "EntidadDescripcion" },
+                                               { data: "SedeDescripcion" },
+                                               { data: "UsuarioNic" },
+                                               { data: "OrganoNicDescripcion" },
+                                               { data: "CargoNicDescripcion" }
+                                           ],
+                                           columnDefs: [],
+                                           dom: 'Bfrtip',
+                                           buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                           language: { url: obtenerURL("/Json/Spanish.json") },
+                                           lengthMenu: [5],
+                                           bLengthChange: false,
+                                           searching: true
+                                       });
+
+                                       $('#dtListasUsuarioNic tbody').on('click', 'tr', function () {
+                                           $("#dtListasUsuarioNic tr.selected").removeClass();
+                                           $(this).addClass('selected');
+                                       });
+                                   }
+                               })
+                               
+                           }
+                           else {
+                               alertify.alert().destroy();
+                               alertify.alert('Advertencia', listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                           }
+                       })
+                }
+                , function () { })//onCancel
+                .set('labels', { ok: '< Si >', cancel: '< No >' });
+            }
+        </script>
+     , true);
+}

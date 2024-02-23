@@ -1,0 +1,134 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+
+    td { font-size: 12px;}
+</style>
+
+<div id="documentosEntidad">
+    <table id="dtListasEntidad" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column">Descripcion</th>
+                <th class="sortable-column">CodDepartamento</th>
+                <th class="sortable-column">CodMunicipio</th>
+                @*<th class="sortable-column">Domicilio</th>
+                <th class="sortable-column">Telefonos</th>
+                <th class="sortable-column">Estado</th>
+                <th class="sortable-column">Circuito</th>*@
+                <th class="sortable-column">DescripcionCorta</th>
+                <th class="sortable-column">SedeJudicial</th>
+                <th class="sortable-column">intCodEntidadPJ</th>
+                <th class="sortable-column">chrCodEdificio</th>
+                <th class="sortable-column">Activo</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+    {
+        Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function eliminaEntidad(obj) {
+                showalertify()
+                ventidadId = $(obj).attr('id');
+                var url = obtenerURL('/Mantenimiento/eliminaEntidad?entidadjson=' + ventidadId);
+                $.post(url)
+                    .done(function (data) {
+                        var listado = JSON.parse(data);
+                        if (listado.Resultado === "true") {
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                            $('#frEntidad').empty();
+                            $('#frEntidad').load(obtenerURL("/Mantenimiento/ListaEntidad"));
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+                closealertify();
+            }
+
+            function obtenerEntidad(obj) {
+                showalertify()
+                ventidadId = $(obj).attr('id');                
+                var url = obtenerURL('/Mantenimiento/ObtenerEntidad?EntidadId=' + ventidadId + "&Proyecto=" + $('#txtProyecto').val());
+                $.getJSON(url)
+                    .done(function (data) {
+                        var Listado = (JSON.stringify(data));
+                        encabezdo = (Listado);
+                        iniciarValoresEntidad();
+
+                        $('#guineaoriental').empty();
+                        var url = obtenerURL("/Mantenimiento/_ListaEntidadMat");
+                        $("#guineaoriental").load(url, function (response, status, xhr) {
+                            if (status === "success") {
+                                table = $('#dtListasEntidadMat').dataTable({
+                                    ajax: {
+                                        url: obtenerURL('/Mantenimiento/ObtenerRelacionEntidadMateria?EntidadId=' + ventidadId),
+                                        dataSrc: "",
+                                    },
+                                    rowId: 'Llave',
+                                    retrieve: true,
+                                    columns: [
+                                        { data: "MateriaId" },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.EntidadId + ";" + row.MateriaId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelEntidadMateria(this)"></span>'
+                                            }
+                                        },
+                                        { data: "Descripcion" }
+                                    ],
+                                    columnDefs: [{ targets: [0], visible: false },],
+                                    dom: 'Bfrtip',
+                                    buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                    language: { url: obtenerURL("/Json/Spanish.json") },
+                                    lengthMenu: [5],
+                                    bLengthChange: false,
+                                    searching: true
+                                });
+
+                                $('#dtListasEntidadMat tbody').on('click', 'tr', function () {
+                                    $("#dtListasEntidadMat tr.selected").removeClass();
+                                    $(this).addClass('selected');
+                                });
+                            }
+                        })
+                    })
+
+                $("#entmat").show();
+                closealertify();
+            }
+        </script>
+    , true);
+}
+
+

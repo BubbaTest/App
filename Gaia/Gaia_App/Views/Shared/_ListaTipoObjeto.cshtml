@@ -1,0 +1,79 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+        table.cell-border th {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        table.cell-border thead th {
+            text-align: center;
+            background: #66a9bd;
+        }
+
+        table.cell-border tbody td {
+            text-align: center;
+        }
+</style>
+
+<div id="documentosTipoReporte">
+    <table id="dtListasTipoObjeto" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column">Descripción</th>                
+                <th class="sortable-column">Activo</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function eliminarTipoObjeto(obj) {
+                vtipoobjetoId = $(obj).attr('id');
+
+                var url = obtenerURL('/Mantenimiento/eliminaTipoObjeto?tipoobjetojson=' + vtipoobjetoId);
+                $.post(url)
+                    .done(function (data) {
+                        var listado = JSON.parse(data);
+
+                        if (listado.Resultado === "true") {
+                            $('#frTipObj').empty();
+                            $('#frTipObj').load(obtenerURL("/Mantenimiento/ListaTipoObjeto"));
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación' , listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia' , listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+            }
+
+            function obtenerTipoObjeto(obj) {
+                vtipoobjetoId = $(obj).attr('id');
+
+                var url = obtenerURL('/Mantenimiento/ObtenerTipoObjeto?TipoObjetoId=' + vtipoobjetoId);
+                $.getJSON(url)
+                    .done(function (data) {                        
+                        encabezdo = (data);
+                        iniciarValoresTipoObjeto();
+                    })                
+            }
+        </script>
+     , true);
+}

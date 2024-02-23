@@ -1,0 +1,27 @@
+﻿<div class="panel">
+    <div class="heading">
+        <span class="title">Mantenimiento de Sistemas</span>
+    </div>
+</div>
+<div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+    <ul class="tabs">
+        <li class="active"><a href="#frSistema">Sistema</a></li>
+    </ul>
+    <div class="frames">
+        <div class="frame" id="frSistema" style="display: block;">
+            @Html.Partial("ListaSistema")
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            var vsistemaId;
+            var vusuarioId;
+        </script>
+    , true);
+}
+
+

@@ -1,0 +1,124 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+
+    td {
+        font-size: 12px;
+    }
+</style>
+
+<div id="documentosUsuarioGaleno">
+    <table id="dtListasUsuarioGaleno" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">CODIGO</th>
+                <th class="sortable-column">NOMBRE</th>
+                <th class="sortable-column">USUARIO</th>
+                <th class="sortable-column">CARGO</th>
+                <th class="sortable-column">DELEGACION</th>
+                <th class="sortable-column">TODAS LAS DELEGACIONES</th>
+                <th class="sortable-column">ACTIVO</th>
+                <th class="sortable-column"></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function ResetearPassword(obj) {
+                showalertify();
+                var values = $(obj).attr('id').split(";");
+                vchrcodempleado = values[0];                                
+
+                var url = obtenerURL('/Mantenimiento/restablecerUsuarioPassword?reljson=' + vchrcodempleado);
+                $.post(url)
+                    .done(function (data) {
+                        var listado = JSON.parse(data);
+                        if (listado.Resultado === "true") {
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación', listado.Mensaje);
+                            alertify.alert().setting('modal', true);                            
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+                closealertify();                        
+            }
+                       
+            function obtenerUsuarioGaleno(obj) {
+                showalertify();
+                vchrcodempleado = $(obj).attr('id');
+                var url = obtenerURL('/Mantenimiento/ObtenerUsuarioGaleno?UsuarioId=' + vchrcodempleado);
+                $.getJSON(url)
+                    .done(function (data) {                                                
+                        iniciarValoresUsuarioGaleno(data);
+
+                        $('#baba').empty();
+                        var url = obtenerURL("/Mantenimiento/_ListaRolGR");
+                        $('#baba').load(url, function (response, status, xhr) {
+                            if (status === "success") {
+                                table = $('#dtListasRolGR').dataTable({
+                                    ajax: {
+                                        url: obtenerURL('/Mantenimiento/ObtenerRelacionRolUsuarioG?UsuarioId=' + vchrcodempleado), //+ '&Proyecto=' + $('#txtProyecto').val()
+                                        dataSrc: "",
+                                    },
+                                    rowId: 'IdRolPersonal',
+                                    retrieve: true,
+                                    columns: [
+                                        { data: "IdRolPersonal" },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.strRol + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioRolG(this)"></span>'
+                                            }
+                                        },
+                                        { data: "strRol" }
+                                    ],
+                                    columnDefs: [{ targets: [0], visible: false },],
+                                    language: { url: obtenerURL("/Json/Spanish.json") },
+                                    lengthMenu: [5],
+                                    bLengthChange: false,
+                                    searching: true
+                                });
+
+                                $('#dtListasRolGR tbody').on('click', 'tr', function () {
+                                    $("#dtListasRolGR tr.selected").removeClass();
+                                    $(this).addClass('selected');
+                                });
+                            }
+                            $("#usurol").show();
+                        })
+                    })
+                closealertify();
+            }
+        </script>
+     , true);
+}
+

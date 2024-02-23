@@ -1,0 +1,22 @@
+﻿@model Gaia.DAL.Model.UsuarioRolEntidad
+
+<div class="content">
+    <div class="flex-grid">
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control select full-size" data-placeholder="Seleccione una Acción" data-allow-clear="true">
+                    @Html.DropDownListFor(model => model.RolId, new SelectList(ViewBag.AccionNo as System.Collections.IEnumerable, "IdAccion", "DescpAccion"),
+                                    "Selecciona Accion", new { id = "ddlrelAccionSap", @style = "width:400px;" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+        </script>
+     , true);
+}

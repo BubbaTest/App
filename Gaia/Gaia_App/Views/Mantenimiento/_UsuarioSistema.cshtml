@@ -1,0 +1,30 @@
+﻿<div class="content">
+    <div class="flex-grid">
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control select full-size" data-placeholder="Seleccione una Opción" data-allow-clear="true">
+                    @Html.DropDownList("sistema", new SelectList(ViewBag.Sistema as System.Collections.IEnumerable, "SistemaId", "Descripcion"),
+                                    "Selecciona Proyecto", new { id = "ddlrelSistema", @style = "width:100%;" })
+                </div>
+            </div>
+        </div>
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <label class="input-control password full-size">
+                    @Html.TextBox("password","", new { id = "txtPassword", type = "password", PlaceHolder = "Contraseña" })
+                    @Html.ValidationMessage("password", "* Campo Requerido *", new { id = "lblcontrasena", @style = "color:red; display: none;" })
+                </label>
+            </div>
+        </div>        
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+        </script>
+    , true);
+}
+
+

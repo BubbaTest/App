@@ -1,0 +1,65 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+</style>
+
+<div id="documentosAuditoria">
+    <table id="dtListasAuditoria" class="cell-border" cellspacing="0" style="width:100%;">
+        @*<thead id="table-tfoot">
+            <tr class="table-header">
+                <th class="sortable-column">AuditoriaId</th>
+                <th class="sortable-column">SessionID</th>
+                <th class="sortable-column">UsuarioId</th>
+                <th class="sortable-column">RolId</th>
+                <th class="sortable-column">EntidadId</th>
+                <th class="sortable-column">Host</th>
+                <th class="sortable-column">PaginaAccedida</th>
+                <th class="sortable-column">NombreControlador</th>
+                <th class="sortable-column">NombreAccion</th>
+            </tr>
+        </thead>*@
+        <thead>
+            <tr>
+                <th class="sortable-column">AuditoriaId</th>
+                <th class="sortable-column">SessionID</th>
+                <th class="sortable-column">NombreUsuario</th>
+                <th class="sortable-column">RolId</th>
+                <th class="sortable-column">Entidad</th>
+                <th class="sortable-column">FechaRegistro</th>                
+                <th class="sortable-column">PaginaAccedida</th>                
+                <th class="sortable-column">NombreControlador</th>
+                <th class="sortable-column">NombreAccion</th>
+                <th class="sortable-column">Host</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+        </script>
+    , true);
+}

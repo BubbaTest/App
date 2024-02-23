@@ -1,0 +1,340 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+
+    td { font-size: 12px; }
+</style>
+
+<div id="documentosUsuario">
+    <table id="dtListasUsuario" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>                
+                <th class="sortable-column">Id</th>                
+                <th class="sortable-column">Email</th>
+                <th class="sortable-column">Nombre Completo</th>
+                <th class="sortable-column">Tipo Usuario</th>
+                <th class="sortable-column">Cargo</th>                
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function ResetearPassword(obj) {
+                var values = $(obj).attr('id').split(";");
+                vsistemaId = values[0];
+                var vid = values[1]
+                
+                var url = obtenerURL('/Mantenimiento/obtenerCifrado?Sistema=' + vsistemaId);
+                $.getJSON(url)
+                    .done(function (data) {
+                        $.each(data, function (i, item) {
+                            key = item.LlaveCifrado
+                            alg = item.AlgoritmoCifrado;
+
+                            if (key == null) { var url = obtenerURL('/Mantenimiento/ActualizarUsuSis?UsuarioId=' + vusuarioId + '&SistemaId=' + vsistemaId + '&id=' + vid + '&alg=' + alg); }
+                            else { var url = obtenerURL('/Mantenimiento/ActualizarUsuSis?UsuarioId=' + vusuarioId + '&SistemaId=' + vsistemaId + '&id=' + vid + '&alg=' + alg + '&key=' + key); }
+                            
+                            $.post(url)
+                                .done(function (data) {
+                                    var listado = JSON.parse(data);
+                                    if (listado.Resultado === "true") {
+                                        alertify.alert().destroy();
+                                        alertify.alert('Confirmación', listado.Mensaje);
+                                        alertify.alert().setting('modal', true);
+                                        $('#pajaronegro').empty();
+                                        var url = obtenerURL("/Mantenimiento/_ListaUsuSisR");
+                                        $('#pajaronegro').load(url, function (response, status, xhr) {
+                                            if (status === "success") {
+                                                table = $('#dtListasUsuSisR').dataTable({
+                                                    ajax: {
+                                                        url: obtenerURL('/Mantenimiento/ObtenerRelacionUsuSis?UsuarioId=' + vusuarioId), //+ '&Proyecto=' + $('#txtProyecto').val()
+                                                        dataSrc: "",
+                                                    },
+                                                    rowId: 'SistemaId',
+                                                    retrieve: true,
+                                                    columns: [
+                                                        { data: "SistemaId" },
+                                                        {
+                                                            'data': null,
+                                                            'render': function (data, type, row) {
+                                                                return '<span id="' + row.SistemaId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioSistema(this)"></span>'
+                                                            }
+                                                        },
+                                                        { data: "SistemaId" },
+                                                        { data: "Password" },
+                                                        {
+                                                            'data': null,
+                                                            'render': function (data, type, row) {
+                                                                return (data ? '<button id="' + row.SistemaId + '"class="button rounded bg-blue fg-white" onclick=ResetearPassword(this)> Resetear Password</button>' : '')
+                                                            }
+                                                        },
+                                                    ],
+                                                    columnDefs: [
+                                                        {
+                                                            targets: [0],
+                                                            visible: false
+                                                        },
+                                                    ],                                                    
+                                                    dom: 'Bfrtip',
+                                                    buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                                    language: { url: obtenerURL("/Json/Spanish.json") },
+                                                    lengthMenu: [5],
+                                                    bLengthChange: false,
+                                                    searching: true
+                                                });
+
+                                                $('#dtListasUsuSisR tbody').on('click', 'tr', function () {
+                                                    $("#dtListasUsuSisR tr.selected").removeClass();
+                                                    $(this).addClass('selected');
+                                                });
+                                            }
+                                        })
+                                    }
+                                    else {
+                                        alertify.alert().destroy();
+                                        alertify.alert('Advertencia', listado.Mensaje);
+                                        alertify.alert().setting('modal', true);
+                                    }
+                                })
+                        })
+                    })
+            }
+
+            function eliminaUsuario(obj) {
+                vusuarioId = $(obj).attr('id');                                                    
+                var url = obtenerURL('/Mantenimiento/eliminaUsuario?usuariojson=' + vusuarioId);
+                $.post(url)
+                    .done(function (data) {
+                        var listado = JSON.parse(data);
+                        if (listado.Resultado === "true") {
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                            $('#frUsuario').empty();
+                            $('#frUsuario').load(obtenerURL("/Mantenimiento/ListaUsuario"));                               
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+            }
+
+            function obtenerUsuario(obj) {                                
+                vusuarioId = $(obj).attr('id');
+                var url = obtenerURL('/Mantenimiento/ObtenerUsuario?UsuarioId=' + vusuarioId);
+                $.getJSON(url)
+                    .done(function (data) {
+                        var Listado = (JSON.stringify(data));
+                        encabezdo = (Listado);
+                        iniciarValoresUsuario();                        
+
+                        $('#pajaronegro').empty();
+                        var url = obtenerURL("/Mantenimiento/_ListaUsuSisR");
+                        $('#pajaronegro').load(url, function (response, status, xhr) {
+                            if (status === "success") {
+                                table = $('#dtListasUsuSisR').dataTable({
+                                    ajax: {
+                                        url: obtenerURL('/Mantenimiento/ObtenerRelacionUsuSis?UsuarioId=' + vusuarioId), //+ '&Proyecto=' + $('#txtProyecto').val()
+                                        dataSrc: "",
+                                    },
+                                    rowId: 'SistemaId',
+                                    retrieve: true,
+                                    columns: [
+                                        { data: "SistemaId" },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.SistemaId + ";" + row.Id + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioSistema(this)"></span>'
+                                            }
+                                        },
+                                        { data: "SistemaId" },
+                                        { data: "Password" },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return (data ? '<button id="' + row.SistemaId + ";" + row.Id + '"class="button rounded bg-blue fg-white" onclick=ResetearPassword(this)> Resetear Password</button>' : '')
+                                            }
+                                        },                                        
+                                    ],
+                                    columnDefs: [
+                                        {
+                                            targets: [0],
+                                            visible: false
+                                        },
+                                    ],                                    
+                                    dom: 'Bfrtip',
+                                    buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                    language: { url: obtenerURL("/Json/Spanish.json") },
+                                    lengthMenu: [5],
+                                    bLengthChange: false,
+                                    searching: true
+                                });
+
+                                $('#dtListasUsuSisR tbody').on('click', 'tr', function () {
+                                    $("#dtListasUsuSisR tr.selected").removeClass();
+                                    $(this).addClass('selected');
+                                });
+                            }
+                        })
+
+                        $('#baba').empty();
+                        var url = obtenerURL("/Mantenimiento/_ListaRolR");
+                        $('#baba').load(url, function (response, status, xhr) {
+                            if (status === "success") {
+                                table = $('#dtListasRolR').dataTable({
+                                    ajax: {
+                                        url: obtenerURL('/Mantenimiento/ObtenerRelacionRolEntidad?UsuarioId=' + vusuarioId), //+ '&Proyecto=' + $('#txtProyecto').val()
+                                        dataSrc: "",                                           
+                                    },
+                                    rowId: 'Llave',
+                                    retrieve: true,
+                                    columns: [
+                                        { data: "RolId" },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.RolId + ";" + row.EntidadId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioEntidad(this)"></span>'
+                                            }
+                                        },                                                                                
+                                        { data: "Descripcion" },
+                                        { data: "EntidadDescripcion" }
+                                    ],
+                                    columnDefs: [
+                                        {
+                                            targets: [0],
+                                            visible: false
+                                        },
+                                    ],                                    
+                                    dom: 'Bfrtip',
+                                    buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                    language: { url: obtenerURL("/Json/Spanish.json") },
+                                    lengthMenu: [5],
+                                    bLengthChange: false,
+                                    searching: true
+                                });
+
+                                $('#dtListasRolR tbody').on('click', 'tr', function () {
+                                    $("#dtListasRolR tr.selected").removeClass();
+                                    $(this).addClass('selected');
+                                });
+                            }
+                        })
+
+                        $('#babanic').empty();
+                        var url = obtenerURL("/Mantenimiento/_ListaUsuarioNic");
+                        $('#babanic').load(url, function (response, status, xhr) {
+                            if (status === "success") {
+                                table = $('#dtListasUsuarioNic').dataTable({
+                                    ajax: {
+                                        url: obtenerURL('/Mantenimiento/ObtenerUsuarioNicarao?UsuarioId=' + vusuarioId), 
+                                        dataSrc: "",
+                                    },                                    
+                                    retrieve: true,
+                                    columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.relGUID + ";" + row.Sede + ";" + row.UsuarioNic + ";" + row.OrganoNic + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioNicarao(this)"></span>'
+                                            }
+                                        },
+                                        { data: "RolDescripcion" },
+                                        { data: "EntidadDescripcion" },
+                                        { data: "SedeDescripcion" },
+                                        { data: "UsuarioNic" },
+                                        { data: "OrganoNicDescripcion" },
+                                        { data: "CargoNicDescripcion" }
+                                    ],
+                                    columnDefs: [],
+                                    dom: 'Bfrtip',
+                                    buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                    language: { url: obtenerURL("/Json/Spanish.json") },
+                                    lengthMenu: [5],
+                                    bLengthChange: false,
+                                    searching: true
+                                });
+
+                                $('#dtListasUsuarioNic tbody').on('click', 'tr', function () {
+                                    $("#dtListasUsuarioNic tr.selected").removeClass();
+                                    $(this).addClass('selected');
+                                });
+                            }
+                        })
+
+                        $('#guinea').empty();
+                        var url = obtenerURL("/Mantenimiento/_ListaOpcAsoR");
+                        $('#guinea').load(url, function (response, status, xhr) {
+                            if (status === "success") {
+                                table = $('#dtListasOpcAsoR').dataTable({
+                                    ajax: {
+                                        url: obtenerURL('/Mantenimiento/ObtenerRelacionUsuarioOpcAso?UsuarioId=' + vusuarioId),  //+ '&Proyecto=' + $('#txtProyecto').val()),
+                                        dataSrc: "",
+                                    },
+                                    rowId: 'OpcionId',
+                                    retrieve: true,
+                                    columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.OpcionId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelOpcAso(this)"></span>'
+                                            }
+                                        },
+                                        { data: "OpcionId" },
+                                        { data: "Opcion" }
+                                    ],
+                                    columnDefs: [],
+                                    dom: 'Bfrtip',
+                                    buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                    language: { url: obtenerURL("/Json/Spanish.json") },
+                                    lengthMenu: [5],
+                                    bLengthChange: false,
+                                    searching: true
+                                });
+
+                                $('#dtListasOpcAsoR tbody').on('click', 'tr', function () {
+                                    $("#dtListasOpcAsoR tr.selected").removeClass();
+                                    $(this).addClass('selected');
+                                });
+                            }
+                        })
+                    })
+
+                $("#ususis").show();
+                $("#usurol").show();
+                $("#usunic").show();
+                $("#usuopcaso").show();
+            }
+        </script>
+     , true);
+}
+
+
+
+
+

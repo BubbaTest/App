@@ -1,0 +1,161 @@
+﻿<li id="liPerfil">
+    <label for="drop-perfil" class="toggleee">@ViewBag.sUsuario</label>
+    <a href="#">@ViewBag.Usuario [@ViewBag.Ambiente]</a>
+    <input type="checkbox" id="drop-perfil" />
+    <ul>
+        <li id="menuperfil">
+            <table>
+                <tr>
+                    <td id="tdFoto">
+                        <img src="~/Content/Images/anonymous.png" style="height:80px;width:80px">
+                    </td>
+                    <td id="tdBotones">
+                        <div>
+                            @{
+                                if (Session["Rol"] != null)
+                                {
+                                    if (Session["Rol"].ToString() == "*")
+                                    {
+                                        <button onclick="IrARolPorUsuario()" class="btnMenu">Cambiar Rol</button>
+                                    }
+                                }
+                            }
+                            <button id="lnkCambiarPassword" class="btnMenu">Cambiar Clave</button>
+                            <button onclick="CerrarSesion()" class="btnMenu">Salir</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div id="datosPerfil">
+                @*<hr style="WIDTH:97%;">*@
+                <hr>
+                <p><b>@ViewBag.NombreCompleto</b></p>
+                
+                <p><b>Rol:</b> <br><i>@ViewBag.sRolDescripcion</i></p>
+                
+                <p id="menucorreo"><b>Correo:</b> <br><i>@ViewBag.sCorreo</i></p>
+            </div>
+        </li>
+    </ul>
+</li>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(@<script type="text/javascript">
+        $(document).ready(function () {
+            $("#lnkCambiarPassword").on("click", function (e) {
+                alertify.confirm().destroy();
+
+                var contenido;
+                var div = $("#ModalGenerico");
+
+                //alertify.defaults.theme.ok = "success button";
+                //alertify.defaults.theme.cancel = "danger button";
+
+                div.load(obtenerURL("/Home/CambiarPassword"), function () {
+                    contenido = div.html();
+                    div.empty();
+                    var modal = alertify.confirm()
+                        .setHeader('')
+                        .setContent(contenido)
+                        .set({'startMaximized':true, 'resizable': false, 'basic': true, 'closable': false})
+                        .show();
+
+                    VerClave();
+                });
+            });
+        });
+        
+        
+    </script>, true);
+}
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(@<script type="text/javascript">
+        function CerrarSesion()
+        {
+            url = $(location).attr("origin") + obtenerURL("/Home/CerrarSesion");
+            $(location).attr("href", url);
+        }
+
+        function IrARolPorUsuario()
+        {
+            url = $(location).attr("origin") + obtenerURL("/Rol/RedirigirARolPorUsuario");
+            $(location).attr("href", url);
+        }
+
+        function CancelarModificarPassword() {
+            alertify.confirm().close();
+        }
+
+        function ModificarPassword() {
+            $("#txtPasswordActual").val($("#txtPasswordActual").val().trim());
+            $("#txtPasswordNueva").val($("#txtPasswordNueva").val().trim());
+            $("#txtConfirmarPasswordNueva").val($("#txtConfirmarPasswordNueva").val().trim());
+
+            //console.log("entro btnok");
+            var passwordactual = $("#txtPasswordActual").val();
+            var passwordnueva = $("#txtPasswordNueva").val();
+            var confirmarpasswordnueva = $("#txtConfirmarPasswordNueva").val();
+            //Obtenemos el string en formato json
+            var cenencjson = JSON.stringify({ "UsuarioId": $('#sUsuario').val() });
+            var UsuarioJSON = { "UsuarioId": $('#sUsuario').val() }; // JSON.parse(cenencjson);
+            //var UsuarioJSON = JSON.parse($("#sUsuario").val());
+            var usuarioid = UsuarioJSON.UsuarioId;
+
+            //Comprobamos que haya digitado al menos la contraseña
+            if (passwordactual.length === 0 || passwordnueva.length === 0 || confirmarpasswordnueva.length === 0) {
+                alertify.alert("Advertencia", "Por favor, debe llenar los campos requeridos");
+                return false;
+            }
+
+            //Codificamos la contraseña previo al envío
+            passwordactual = Base64.encode(passwordactual);
+            //////////////////////////////////
+            //Utilizamos una expresion regular
+            //Se requiere al menos 1 caracter en mayúsculas, 1 en minúsculas y 1 dígito
+            var reg= /(?=^.{8,15}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
+
+            if (!reg.test(passwordnueva)) {
+                alertify.alert("Advertencia", "La contraseña debe contener al menos 1 caracter en mayúsculas, 1 caracter en minúsculas y 1 dígito!");
+                return false;
+            }
+
+            //Comparación contraseña nueva y anterior
+            if (passwordnueva === confirmarpasswordnueva) {
+                //Codificamos la contraseña nueva previo al envío
+                passwordnueva = Base64.encode(passwordnueva);
+
+                //Hacemos el envío de los datos
+                $.get(obtenerURL("/Usuario/CambiarPassword"), { usuarioid: usuarioid, passwordactual: passwordactual, passwordnueva: passwordnueva })
+                     .done(function (data) {
+                         console.log(data);
+                         var JsonData = $.parseJSON(data)
+                         console.log(JsonData.Retorno)
+                         if (JsonData.Retorno === "0") {
+                             //alertify.alert("Notificación", "Se ha modificado exitosamente su contraseña, se cerrará su sesión de usuario para que ingrese nuevamente");
+                             alertify.confirm().close();
+                             alertify.confirm().destroy();
+                             //$.post("Home/CerrarSesion");
+                             url = $(location).attr("origin") + obtenerURL("/Usuario/Login");
+                             $(location).attr("href", url);
+                         }
+                         else {
+                             alertify.alert("Advertencia", JsonData.Mensaje);
+                         }
+                     }).fail(function (jqxhr, textStatus, error) {
+                         var err = textStatus + ", " + error;
+                         alertify.alert("Advertencia", err);
+                         //console.log("Request Failed: " + err);
+                     });
+            }
+            else {
+                alertify.alert("Advertencia", "La contraseña nueva y de confirmación deben coincidir!");
+            }
+            //Comparación contraseña
+
+        }
+
+    </script>, true);
+}

@@ -1,0 +1,171 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleUsuarioSap">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetUsuarioSap">Detalle</a></li>
+            <li id="usurol" style="display: none"><a href="#frDetUsuSRol">RelUsuarioRol</a></li>
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetUsuarioSap">
+                @Html.Partial("_UsuarioSapMant")
+            </div>
+            <div class="frame" id="frDetUsuSRol">
+                <div class="container">
+                    <div class="example">
+                        <div class="flex-grid">
+                            <h5 style="align-self:center" id="btnUsuarioSRoles">
+                                Relación Usuario Roles
+                                <button class="image-button ribbed-darkGreen" data-tabcontinuar="data-tabcontinuar" id="btnrelRoles" onclick="relUsuSRoles()">
+                                    <span class="fg-white">Agregar</span>
+                                    <span class="icon mif-plus fg-white bg-darkGreen"></span>
+                                </button>
+                            </h5>
+                            <div class="row flex-just-center">
+                                <div class="cell size8" id="baba">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+
+            function GuardaUsuarioRol() {
+                showalertify();
+                var reljson = JSON.stringify({ "id_usuario": vidusuario, "id_rol": $("#ddlrelRolS").val(), "DeBaja": "1", "blnActivo": "1"});
+                var url = obtenerURL('/Mantenimiento/GuardarRelUsuarioRolS?reljson=' + reljson);
+                $.post(url)
+                    .done(function (data) {
+                        var listado = JSON.parse(data);
+                        if (listado.Resultado === "true") {
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                            $('#baba').empty();
+                            var url = obtenerURL("/Mantenimiento/_ListaRolSR");
+                            $('#baba').load(url, function (response, status, xhr) {
+                                if (status === "success") {
+                                    table = $('#dtListasRolSR').dataTable({
+                                        ajax: {
+                                            url: obtenerURL('/Mantenimiento/ObtenerRelacionRolUsuarioS?UsuarioId=' + vidusuario),
+                                            dataSrc: "",
+                                        },
+                                        rowId: 'Id_Usuario_Rol',
+                                        retrieve: true,
+                                        columns: [
+                                            { data: "id_rol" },
+                                            {
+                                                'data': null,
+                                                'render': function (data, type, row) {
+                                                    return '<span id="' + row.id_rol + "/" + row.Id_Usuario_Rol + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioRolS(this)"></span>'
+                                                }
+                                            },
+                                            { data: "descripcion" }
+                                        ],
+                                        columnDefs: [{ targets: [0], visible: false },],
+                                        language: { url: obtenerURL("/Json/Spanish.json") },
+                                        lengthMenu: [5],
+                                        bLengthChange: false,
+                                        searching: true
+                                    });
+
+                                    $('#dtListasRolSR tbody').on('click', 'tr', function () {
+                                        $("#dtListasRolSR tr.selected").removeClass();
+                                        $(this).addClass('selected');
+                                    });
+                                }                              
+                            })
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+                closealertify();
+            }
+
+            function relUsuSRoles() {
+                var contenido;
+                var div = $("#ModalGenerico");
+                alertify.defaults.theme.ok = "success button";
+                alertify.defaults.theme.cancel = "danger button";
+                alertify.confirm().destroy();
+                div.load(obtenerURL("/Mantenimiento/_RolUsuarioS?idusuario=" + vidusuario), function () {
+                    contenido = div.html();
+                    div.empty();
+                    var modal = alertify.confirm()
+                        .setHeader('<h4> Relacionar Usuario a Rol</h4> ')
+                        .setContent(contenido)
+                        .set({ 'startMaximized': false, 'maximizable': true, 'resizable': true, 'labels': { ok: '< Guardar >', cancel: '< Salir >' } })
+                        .resizeTo(200, 260)
+                        .set('oncancel', function (closeEvent) { })
+                        .set('onok', function (closeEvent) { GuardaUsuarioRol(); })
+                        .show();
+                    var select2 = $(modal.elements.root).find("select");
+                    select2.select2().on("select2:open", function (e) {
+                        var id = e.target.id;
+                        var div_results = "#select2-" + id + "-results";
+                        $(div_results).parents(".select2-container").css({ 'z-index': '3000' });
+                    });
+                })
+            }
+
+            $(document).ready(function () {
+                $('#gridDetalleUsuarioSap').empty();
+                $("#gridDetalleUsuarioSap").load(obtenerURL("/Mantenimiento/ObtenerListaUsuarioSap"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasUsuarioSap').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObtenerUsuarioSap"),
+                                dataSrc: "",
+                            },
+                            rowId: 'Id_usuario',
+                            retrieve: true,
+                            columns: [
+                                {
+                                    'data': null,
+                                    'render': function (data, type, row) {
+                                        return '<span id="' + row.Id_usuario + '" class="icon mif-pencil mif-1x fg-blue" onclick="obtenerUsuarioSap(this)"></span>'
+                                    }
+                                },
+                                { data: "Id_usuario" },
+                                { data: "Identificacion" },
+                                { data: "DescripcionTipodeIdentificacion" },
+                                { data: "NombreCompleto" },
+                                { data: "DescripcionEntidad" },
+                                { data: "FechaInsercion" },
+                                { data: "DeBaja" }
+                            ],
+                            columnDefs: [{ targets: [7], type: Date, render: function (data) { if (data === "0") { return "Activo"; } else { return "Pasivo"; } } },],
+                            dom: 'Bfrtip',
+                            buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasUsuarioSap tbody').on('click', 'tr', function () {
+                            $("#dtListasUsuarioSap tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+    , true);
+}

@@ -1,0 +1,99 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+
+    td {
+        font-size: 12px;
+    }
+</style>
+
+<div id="documentosPermisoSap">
+    <table id="dtListasPermisoSap" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column">Rol</th>
+                <th class="sortable-column">Menu</th>
+                <th class="sortable-column">Fecha Inserción</th>
+                <th class="sortable-column">DeBaja</th>
+                <th class="sortable-column">Activo</th>                
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+
+            function obtenerPermisoSap(obj) {
+                showalertify();
+                vidpermiso = $(obj).attr('id');
+                var url = obtenerURL('/Mantenimiento/ObtenerPermisoSap?PermisoId=' + vidpermiso);
+                $.getJSON(url)
+                    .done(function (data) {
+                        iniciarValoresPermisoSap(data);
+
+                        $('#babas').empty();
+                        var url = obtenerURL("/Mantenimiento/_ListaAccPerSap");
+                        $('#babas').load(url, function (response, status, xhr) {
+                            if (status === "success") {
+                                table = $('#dtListasAccPerSap').dataTable({
+                                    ajax: {
+                                        url: obtenerURL('/Mantenimiento/ObtenerRelacionPerAccSap?IdPermiso=' + vidpermiso),
+                                        dataSrc: "",
+                                    },
+                                    rowId: 'Id_PermisoAccion',
+                                    retrieve: true,
+                                    columns: [
+                                        { data: "IdAccion" },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.IdAccion + "/" + row.Id_PermisoAccion + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelPerAccSap(this)"></span>'
+                                            }
+                                        },
+                                        { data: "DescpAccion" }
+                                    ],
+                                    columnDefs: [{ targets: [0], visible: false },],
+                                    language: { url: obtenerURL("/Json/Spanish.json") },
+                                    lengthMenu: [5],
+                                    bLengthChange: false,
+                                    searching: true
+                                });
+
+                                $('#dtListasAccPerSap tbody').on('click', 'tr', function () {
+                                    $("#dtListasAccPerSap tr.selected").removeClass();
+                                    $(this).addClass('selected');
+                                });
+                            }
+                            $("#peracc").show();
+                        })
+                    })
+                closealertify();
+            }
+        </script>
+    , true);
+}

@@ -1,0 +1,297 @@
+﻿@model  Gaia.DAL.Model.EntidadG
+
+@{ IEnumerable<SelectListItem> Municipios = ViewBag.Municipios;}
+
+<div class="content">
+    <div class="flex-grid">
+        <div class="row padding10 flex-jus-center">
+            <div class="cell size8 padding10 no-padding-left">
+                <div data-role="window" class="window">
+                    <div class="window-caption">
+                        <span class="window-caption-title">Entidad</span>
+                    </div>
+                    <div class="window-content">                        
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.TextBoxFor(model => model.EntidadId, new { id = "txtEntidadId", PlaceHolder = "EntidadId" })
+                                    @Html.ValidationMessage("entidadid", "* Campo Requerido *", new { id = "lblentidadid", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.TextBoxFor(model => model.Descripcion, new { id = "txtDescripcionE", PlaceHolder = "Descripcion" })
+                                    @Html.ValidationMessage("descripcion", "* Campo Requerido *", new { id = "lbldescripcione", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">                                    
+                                    @Html.DropDownListFor(model => model.CodDepartamento, new SelectList(ViewBag.Departamentos as System.Collections.IEnumerable, "chrCodDepartamento", "strDepartamento"),
+                                            "Selecciona Departamento", new { id = "txtCodDepartamento", @class = "dep" })
+                                    @Html.ValidationMessage("coddepartamento", "* Campo Requerido *", new { id = "lblcoddepartamento", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>                        
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.DropDownListFor(model => model.CodMunicipio, Municipios, new { @id = "txtCodMunicipio", @class = "mun" }) 
+                                    @Html.ValidationMessage("codmunicipio", "* Campo Requerido *", new { id = "lblcodmunicipio", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>                        
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.TextBoxFor(model => model.Domicilio, new { id = "txtDomicilio", PlaceHolder = "Domicilio" })
+                                    @Html.ValidationMessage("domicilio", "* Campo Requerido *", new { id = "lbldomicilio", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.TextBoxFor(model => model.Telefonos, new { id = "txtTelefonos", PlaceHolder = "Teléfonos" })
+                                    @Html.ValidationMessage("telefonos", "* Campo Requerido *", new { id = "lbltelefonos", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.TextBoxFor(model => model.Estado, new { id = "txtEstado", PlaceHolder = "Estado" })
+                                    @Html.ValidationMessage("estado", "* Campo Requerido *", new { id = "lblestado", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.TextBoxFor(model => model.Circuito, new { id = "txtCircuito", PlaceHolder = "Circuito" })
+                                    @Html.ValidationMessage("circuito", "* Campo Requerido *", new { id = "lblcircuito", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.TextBoxFor(model => model.DescripcionCorta, new { id = "txtDescripcionCorta", PlaceHolder = "DescripcionCorta" })
+                                    @Html.ValidationMessage("descripcioncorta", "* Campo Requerido *", new { id = "lbldescripcioncorta", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.DropDownListFor(model => model.SedeJudicial, new SelectList(ViewBag.Sede as System.Collections.IEnumerable, "SedeId", "Descripcion"),
+                                            "Selecciona SedeJudicial", new { id = "txtSedeJudicial", @class = "sj" })
+                                    @Html.ValidationMessage("sedejudicial", "* Campo Requerido *", new { id = "lblsedejudicial", @style = "color:red; display: none;" })
+                                </label>                                
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.DropDownListFor(model => model.intCodEntidadPJ, new SelectList(ViewBag.Entidadpj as System.Collections.IEnumerable, "intCodEntidadPJ", "DescripcionCompleta"),
+                                            "Selecciona Entidad", new { id = "txtintCodEntidadPJ", @class = "ent" })                                    
+                                    @Html.ValidationMessage("intCodEntidadPJ", "* Campo Requerido *", new { id = "lblintcodentidadpjl", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div> 
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.DropDownListFor(model => model.chrCodEdificio, new SelectList(ViewBag.Edificiopj as System.Collections.IEnumerable, "chrCodEdificio", "strEdificio"),
+                                            "Selecciona Edificio", new { id = "txtchrCodEdificio", @class = "edi" })
+                                    @Html.ValidationMessage("chrCodEdificio", "* Campo Requerido *", new { id = "lblchrCodEdificiol", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center" id="ActivoEnt">
+                            <label class="input-control checkbox small-check">
+                                <input type="checkbox" id="activoent" value="true" checked>
+                                <span class="check"></span>
+                                <span class="caption">Activo</span>
+                            </label>
+                            <label class="input-control checkbox small-check">
+                                <input type="checkbox" id="inactivoent" value="false">
+                                <span class="check"></span>
+                                <span class="caption">Inactivo</span>
+                            </label>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="toolbar">
+                                <div class="toolbar-section">
+                                    <button class="image-button ribbed-darkBlue" data-tabcontinuar="data-tabcontinuar" id="btnGuardaEntidad" onclick="AgregarEntidad()">
+                                        <span class="fg-white">Guardar</span>
+                                        <span class="icon mif-floppy-disk fg-white bg-darkBlue"></span>
+                                    </button>
+                                    <button class="image-button ribbed-darkOrange" data-tabcontinuar="data-tabcontinuar" id="btnActualizarEntidad" onclick="ActualizarEntidad()" style="display: none">
+                                        <span class="fg-white">Actualizar</span>
+                                        <span class="icon mif-pencil fg-white bg-darkOrange"></span>
+                                    </button>
+                                    <button class="image-button ribbed-darkEmerald" data-tabcontinuar="data-tabcontinuar" id="btnNuevoEntidad" onclick="NuevaEntidad()">
+                                        <span class="fg-white">Nuevo</span>
+                                        <span class="icon mif-plus fg-white bg-darkEmerald"></span>
+                                    </button>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+    {
+        Html.AddScriptBlock(
+            @<script type="text/javascript">
+                function ActualizarEntidad() {
+                    var bandera = true;
+                    var FechaBaja = "";
+                    if ($('#txtEntidadId').val().toString().length < 1) {
+                        $("#lblentidadid").show();
+                        bandera = false;
+                    }
+                    if (bandera == true) {
+                        showalertify();
+                        $("#lblentidadid").hide();
+
+                        var listaCheck = $("#ActivoEnt input[type='checkbox']");
+                        $.each(listaCheck, function (index, value) {
+                            if ($(value).prop('checked') === true) {
+                                Activo = value.value
+                                if (Activo == 1) {
+                                    FechaBaja = formatFechaHoras(new Date)
+                                }
+                            }
+                        })
+
+                        var entidadjson = JSON.stringify({ "EntidadId": $.trim($('#txtEntidadId').val()), "Descripcion": $('#txtDescripcionE').val().toString(), "CodDepartamento": $('#txtCodDepartamento').val(), "CodMunicipio": $('#txtCodMunicipio').val(), "Domicilio": $('#txtDomicilio').val().toString(), "Telefonos": $('#txtTelefonos').val().toString(), "Estado": $('#txtEstado').val().toString(), "Circuito": $('#txtCircuito').val().toString(), "DescripcionCorta": $('#txtDescripcionCorta').val().toString(), "SedeJudicial": $('#txtSedeJudicial').val(), "intCodEntidadPJ": $('#txtintCodEntidadPJ').val().toString(), "chrCodEdificio": $('#txtchrCodEdificio').val(), "FechaBaja": FechaBaja, "Activo": Activo });
+                        var url = obtenerURL('/Mantenimiento/ActualizarEntidad?entidadjson=' + entidadjson);
+                        $.post(url)
+                            .done(function (data) {
+                                var listado = JSON.parse(data);
+                                if (listado.Resultado === "true") {
+                                    alertify.alert().destroy();
+                                    alertify.alert('Confirmación', listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                    $('#frEntidad').empty();
+                                    $('#frEntidad').load(obtenerURL("/Mantenimiento/ListaEntidad"))
+                                }
+                                else {
+                                    alertify.alert().destroy();
+                                    alertify.alert('Advertencia', listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                }
+                            })
+                        closealertify();
+                    }
+                }
+
+                function AgregarEntidad() {
+                    var bandera = true;
+                    var FechaBaja = "";
+                    if ($('#txtEntidadId').val().toString().length < 1) {
+                        $("#lblentidadid").show();
+                        bandera = false;
+                    }
+                    if (bandera == true) {
+                        showalertify();
+                        $("#lblentidadid").hide();
+
+                        var listaCheck = $("#ActivoEnt input[type='checkbox']");
+                        $.each(listaCheck, function (index, value) {
+                            if ($(value).prop('checked') === true) {
+                                Activo = value.value
+                                if (Activo == 1) {
+                                    FechaBaja = formatFechaHoras(new Date)
+                                }
+                            }
+                        })
+
+                        var entidadjson = JSON.stringify({ "EntidadId": $.trim($('#txtEntidadId').val()), "Descripcion": $('#txtDescripcionE').val().toString(), "CodDepartamento": $('#txtCodDepartamento').val(), "CodMunicipio": $('#txtCodMunicipio').val(), "Domicilio": $('#txtDomicilio').val().toString(), "Telefonos": $('#txtTelefonos').val().toString(), "Estado": $('#txtEstado').val().toString(), "Circuito": $('#txtCircuito').val().toString(), "DescripcionCorta": $('#txtDescripcionCorta').val().toString(), "SedeJudicial": $('#txtSedeJudicial').val(), "intCodEntidadPJ": $('#txtintCodEntidadPJ').val(), "chrCodEdificio": $('#txtchrCodEdificio').val(), "FechaBaja": FechaBaja, "Activo": Activo });
+                        var url = obtenerURL('/Mantenimiento/AgregarEntidad?entidadjson=' + entidadjson);
+                        $.post(url)
+                           .done(function (data) {
+                               var listado = JSON.parse(data);
+                               if (listado.Resultado === "true") {
+                                   $('#frEntidad').empty();
+                                   $('#frEntidad').load(obtenerURL("/Mantenimiento/ListaEntidad"))
+                                   alertify.alert().destroy();
+                                   alertify.alert('Confirmación', listado.Mensaje);
+                                   alertify.alert().setting('modal', true);
+                               }
+                               else {
+                                   alertify.alert().destroy();
+                                   alertify.alert('Advertencia', listado.Mensaje);
+                                   alertify.alert().setting('modal', true);
+                               }
+                           })
+                        closealertify();
+                    }
+                }
+
+                function NuevaEntidad() {
+                    $('#txtEntidadId').prop("disabled", false);
+                    $('#txtEntidadId').val("");
+                    $('#txtDescripcionE').val("");
+                    $('#txtCodDepartamento').select2("val", "ca");
+                    $('#txtCodMunicipio').select2("val", "ca");
+                    $('#txtDomicilio').val("");
+                    $('#txtTelefonos').val("");
+                    $('#txtEstado').val("");
+                    $('#txtCircuito').val("");
+                    $('#txtDescripcionCorta').val("");
+                    $('#txtSedeJudicial').select2("val", "ca");
+                    $('#txtintCodEntidadPJ').select2("val", "ca");
+                    $('#txtchrCodEdificio').select2("val", "ca");
+                    $('#btnActualizarEntidad').hide();
+                    $('#btnGuardaEntidad').show();
+                    $('#ActivoEnt input[type=checkbox]').prop("checked", false);
+                    $('#activoent').prop('checked', true);
+                }
+
+                $(document).ready(function () {
+                    $("#txtCodDepartamento").on("change", function (b) {
+                        var sssUrl = obtenerURL("/Mantenimiento/txtCodMunicipio?chrCodDepartamento=" + $('#txtCodDepartamento').val());
+                        $("#txtCodMunicipio").load(sssUrl, function (response, status, xhr) {})
+                    });
+
+                    $(".dep").select2({
+                        placeholder: "Seleccione Departamento", dropdownAutoWidth: true, tags: true, width: '100%',
+                    });
+
+                    $(".mun").select2({
+                        placeholder: "Seleccione Municipio", dropdownAutoWidth: true, tags: true, width: '100%',
+                    });
+
+                    $(".sj").select2({
+                        placeholder: "Seleccione SedeJudicial", dropdownAutoWidth: true, tags: true, width: '100%',
+                    });
+
+                    $(".ent").select2({
+                        placeholder: "Seleccione Entidad", dropdownAutoWidth: true, tags: true, width: '100%',
+                    });
+
+                    $(".edi").select2({
+                        placeholder: "Seleccione Edificio", dropdownAutoWidth: true, tags: true, width: '100%',
+                    });
+
+                    $('#ActivoEnt input[type=checkbox]').click(function () {
+                        $('#ActivoEnt input[type=checkbox]').prop("checked", false);
+                        $(this).prop("checked", true);
+                    });
+                })
+            </script>
+    , true);
+}
+
+
+

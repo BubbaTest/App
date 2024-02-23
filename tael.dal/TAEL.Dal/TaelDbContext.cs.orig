@@ -1,0 +1,135 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TAEL.Dal.Model;
+using TAEL.Dal.Model.edictos;
+using TAEL.Dal.Model.solicitud;
+
+namespace TAEL.Dal
+{
+    public class TaelDBContext : DbContext
+    {
+        public TaelDBContext() : base("name=cnnTael") { }
+
+        public TaelDBContext(string cnn) : base(cnn) { }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            Database.SetInitializer<TaelDBContext>(null);
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+
+            //modelBuilder.Entity<Asuntos>().ToTable("Asunto");
+            modelBuilder.Entity<Asuntos>().ToTable("Asunto");
+            modelBuilder.Entity<Actuacion>().ToTable("Actuacion");
+            modelBuilder.Entity<Interviniente>().ToTable("Interviniente");
+            modelBuilder.Entity<DocumentoBBDD>().ToTable("DocumentoBBDD");
+            modelBuilder.Entity<DocumentosActuacion>().ToTable("DocumentosActuacion");
+
+            modelBuilder.Entity<catCircuito>().ToTable("catCircuito", "dbo");
+            modelBuilder.Entity<variable_control>().ToTable("VARIABLE_CONTROL", "dbo");
+            modelBuilder.Entity<catClase>().ToTable("catClase", "dbo");
+            modelBuilder.Entity<catDemanda>().ToTable("catDemanda", "dbo");
+            modelBuilder.Entity<catIdentificativoTipo>().ToTable("catIdentificativoTipo", "dbo");
+            modelBuilder.Entity<catMateria>().ToTable("catMateria", "dbo");
+            modelBuilder.Entity<catMotivoAsunto>().ToTable("catMotivoAsunto", "dbo");
+            modelBuilder.Entity<catOrgano>().ToTable("catOrgano", "dbo");
+            modelBuilder.Entity<catParteTipo>().ToTable("catParteTipo", "dbo");
+            modelBuilder.Entity<catPersoneriaTipo>().ToTable("catPersoneriaTipo", "dbo");
+            modelBuilder.Entity<catPonencia>().ToTable("catPonencia", "dbo");
+            modelBuilder.Entity<catSexo>().ToTable("catSexo", "dbo");
+            modelBuilder.Entity<catIntervencionTipo>().ToTable("catIntervencionTipo", "dbo");
+            modelBuilder.Entity<catMagistrado>().ToTable("catMagistrado", "dbo");
+            modelBuilder.Entity<catSedeJudicial>().ToTable("catSedeJudicial", "dbo");
+            modelBuilder.Entity<ActuacionTipo>().ToTable("catActuacionTipo");
+            modelBuilder.Entity<catAcontecimientoTipo>().ToTable("catAcontecimientoTipo", "dbo");
+            modelBuilder.Entity<Edicto_Entidad>().ToTable("spActuacionConDocumentoObtener", "dbo");
+            modelBuilder.Entity<DocumentoEdicto>().ToTable("spDocumentoBBDDObtenerDatos", "dbo");
+            modelBuilder.Entity<vwEntidadesJudiciales>().ToTable("vwEntidadesJudiciales", "dbo");
+            modelBuilder.Entity<vwEstadoEdicto>().ToTable("vwEstadoEdicto", "dbo");
+
+            //edictos
+            modelBuilder.Entity<Publicacion>().ToTable("Publicacion", "edictos");
+            modelBuilder.Entity<ImpresionPublicacion>().ToTable("ImpresionPublicacion", "edictos");
+            modelBuilder.Entity<vwImpresionPublicacion>().ToTable("vwImpresionPublicacion", "edictos");
+
+            modelBuilder.Entity<relClaseLetraEntidad>().ToTable("relClaseLetraEntidad", "dbo");
+            modelBuilder.Entity<vwRelEntidadMotivo>().ToTable("vwRelEntidadMotivo", "dbo");
+            modelBuilder.Entity<relMotivoEntidad>().ToTable("relMotivoEntidad", "dbo");
+
+            modelBuilder.Entity<catTipoPublicacion>().ToTable("catTipoPublicacion", "dbo");
+
+            modelBuilder.Entity<SolicitudPublicacion>().ToTable("Publicacion", "solicitud");
+            modelBuilder.Entity<Vaucher>().ToTable("Vaucher", "solicitud");
+            modelBuilder.Entity<catBanco>().ToTable("catBancos","dbo");
+            modelBuilder.Entity<catCuentasBancarias>().ToTable("catCuentasBancarias","dbo");
+            modelBuilder.Entity<relBancoCuenta>().ToTable("relBancoCuenta","dbo");
+            modelBuilder.Entity<catTipoPublicacion>().ToTable("catTipoPublicacion","dbo");
+            modelBuilder.Entity<catMoneda>().ToTable("catMoneda","dbo");
+            modelBuilder.Entity<catEstadoSolicitud>().ToTable("catEstadoSolicitud","dbo");
+            modelBuilder.Entity<catEstadoPublicacion>().ToTable("catEstadoPublicacion","dbo");
+            modelBuilder.Entity<catEstadoVoucher>().ToTable("catEstadoVoucher","dbo");
+            modelBuilder.Entity<relActuacionTipoPublicacion>().ToTable("relActuacionTipoPublicacion","dbo");
+            modelBuilder.Entity<relActuacionMateria>().ToTable("relActuacionMateria","dbo");
+
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public DbSet<Asuntos> Asuntos { get; set; }
+        public DbSet<Actuacion> Actuacion { get; set; }
+        public DbSet<Interviniente> Interviniente { get; set; }
+        public DbSet<DocumentoBBDD> DocumentoBBDD { get; set; }
+        public DbSet<DocumentosActuacion> DocumentosActuacion { get; set; }
+        public DbSet<catCircuito> catCircuito { get; set; }
+        public DbSet<variable_control> variable_control { get; set; }
+        public DbSet<catClase> catClase { get; set; }
+        public DbSet<catDemanda> catDemanda { get; set; }
+        public DbSet<catIdentificativoTipo> catIdentificativoTipo { get; set; }
+        public DbSet<catMateria> catMateria { get; set; }
+        public DbSet<ImpresionPublicacion> ImpresionPublicacion { get; set; }
+
+        public DbSet<catMotivoAsunto> catMotivoAsunto { get; set; }
+        public DbSet<catOrgano> catOrgano { get; set; }
+        public DbSet<catParteTipo> catParteTipo { get; set; }
+        public DbSet<catPersoneriaTipo> catPersoneriaTipo { get; set; }
+        public DbSet<catPonencia> catPonencia { get; set; }
+        public DbSet<catSexo> catSexo { get; set; }
+        public DbSet<catIntervencionTipo> catIntervencionTipo { get; set; }
+        public DbSet<catMagistrado> catMagistrado { get; set; }
+        public DbSet<catSedeJudicial> catSedeJudicial { get; set; }
+        public DbSet<ActuacionTipo> catActuacionTipo { get; set; }
+        public DbSet<catAcontecimientoTipo> catAcontecimientoTipo { get; set; }
+        public DbSet<Edicto_Entidad> spActuacionConDocumentoObtener { get; set; }
+        public DbSet<DocumentoEdicto> spDocumentoBBDDObtenerDatos { get; set; }
+        public DbSet<vwEstadoEdicto> vwEstadoEdicto { get; set; }
+        public DbSet<vwEntidadesJudiciales> vwEntidadesJudiciales { get; set; }
+
+        //edictos
+        public DbSet<Publicacion> Publicacion { get; set; }
+        public DbSet<SolicitudPublicacion> PublicacionSolicitud { get; set; }
+        public DbSet<Vaucher> Vaucher { get; set; }
+        public DbSet<catBanco> catBanco { get; set; }
+        public DbSet<catCuentasBancarias> catCuentasBancarias { get; set; }
+        public DbSet<relBancoCuenta> RelBancoCuenta { get; set; }
+        public DbSet<vwImpresionPublicacion> vwImpresionPublicacion { get; set; }
+        public DbSet<relClaseLetraEntidad> relClaseLetraEntidad { get; set; }
+        public DbSet<vwRelEntidadMotivo> vwRelEntidadMotivo { get; set; }
+        public DbSet<relMotivoEntidad> relMotivoEntidad { get; set; }
+
+<<<<<<< HEAD
+        public DbSet<catTipoPublicacion> catTipoPublicacion{ get; set; }
+
+=======
+        public DbSet<catTipoPublicacion> catTipoPublicacion { get; set; }
+        public DbSet<catMoneda> catMoneda { get; set; }
+        public DbSet<catEstadoSolicitud> catEstadoSolicitud { get; set; }
+        public DbSet<catEstadoPublicacion> catEstadoPublicacion { get; set; }
+        public DbSet<catEstadoVoucher> catEstadoVoucher { get; set; }
+        public DbSet<relActuacionTipoPublicacion> relActuacionTipoPublicacion { get; set; }
+        public DbSet<relActuacionMateria> relActuacionMateria { get; set; }
+>>>>>>> origin/pj2
+    }
+}

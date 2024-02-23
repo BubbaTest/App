@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Gaia.DAL.Model.UsuarioRolEntidad>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Titulo</title>
+    @Styles.Render("~/Content/css/alertify")
+    @Styles.Render("~/Content/gaia_css/rol.css")
+</head>
+<body>
+    <div class="alertify">
+        <div class="ajs-dimmer"></div>
+        <div class="ajs-modal" tabindex="0">
+            <div class="ajs-dialog" tabindex="0">
+                <div class="ajs-commands">
+                </div><div class="ajs-header"> </div><div class="ajs-body">
+                    <div class="ajs-content">
+                        <div class="listarol">
+                            <div class="titulo">SELECCIONE UN ROL</div>
+                            @foreach (var item in Model)
+                            {
+                                <a onclick="MensajeEspera()" href="~/Rol/Redirigir?rolId=@item.RolId&entidadId=@item.EntidadId">
+                                    <div class="opcion">
+                                        @item.EntidadG.Descripcion (@item.Rol.Descripcion)
+                                    </div>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div><div class="ajs-footer"></div><div class="ajs-handle"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+    @using (Html.BeginScriptContext())
+    {
+
+        Html.AddScriptFile("~/bundles/jquery");        
+        Html.AddScriptFile("~/bundles/alertify");
+        
+
+        Html.AddScriptBlock(
+            @<script type="text/javascript">
+                //$('#mdRolPorUsuario').modal({
+                //    keyboard: false,
+                //    backdrop: true,
+                //    focus: true,
+                //    show: true
+                //})
+
+                function MensajeEspera() {
+                    // showPreloader('dialogPreloader');
+                    var dialog = '<img src="data:image/gif;base64,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"><br><br><div>Por favor, espere un momento...</div>';;
+                    //console.log(dialog);
+                    alertify.alert().set('basic', true).setting({ 'closable': false }).setContent(dialog).show();
+                }
+            </script>
+            , true);
+
+    }
+
+    @*@RenderSection("Scripts", false)*@
+    @Html.RenderScripts(Scripts.Render)
+</body>
+
+</html>

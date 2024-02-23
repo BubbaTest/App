@@ -1,0 +1,34 @@
+﻿@model Gaia.DAL.Model.BusquedaUsuarioGAIA
+
+<div class="content">
+    <div class="flex-grid">
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                @*<div class="input-control select full-size" data-placeholder="Seleccione una Opción" data-allow-clear="true">
+                    @Html.DropDownListFor(model => model.USUARIOID, new SelectList(ViewBag.Usuario as System.Collections.IEnumerable, "USUARIOID", "NOMBRE"),
+                                    "Selecciona Usuario", new { id = "ddlrelUsuario", @style = "width:400px;" })
+                </div>*@
+                <label class="input-control text full-size">
+                    <select id="ddlrelUsuario"></select>
+                </label>
+            </div>            
+        </div>
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control select full-size" data-placeholder="Seleccione una Opción" data-allow-clear="true">
+                    @Html.DropDownListFor(model => model.ENTIDAD, new SelectList(ViewBag.Entidad as System.Collections.IEnumerable, "EntidadId", "Descripcion"),
+                                    "Selecciona Entidad", new { id = "ddlrelEntidad", @style = "width:400px;" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+        </script>
+     , true);
+}
+

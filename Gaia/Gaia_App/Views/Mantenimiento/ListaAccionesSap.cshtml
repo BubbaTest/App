@@ -1,0 +1,70 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleAccSap">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetAccSap">Detalle</a></li>
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetAccSap">
+                @Html.Partial("_AccSapMant")
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            $(document).ready(function () {
+                $('#gridDetalleAccSap').empty();
+                $("#gridDetalleAccSap").load(obtenerURL("/Mantenimiento/ObtenerListaAccSap"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasAccSap').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObteneAccSap"),
+                                dataSrc: "",
+                            },
+                            rowId: 'IdAccion',
+                            retrieve: true,
+                            columns: [
+                                {
+                                    'data': null,
+                                    'render': function (data, type, row) {
+                                        return '<span id="' + row.IdAccion + '" class="icon mif-pencil mif-1x fg-blue" onclick="obtenerAccSap(this)"></span>'
+                                    }
+                                },
+                                { data: "IdAccion" },
+                                { data: "DescTipoAccion" },
+                                { data: "DescpAccion" },
+                                { data: "PorDefecto" },
+                                { data: "Grupo" },
+                                { data: "DeBaja" },
+                                { data: "Orden" },
+                                { data: "blnActivo" }
+                            ],
+                            columnDefs: [ { targets: [6], type: Date, render: function (data) { if (data === "0") { return "Alta"; } else { return "Baja"; } } }, { targets: [8], type: Date, render: function (data) { if (data === "0") { return "Pasivo"; } else { return "Activo"; } } },],
+                            dom: 'Bfrtip',
+                            buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasAccSap tbody').on('click', 'tr', function () {
+                            $("#dtListasAccSap tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+    , true);
+}

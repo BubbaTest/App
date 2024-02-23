@@ -1,0 +1,209 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+</style>
+
+<div id="documentosReporte">
+    <table id="dtListasReporte" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column">Descripción</th>
+                <th class="sortable-column">NombreReporte</th>
+                <th class="sortable-column">SistemaId</th>
+                <th class="sortable-column">Modulo</th>
+                <th class="sortable-column">Activo</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function eliminarReporte(obj) {
+                vreporteId = $(obj).attr('id');
+
+                var url = obtenerURL('/Mantenimiento/eliminaReporte?reportejson=' + vreporteId);
+                $.post(url)
+                    .done(function (data) {
+                        var listado = JSON.parse(data);
+
+                        if (listado.Resultado === "true") {
+                            $('#frReporte').empty();
+                            $('#frReporte').load(obtenerURL("/Mantenimiento/ListaReporte"));
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación' , listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia' , listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+            }
+
+            function obtenerReporte(obj) {
+                vreporteId = $(obj).attr('id');
+
+                var url = obtenerURL('/Mantenimiento/ObtenerReporte?ReporteId=' + vreporteId);
+                $.getJSON(url)
+                    .done(function (data) {
+                        var Listado = (JSON.stringify(data));
+                        encabezdo = (Listado);
+                        iniciarValoresReporte();
+
+                        $('#reportecampo').empty();
+                        var url = obtenerURL("/Mantenimiento/_ListaCampoR");
+                        $('#reportecampo').load(url, function (response, status, xhr) {
+                            if (status === "success") {
+                                table = $('#dtListasCampoR').dataTable({
+                                    ajax: {
+                                        url: obtenerURL('/Mantenimiento/ObtenerRelacionRepCam?reporteId=' + vreporteId),
+                                        dataSrc: "",
+                                    },
+                                    rowId: 'CampoReporteId',
+                                    retrieve: true,
+                                    columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.CampoReporteId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelReporteCampor(this)"></span>'
+                                            }
+                                        },
+                                        { data: "CampoReporteId" },                                        
+                                        { data: "Placeholder" },
+                                        { data: "Titulo" },
+                                        { data: "Orden" },
+                                        { data: "IsPrincipal" }
+                                    ],
+                                    columnDefs: [
+                                        {
+                                            targets: [1],
+                                            visible: false
+                                        },
+                                        { targets: [5], type: Date, render: function (data) { if (data === true) { return "Principal"; } else { return "NoPrincipal"; } } },
+                                    ],
+                                    language: { url: obtenerURL("/Json/Spanish.json") },
+                                    lengthMenu: [5],
+                                    bLengthChange: false,
+                                    searching: true
+                                });
+
+                                $('#dtListasCampoR tbody').on('click', 'tr', function () {
+                                    $("#dtListasCampoR tr.selected").removeClass();
+                                    $(this).addClass('selected');
+                                });
+                            }
+                        })
+
+                        $('#reporterol').empty();
+                        var url = obtenerURL("/Mantenimiento/_ListaRolRep");
+                        $('#reporterol').load(url, function (response, status, xhr) {
+                            if (status === "success") {
+                                table = $('#dtListasRolR').dataTable({
+                                    ajax: {
+                                        url: obtenerURL('/Mantenimiento/ObtenerRelacionRepRol?reporteId=' + vreporteId),
+                                        dataSrc: "",
+                                    },
+                                    rowId: 'RolId',
+                                    retrieve: true,
+                                    columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.RolId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelReporteRol(this)"></span>'
+                                            }
+                                        },
+                                        { data: "RolId" } 
+                                        //{ data: "Descripcion" }
+                                    ],
+                                    columnDefs: [
+                                        //{
+                                        //    targets: [1],
+                                        //    visible: false
+                                        //},
+                                    ],
+                                    language: { url: obtenerURL("/Json/Spanish.json") },
+                                    lengthMenu: [5],
+                                    bLengthChange: false,
+                                    searching: true
+                                });
+
+                                $('#dtListasRolR tbody').on('click', 'tr', function () {
+                                    $("#dtListasRolR tr.selected").removeClass();
+                                    $(this).addClass('selected');
+                                });
+                            }
+                        })
+
+                        //$('#reporteparametro').empty();
+                        //var url = obtenerURL("/Mantenimiento/_ListaParametroR");
+                        //$('#reporteparametro').load(url, function (response, status, xhr) {
+                        //    if (status === "success") {
+                        //        table = $('#dtListasParametroR').dataTable({
+                        //            ajax: {
+                        //                url: obtenerURL('/Mantenimiento/ObtenerRelacionRepPar?reporteId=' + vreporteId), //+ '&Proyecto=' + $('#txtProyecto').val()
+                        //                dataSrc: "",
+                        //            },
+                        //            rowId: 'ParametroId',
+                        //            retrieve: true,
+                        //            columns: [
+                        //                {
+                        //                    'data': null,
+                        //                    'render': function (data, type, row) {
+                        //                        return '<span id="' + row.ParametroId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelReporteParametro(this)"></span>'
+                        //                    }
+                        //                },
+                        //                { data: "ParametroId" },
+                        //                { data: "Descripcion" }
+                        //            ],
+                        //            columnDefs: [
+                        //                {
+                        //                    targets: [1],
+                        //                    visible: false
+                        //                },
+                        //            ],
+                        //            language: { url: obtenerURL("/Json/Spanish.json") },
+                        //            lengthMenu: [5],
+                        //            bLengthChange: false,
+                        //            searching: true
+                        //        });
+
+                        //        $('#dtListasParametroR tbody').on('click', 'tr', function () {
+                        //            $("#dtListasParametroR tr.selected").removeClass();
+                        //            $(this).addClass('selected');
+                        //        });
+                        //    }
+                        //})
+                    })
+                $("#relCampo").show();
+                $("#relRol").show();
+            }
+        </script>
+     , true);
+}

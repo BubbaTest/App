@@ -1,0 +1,183 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+</style>
+
+<div id="documentosOpcAsoR">
+    <table id="dtListasOpcAsoR" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>                
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column">Descripción</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+    {
+        Html.AddScriptBlock(
+            @<script type="text/javascript">
+                function eliminarelOpcAso(obj) {                
+                    vopcionId = $(obj).attr('id');                
+                    alertify.defaults.theme.ok = "button warning";
+                    alertify.defaults.theme.cancel = "button primary";
+                    alertify.confirm().destroy();
+                    alertify.confirm('Advertencia', 'Esta seguro de querer Eliminar la Relacion?'
+                    , function () { //onOk   
+                        showalertify();
+                        var url = obtenerURL('/Mantenimiento/eliminarelOpcAso?Id=' + vusuarioId + "&Id2=" + vopcionId);
+                        $.post(url)
+                            .done(function (data) {
+                                var listado = JSON.parse(data);
+                                if (listado.Resultado === "true") {
+                                    alertify.alert().destroy();
+                                    alertify.alert('Confirmación', listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                    $('#guinea').empty();
+                                    var url = obtenerURL("/Mantenimiento/_ListaOpcAsoR");
+                                    $('#guinea').load(url, function (response, status, xhr) {
+                                        if (status === "success") {
+                                            table = $('#dtListasOpcAsoR').dataTable({
+                                                ajax: {
+                                                    url: obtenerURL('/Mantenimiento/ObtenerRelacionUsuarioOpcAso?UsuarioId=' + vusuarioId),  //+ '&Proyecto=' + $('#txtProyecto').val()),
+                                                    dataSrc: "",
+                                                },
+                                                rowId: 'OpcionId',
+                                                retrieve: true,
+                                                columns: [
+                                                    {
+                                                        'data': null,
+                                                        'render': function (data, type, row) {
+                                                            return '<span id="' + row.OpcionId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelOpcAso(this)"></span>'
+                                                        }
+                                                    },
+                                                    { data: "OpcionId" },
+                                                    { data: "Opcion" }
+                                                ],
+                                                columnDefs: [],
+                                                dom: 'Bfrtip',
+                                                buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                                language: { url: obtenerURL("/Json/Spanish.json") },
+                                                lengthMenu: [5],
+                                                bLengthChange: false,
+                                                searching: true
+                                            });
+
+                                            $('#dtListasOpcAsoR tbody').on('click', 'tr', function () {
+                                                $("#dtListasOpcAsoR tr.selected").removeClass();
+                                                $(this).addClass('selected');
+                                            });
+                                        }
+                                    })
+                                }
+                                else {
+                                    closealertify();
+                                    alertify.alert().destroy();
+                                    alertify.alert('Advertencia'
+                                        , listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                }
+                            })
+                        closealertify();
+                    }
+                    , function () { })//onCancel                    
+                    .set('labels', { ok: '< Si >', cancel: '< No >' });                                    
+                }
+
+                function eliminarelOpcAsoR(obj) {
+                    vopcionId = $(obj).attr('id');
+                    alertify.defaults.theme.ok = "button warning";
+                    alertify.defaults.theme.cancel = "button primary";
+                    alertify.confirm().destroy();
+                    alertify.confirm('Advertencia', 'Esta seguro de querer Eliminar la Relacion?'
+                    , function () { //onOk   
+                        showalertify();
+                        var url = obtenerURL('/Mantenimiento/eliminarelOpcAsoR?Id=' + vrolId + "&Id2=" + vopcionId);
+                        $.post(url)
+                            .done(function (data) {
+                                var listado = JSON.parse(data);
+                                if (listado.Resultado === "true") {
+                                    alertify.alert().destroy();
+                                    alertify.alert('Confirmación', listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                    $('#rroa').empty();
+                                    var url = obtenerURL("/Mantenimiento/_ListaOpcAsoR");
+                                    $('#rroa').load(url, function (response, status, xhr) {
+                                        if (status === "success") {
+                                            table = $('#dtListasOpcAsoR').dataTable({
+                                                ajax: {
+                                                    url: obtenerURL('/Mantenimiento/ObtenerRelacionOpcAso?RolId=' + vrolId + '&Proyecto=' + $('#txtProyecto').val()),
+                                                    dataSrc: "",
+                                                },
+                                                rowId: 'OpcionId',
+                                                retrieve: true,
+                                                columns: [
+                                                    {
+                                                        'data': null,
+                                                        'render': function (data, type, row) {
+                                                            return '<span id="' + row.OpcionId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelOpcAsoR(this)"></span>'
+                                                        }
+                                                    },
+                                                    { data: "OpcionId" },
+                                                    { data: "Opcion" }
+                                                ],
+                                                columnDefs: [],
+                                                dom: 'Bfrtip',
+                                                buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                                language: { url: obtenerURL("/Json/Spanish.json") },
+                                                lengthMenu: [5],
+                                                bLengthChange: false,
+                                                searching: true
+                                            });
+
+                                            $('#dtListasOpcAsoR tbody').on('click', 'tr', function () {
+                                                $("#dtListasOpcAsoR tr.selected").removeClass();
+                                                $(this).addClass('selected');
+                                            });
+                                        }
+                                    })
+                                }
+                                else {
+                                    closealertify();
+                                    alertify.alert().destroy();
+                                    alertify.alert('Advertencia'
+                                        , listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                }
+                            })
+                        closealertify();
+                    }
+                    , function () { })//onCancel                    
+                    .set('labels', { ok: '< Si >', cancel: '< No >' });
+                }
+        </script>
+    , true);
+}
+
+
+
+
+
+

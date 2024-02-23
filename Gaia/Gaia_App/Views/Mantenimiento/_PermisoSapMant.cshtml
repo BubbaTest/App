@@ -1,0 +1,252 @@
+﻿@model  Gaia.DAL.Model.Usuario
+
+@Html.Hidden("hfidPermiso")
+<div class="content">
+    <div class="flex-grid">
+        <div class="row padding10 flex-jus-center">
+            <div class="cell size8 padding10 no-padding-left">
+                <div data-role="window" class="window">
+                    <div class="window-caption">
+                        <span class="window-caption-title">Permiso</span>
+                    </div>
+                    <div class="window-content">
+                        <div class="row flex-just-center">
+                            <div class="cell size12">
+                                <div class="row flex-just-center">
+                                    <div class="cell size6">
+                                        <label class="input-control text full-size">
+                                            @Html.DropDownListFor(model => model.UsuarioId, new SelectList(ViewBag.tablaRol as System.Collections.IEnumerable, "id_rol", "descripcion"),
+                                            "Selecciona rol", new { id = "ddltablarolid", @class = "rols" })
+                                            @Html.ValidationMessage("tablarolid", "* Campo Requerido *", new { id = "lbltablarolid", @style = "color:red; display: none;" })
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="row flex-just-center">
+                                    <div class="cell size6">
+                                        <label class="input-control text full-size">
+                                            @Html.DropDownListFor(model => model.EstadoId, new SelectList(ViewBag.tablaMenu as System.Collections.IEnumerable, "id_menu", "codigo"),
+                                            "Selecciona menu", new { id = "ddlcatmenuid", @class = "menus" })
+                                            @Html.ValidationMessage("catmenuid", "* Campo Requerido *", new { id = "lblcatmenuid", @style = "color:red; display: none;" })
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row flex-just-center" id="blnDeBajaPer">
+                                    <label class="input-control checkbox small-check">
+                                        <input type="checkbox" id="activoblnEstadoper" value="true" >
+                                        <span class="check"></span>
+                                        <span class="caption">DeBaja</span>
+                                    </label>
+                                    <label class="input-control checkbox small-check">
+                                        <input type="checkbox" id="inactivoblnEstadoper" value="false" checked>
+                                        <span class="check"></span>
+                                        <span class="caption">Alta</span>
+                                    </label>
+                                </div>
+                                <div class="row flex-just-center" id="blnActivoPer">
+                                    <label class="input-control checkbox small-check">
+                                        <input type="checkbox" id="activoblnActivoper" value="true" checked>
+                                        <span class="check"></span>
+                                        <span class="caption">Activo</span>
+                                    </label>
+                                    <label class="input-control checkbox small-check">
+                                        <input type="checkbox" id="inactivoblnActivoper" value="false">
+                                        <span class="check"></span>
+                                        <span class="caption">Inactivo</span>
+                                    </label>
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="toolbar">
+                                <div class="toolbar-section">
+                                    <button class="image-button ribbed-darkBlue" data-tabcontinuar="data-tabcontinuar" onclick="AgregarPermisoSap()" id="btnGuardaPermisoSap">
+                                        <span class="fg-white">Guardar</span>
+                                        <span class="icon mif-floppy-disk fg-white bg-darkBlue"></span>
+                                    </button>
+                                    <button class="image-button ribbed-darkOrange" data-tabcontinuar="data-tabcontinuar" id="btnActualizarPermisoSap" style="display: none" onclick="ActualizarPermisoSap()">
+                                        <span class="fg-white">Actualizar</span>
+                                        <span class="icon mif-pencil fg-white bg-darkOrange"></span>
+                                    </button>
+                                    <button class="image-button ribbed-darkEmerald" data-tabcontinuar="data-tabcontinuar" id="btnNuevoPermisoSap" onclick="btnNuevoPermisoSap()">
+                                        <span class="fg-white">Nuevo</span>
+                                        <span class="icon mif-plus fg-white bg-darkEmerald"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            $(document).ready(function () {
+                $(".rols").select2({
+                    placeholder: "Seleccione Rol", dropdownAutoWidth: true, tags: true, width: '100%',
+                });
+
+                $(".menus").select2({
+                    placeholder: "Seleccione Menu", dropdownAutoWidth: true, tags: true, width: '100%',
+                });
+
+                $('#blnDeBajaPer input[type=checkbox]').click(function () {
+                    $('#blnDeBajaPer input[type=checkbox]').prop("checked", false);
+                    $(this).prop("checked", true);
+                });
+                $('#blnActivoPer input[type=checkbox]').click(function () {
+                    $('#blnActivoPer input[type=checkbox]').prop("checked", false);
+                    $(this).prop("checked", true);
+                });
+            });
+
+            function AgregarPermisoSap() {
+                var bandera = true;
+                showalertify();
+
+                if ($('#ddltablarolid').val().toString().length < 1) {
+                    $("#lbltablarolid").show();
+                    bandera = false;
+                }
+
+                if ($('#ddlcatmenuid').val().toString().length < 1) {
+                    $("#lblcatmenuid").show();
+                    bandera = false;
+                }
+
+                if (bandera == true) {
+                    $("#lbltablarolid").hide();
+                    $("#lblcatmenuid").hide();
+
+                    var listaCheck = $("#blnDeBajaPer input[type='checkbox']");
+                    $.each(listaCheck, function (index, value) {
+                        if ($(value).prop('checked') === true) {
+                            DeBaja = value.value
+                        }
+                    });
+
+                    var listaCheck = $("#blnActivoPer input[type='checkbox']");
+                    $.each(listaCheck, function (index, value) {
+                        if ($(value).prop('checked') === true) {
+                            Activo = value.value
+                        }
+                    });                    
+
+                    var perjson = JSON.stringify({ "id_rol": $('#ddltablarolid').val(), "id_menu": $('#ddlcatmenuid').val(), "DeBaja": DeBaja, "blnActivo": Activo });
+
+                    var url = obtenerURL('/Mantenimiento/GuardarPermisoSap?json=' + perjson);
+                    $.post(url)
+                        .done(function (data) {
+                            var listado = JSON.parse(data);
+
+                            if (listado.Resultado === "true") {
+                                $('#frPermisoSap').empty();
+                                $('#frPermisoSap').load(obtenerURL("/Mantenimiento/ListaPermisoSap"));
+                                closealertify();
+                                alertify.alert().destroy();
+                                alertify.alert('Confirmación', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                            }
+                            else {
+                                closealertify();
+                                alertify.alert().destroy();
+                                alertify.alert('Advertencia', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                            }
+                        })
+                }
+                else {
+                    closealertify();
+                    alertify.alert().destroy();
+                    alertify.alert('Advertencia', 'Llenar todos los campos obligatorios');
+                    alertify.alert().setting('modal', true);
+                }
+            }
+
+            function ActualizarPermisoSap() {
+                var bandera = true;
+                var permisojson;
+                showalertify();
+
+                if ($('#ddltablarolid').val().toString().length < 1) {
+                    $("#lbltablarolid").show();
+                    bandera = false;
+                }
+
+                if ($('#ddlcatmenuid').val().toString().length < 1) {
+                    $("#lblcatmenuid").show();
+                    bandera = false;
+                }
+
+                if (bandera == true) {
+                    $("#lbltablarolid").hide();
+                    $("#lblcatmenuid").hide();
+
+                    var listaCheck = $("#blnDeBajaPer input[type='checkbox']");
+                    $.each(listaCheck, function (index, value) {
+                        if ($(value).prop('checked') === true) {
+                            DeBaja = value.value
+                        }
+                    });
+
+                    var listaCheck = $("#blnActivoPer input[type='checkbox']");
+                    $.each(listaCheck, function (index, value) {
+                        if ($(value).prop('checked') === true) {
+                            Activo = value.value
+                        }
+                    });
+
+                    if (DeBaja == "true") {
+                        permisojson = JSON.stringify({ "id_permiso": $("#hfidPermiso").val(), "id_rol": $('#ddltablarolid').val(), "id_menu": $('#ddlcatmenuid').val(), "DeBaja": DeBaja, "FechaBaja": formatFechaHoras(new Date) , "blnActivo": Activo });
+                    }
+                    else {
+                        var permisojson = JSON.stringify({ "id_permiso": $("#hfidPermiso").val(), "id_rol": $('#ddltablarolid').val(), "id_menu": $('#ddlcatmenuid').val(), "DeBaja": DeBaja, "blnActivo": Activo });
+                    }                    
+
+                    var url = obtenerURL('/Mantenimiento/ActualizaPermisoSap?json = ' + permisojson + ' & IdPermiso=' + $("#hfidPermiso").val());
+                    $.post(url)
+                        .done(function (data) {
+                            var listado = JSON.parse(data);
+
+                            if (listado.Resultado === "true") {
+                                $('#frPermisoSap').empty();
+                                $('#frPermisoSap').load(obtenerURL("/Mantenimiento/ListaPermisoSap"));
+                                closealertify();
+                                alertify.alert().destroy();
+                                alertify.alert('Confirmación', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                            }
+                            else {
+                                closealertify();
+                                alertify.alert().destroy();
+                                alertify.alert('Advertencia', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                            }
+                        })
+                }
+                else {
+                    closealertify();
+                    alertify.alert().destroy();
+                    alertify.alert('Advertencia', 'Llenar todos los campos obligatorios');
+                    alertify.alert().setting('modal', true);
+                }
+            }
+
+            function btnNuevoPermisoSap() {
+                $('#ddltablarolid').select2("val", "ca");
+                $('#ddlcatmenuid').select2("val", "ca");                
+                $('#blnDeBajaPer input[type=checkbox]').prop("checked", false);
+                $('#blnActivoPer input[type=checkbox]').prop("checked", false);
+                $('#inactivoblnEstadoper').prop('checked', true);
+                $('#activoblnActivoper').prop('checked', true);                
+                $('#btnActualizarPermisoSap').hide();
+                $('#btnGuardaPermisoSap').show();
+            }
+        </script>
+    , true);
+}

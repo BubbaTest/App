@@ -1,0 +1,34 @@
+﻿@model Gaia.DAL.Model.catOpcion
+
+<div class="content">
+    <div class="flex-grid">
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control select full-size" data-placeholder="Seleccione una Opción" data-allow-clear="true">
+                    @Html.DropDownListFor(model => model.OpcionId, new SelectList(ViewBag.Opciones as System.Collections.IEnumerable, "OpcionId", "Opcion"),
+                                    "Selecciona Opcion", new { id = "ddlrelOpcion", multiple = "multiple", @style = "width:350px;" })
+                </div>
+            </div>
+        </div>
+        <div class="row flex-just-center" id="Activosc">
+            <label class="input-control checkbox small-check">
+                <input type="checkbox" id="activoc" value="1">
+                <span class="check"></span>
+                <span class="caption">Por Defecto</span>
+            </label>
+            <label class="input-control checkbox small-check">
+                <input type="checkbox" id="inactivoc" value="0" checked>
+                <span class="check"></span>
+                <span class="caption">No por Defecto</span>
+            </label>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+    {
+        Html.AddScriptBlock(
+        @<script type="text/javascript">
+        </script>
+    , true);
+}

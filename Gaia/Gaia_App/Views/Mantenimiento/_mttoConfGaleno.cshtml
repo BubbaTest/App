@@ -1,0 +1,25 @@
+﻿<div class="panel">
+    <div class="heading">
+        <span class="title">Configuración GALENO</span>
+    </div>
+</div>
+<div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+    <ul class="tabs">
+        <li class="active"><a href="#frUsuarioGal">Usuario</a></li>
+    </ul>
+    <div class="frames">
+        <div class="frame" id="frUsuarioGal" style="display: block;">
+            @Html.Partial("ListaUsuarioGaleno")
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            var vchrcodempleado;
+            var vrolgId;            
+        </script>
+    , true);
+}

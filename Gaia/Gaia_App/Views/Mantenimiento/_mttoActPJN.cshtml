@@ -1,0 +1,189 @@
+﻿<div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+    <ul class="tabs">
+        <li class="active"><a href="#frTabSirufj">Personal</a></li>
+    </ul>
+    <div class="frames">
+        <div class="frame" id="frTabSirufj" style="display: none;">
+            <div class="content">
+                <div class="container full-size" id="gridDetalleSirufj">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content" id="detDatos">
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function fnObtenerPersonalSirufjPJN() {
+                $('#detDatos').empty();
+                $('#gridDetalleSirufj').empty();
+                $("#gridDetalleSirufj").load(obtenerURL("/Mantenimiento/ObtenerListaSirufj"), function (response, status, xhr) {
+                    if (status === "success") {
+                        $("#dtListasSirufj").DataTable().destroy();
+
+                        var tblListasSirufJ = $("#dtListasSirufj").DataTable({
+                            processing: true,
+                            serverSide: true,
+                            ajax: {
+                                url: obtenerURL("Mantenimiento/ObtenerPersonalSirufj"),
+                                type: "post",
+                                dataType: "json",
+                                complete: function () { closealertify(); },
+                                error: function () { alertify.alert().close(); }
+                            },
+                            columns: [
+                                { title: "ExpEmpleado_ID", data: "ExpEmpleado_ID" },
+                                { title: "CID", data: "CID" },
+                                { title: "NombreCompleto", data: "NombreCompleto" },
+                                { title: "SituacionEstatus", data: "SituacionEstatus" },
+                                { title: "CodEmpleado", data: "CodEmpleado" }
+                            ],
+                            columnDefs: [],
+                            fnInitComplete: function () {
+                                $(".dataTables_filter").append('<button onclick="fnBuscarTable()" id="btnFilterdatatable">Buscar</button>');
+
+                                $('#ConsultaFilter th').each(function () {
+                                    var title = $(this).text();
+
+                                    $(this).html('<input style="width:100%; float:left;" type="text" onclick="fnLimpiar()" placeholder="Buscar ' + title + '" />');
+                                    $(this).css({ "padding-left": "5px", "padding-right": "5px" });
+
+                                });
+
+                                tblListasSirufJ.columns().every(function (index) {
+                                    var that = this;
+                                    $('#ConsultaFilter tr:eq(0) th:eq(' + index + ') input').on('keyup change', function (e) {
+                                        $('#detDatos').empty();
+                                        if (that.search() !== this.value && e.keyCode === 13) {
+                                            tblListasSirufJ.search(this.value, that["0"]["0"]).draw();
+                                        }
+                                    });
+                                });
+
+                                $(".dataTables_filter input")
+                                    .unbind()
+                                    .bind('keyup change', function (e) {
+                                        if (e.keyCode == 13 || this.value == "") {
+                                            tblListasSirufJ.search(this.value, 11).draw();
+                                        }
+                                    });
+
+                            },
+                            language: { url: obtenerURL("/Json/Spanish.json"), select: { "rows": { "_": "Ha seleccionado %d filas" } } },
+                            lengthMenu: [5], bLengthChange: false, searching: true, dom: 'Bfrtip',
+                            buttons: [
+                                {
+                                    extend: 'collection', className: 'button',
+                                    text: 'Mostrar Detalle', autoClose: true,
+                                    action: function (e, dt, node, config) {
+
+                                        var dtData = $('#dtListasSirufj').DataTable().rows(".selected").data();
+                                        if (dtData.length === 0) {
+                                            alertify.alert().destroy();
+                                            alertify.alert("Advertencia", "Debe seleccionar un registro para realizar esta acción");
+                                        } else {
+
+                                            $.each(dtData, function (i, item) {
+                                                CargaDetalleDatos(item.ExpEmpleado_ID)
+                                            });
+                                        }
+                                    }
+                                },
+                            ]
+                        });
+
+                        $('#dtListasSirufj tbody').on('click', 'tr', function () {
+                            if ($(this).hasClass('selected')) {
+                                $(this).removeClass('selected');
+                            }
+                            else {
+                                tblListasSirufJ.$('tr.selected').removeClass('selected');
+                                $(this).addClass('selected');
+                            }
+                        });
+                    }
+                })
+            }
+
+            function fnBuscarTable() {
+                var value = $(".dataTables_filter input").val();
+
+                $("#dtListasSirufj").DataTable().search(value).draw();
+            }
+
+            function fnLimpiar() {
+                var estado = false;
+                var input = $('#ConsultaFilter input');
+
+                $.each(input, function (i, item) {
+                    if ($(item).val() !== "") {
+                        estado = true;
+                    }
+                });
+
+                $(input).val("");
+                if (estado === true) {
+                    $('#dtListasSirufj').DataTable().search("").draw();
+                }
+            }
+
+            $(document).ready(function () {
+                fnObtenerPersonalSirufjPJN();
+            })
+
+            function CargaDetalleDatos(obj) {
+                $('#detDatos').empty();
+                $.getJSON(obtenerURL("/Mantenimiento/ObtenerPersonalSirufjPJN?ExpEmpleadoId=" + obj))
+                    .done(function (dataSet) {                        
+                        $("#detDatos").load(obtenerURL("/Mantenimiento/_DetActPJN"), function (response, status, xhr) {
+                            if (status === "success") {
+                                $.each(dataSet, function (i, item) {
+                                    if (item.Origen == "RUFJ") {
+                                        $("#hfEstado").val(item.Estado);
+                                        $("#hfCodigoEmpleadoS").val(item.CodEmpleado);
+                                        $("#txtExpEmpleado_IDS").val(item.ExpEmpleado_ID);
+                                        $("#txtNoCedulaS").val(item.CID);
+                                        $("#txtNombresS").val(item.NombresFuncionario);
+                                        $("#txtApellidosS").val(item.ApellidosFuncionario);
+                                        $("#hfCargoIdS").val(item.codCargo);
+                                        $("#txtCarcoDescripcionS").val(item.CargoFuncionario);
+                                        $("#hfEntidadIdS").val(item.intCodEntidadPJ);
+                                        $("#txtEntidadDescripcionS").val(item.EntidadFuncionario);
+                                        if (item.FechaIni != null) {
+                                            $("#txtFechaInicioS").val(item.FechaIni);
+                                        }
+                                        if (item.FechaFin != null) {
+                                            $("#txtFechaFinS").val(item.FechaFin);
+                                        }
+                                    }
+                                    else {
+                                        $("#hfCodigoEmpleadoP").val(item.CodEmpleado);
+                                        $("#txtExpEmpleado_IDP").val(item.ExpEmpleado_ID);
+                                        $("#txtNoCedulaP").val(item.CID);
+                                        $("#txtNombresP").val(item.NombresFuncionario);
+                                        $("#txtApellidosP").val(item.ApellidosFuncionario);
+                                        $("#hfCargoIdP").val(item.codCargo);
+                                        $("#txtCarcoDescripcionP").val(item.CargoFuncionario);
+                                        $("#hfEntidadIdP").val(item.intCodEntidadPJ);
+                                        $("#txtEntidadDescripcionP").val(item.EntidadFuncionario);
+                                        if (item.FechaIni != null) {
+                                            $("#txtFechaInicioP").val(item.FechaIni);
+                                        }
+                                        if (item.FechaFin != null) {
+                                            $("#txtFechaFinP").val(item.FechaFin);
+                                        }
+                                    }
+                                });
+                                Validar();
+                            }
+                        })
+                    })
+            }
+        </script>
+    , true);
+}

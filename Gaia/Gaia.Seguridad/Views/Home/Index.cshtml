@@ -1,0 +1,14 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string ActionDefault = (string)ViewBag.ActionDefault;
+}
+
+@{
+    if (!string.IsNullOrEmpty(ActionDefault))
+    {
+        string Controlador = ActionDefault.Split("/".ToCharArray())[0];
+        string Accion = ActionDefault.Split("/".ToCharArray())[1];
+
+        Html.RenderAction(Accion, Controlador);
+    }
+}

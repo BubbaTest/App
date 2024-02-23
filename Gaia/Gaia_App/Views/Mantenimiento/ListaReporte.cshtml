@@ -1,0 +1,442 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleReporte">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetReporte">Detalle</a></li>
+            <li id="relCampo" style="display: none"><a href="#frDetReporteCampo">ReporteCampo</a></li>
+            <li id="relRol" style="display: none"><a href="#frDetReporteRol">ReporteRol</a></li>
+            <li id="relParametro" style="display: none"><a href="#frDetReporteParametro">ReporteParametro</a></li>            
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetReporte">
+                @Html.Partial("_ReporteMant")
+            </div>
+            <div class="frame" id="frDetReporteCampo">
+                <div class="container">
+                    <div class="example">
+                        <div class="flex-grid">
+                            <h5 style="align-self:center" id="btnReporteCampo">
+                                Relación Reporte Campo
+                                <button class="image-button ribbed-darkGreen" data-tabcontinuar="data-tabcontinuar" id="btnrelRepCam" onclick="relCampo()">
+                                    <span class="fg-white">Agregar</span>
+                                    <span class="icon mif-plus fg-white bg-darkGreen"></span>
+                                </button>
+                            </h5>
+                            <div class="row flex-just-center">
+                                <div class="cell size8" id="reportecampo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="frame" id="frDetReporteRol">
+                <div class="container">
+                    <div class="example">
+                        <div class="flex-grid">
+                            <h5 style="align-self:center" id="btnReporteRol">
+                                Relación Reporte Rol
+                                <button class="image-button ribbed-darkGreen" data-tabcontinuar="data-tabcontinuar" id="btnrelRepRol" onclick="relRol()">
+                                    <span class="fg-white">Agregar</span>
+                                    <span class="icon mif-plus fg-white bg-darkGreen"></span>
+                                </button>
+                            </h5>
+                            <div class="row flex-just-center">
+                                <div class="cell size8" id="reporterol">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="frame" id="frDetReporteParametro">
+                <div class="container">
+                    <div class="example">
+                        <div class="flex-grid">
+                            <h5 style="align-self:center" id="btnReporteParametro">
+                                Relación Reporte Parametro
+                                <button class="image-button ribbed-darkGreen" data-tabcontinuar="data-tabcontinuar" id="btnrelRepPar" onclick="relParametro()">
+                                    <span class="fg-white">Agregar</span>
+                                    <span class="icon mif-plus fg-white bg-darkGreen"></span>
+                                </button>
+                            </h5>
+                            <div class="row flex-just-center">
+                                <div class="cell size8" id="reporteparametro">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function relCampo() {
+                var contenido;
+                var div = $("#ModalGenerico");                
+                alertify.alert().destroy();
+
+                div.load(obtenerURL("/Mantenimiento/_relReporteCampo?reporteId=" + vreporteId), function () {                
+                    contenido = div.html();
+                    div.empty();
+                    var modal = alertify.confirm()
+                        .set('basic', true)                        
+                        .setContent(contenido)                        
+                        .set({ 'startMaximized': false, 'maximizable': false, 'resizable': true, 'closable': false })
+                        .resizeTo(400, 480)                        
+                        .show();
+                    var select2 = $(modal.elements.root).find("select");
+                    select2.select2().on("select2:open", function (e) {
+                        var id = e.target.id;
+                        var div_results = "#select2-" + id + "-results";
+                        $(div_results).parents(".select2-container").css({ 'z-index': '3000' });
+                    });                    
+                    $(".mask").inputmask('Regex', { regex: "^[0-9,]{1,12}?$" });
+                    $("#txtOrden").focusout(function () {
+                        var urls = obtenerURL('/Mantenimiento/ValidarOrdenCampo?ReporteId=' + vreporteId + '&Orden=' + $("#txtOrden").val());
+                        $.post(urls)
+                            .done(function (dato) {
+                                if (dato == "True") {
+                                    $("#btnGuardaRepCam").show();
+                                }
+                                else {
+                                    $("#btnGuardaRepCam").hide();
+                                    alertify.set('notifier', 'position', 'top-right');
+                                    alertify.error('El Orden digitado ya existe para el reporte seleccionado', 'success', 5);
+                                }
+                            }) 
+                    })                    
+                })
+            }
+
+            function CerrarModalReporte() {
+                alertify.confirm().destroy();
+            }
+
+            function relRol() {
+                var contenido;
+                var div = $("#ModalGenerico");                
+                alertify.alert().destroy();
+                div.load(obtenerURL("/Mantenimiento/_relReporteRol?reporteId=" + vreporteId), function () {
+                    contenido = div.html();
+                    div.empty();
+                    var modal = alertify.confirm()
+                        .set('basic', true)
+                        .setContent(contenido)
+                        .set({ 'startMaximized': false, 'maximizable': false, 'resizable': true, 'closable': false })
+                        .resizeTo(400, 400)
+                        .show();
+                    var select2 = $(modal.elements.root).find("select");
+                    select2.select2().on("select2:open", function (e) {
+                        var id = e.target.id;
+                        var div_results = "#select2-" + id + "-results";
+                        $(div_results).parents(".select2-container").css({ 'z-index': '3000' });
+                    });
+                    //$("#ddlIngresoDepartamentoMunicipio").on("change", function (a) {
+                        //var chrCodDepartamentoMunicipio = $(this).val();
+                    $("#ddlrelRol").on("change", function (a) {
+                        if ($("#ddlrelRol").val().toString().length < 1) {
+                            $("#btnGuardaRepRel").hide();
+                            alertify.set('notifier', 'position', 'top-right');
+                            alertify.error('Debe seleccionar un Rol', 'success', 5);
+                        } else {
+                            $("#btnGuardaRepRel").show();
+                        }
+                    })  
+                })
+            }
+
+            function relParametro() {
+                var contenido;
+                var div = $("#ModalGenerico");
+                alertify.defaults.theme.ok = "success button";
+                alertify.defaults.theme.cancel = "danger button";
+                alertify.confirm().destroy();
+                div.load(obtenerURL("/Mantenimiento/_relReporteParametro?reporteId=" + vreporteId), function () {
+                    contenido = div.html();
+                    div.empty();
+                    var modal = alertify.confirm()
+                        .setHeader('<h4> Relacionar Reporte a Tramite</h4> ')
+                        .setContent(contenido)
+                        .set({ 'startMaximized': false, 'maximizable': true, 'resizable': true, 'labels': { ok: '< Guardar >', cancel: '< Salir >' } })
+                                .resizeTo(160, 250)
+                        .set('oncancel', function (closeEvent) { })
+                        .set('onok', function (closeEvent) { GuardaReporteParametro(); })
+                        .show();
+                    var select2 = $(modal.elements.root).find("select");
+                    select2.select2().on("select2:open", function (e) {
+                        var id = e.target.id;
+                        var div_results = "#select2-" + id + "-results";
+                        $(div_results).parents(".select2-container").css({ 'z-index': '3000' });
+                    });
+                })
+            }
+            
+            function GuardaReporteCampo() { 
+                var bandera = true;
+
+                if ($('#ddlrelRequerido').val().toString().length < 1) {
+                    $("#lblcrrequerido").show();
+                    bandera = false;
+                }
+
+                if ($('#ddlrelIsPrincipal').val().toString().length < 1) {
+                    $("#lblprincipal").show();
+                    bandera = false;
+                }
+
+                if (bandera == true) {
+                    $("#lblcrrequerido").hide();
+
+                    var relparametrojson = JSON.stringify({ "ReporteId": vreporteId, "CampoReporteId": $('#ddlrelCampo').val(), "Orden": $('#txtOrden').val(), "Requerido": $('#ddlrelRequerido').val(), "IsPrincipal": $('#ddlrelIsPrincipal').val() });
+                    var url = obtenerURL('/Mantenimiento/GuardarRelReporteCampo?reljson=' + relparametrojson);
+                    $.post(url)
+                        .done(function (data) {
+                            var listado = JSON.parse(data);
+                            if (listado.Resultado === "true") {
+                                $('#reportecampo').empty();
+                                var url = obtenerURL("/Mantenimiento/_ListaCampoR");
+                                $('#reportecampo').load(url, function (response, status, xhr) {
+                                    if (status === "success") {
+                                        table = $('#dtListasCampoR').dataTable({
+                                            ajax: {
+                                                url: obtenerURL('/Mantenimiento/ObtenerRelacionRepCam?reporteId=' + vreporteId),
+                                                dataSrc: "",
+                                            },
+                                            rowId: 'CampoReporteId',
+                                            retrieve: true,
+                                            columns: [
+                                                {
+                                                    'data': null,
+                                                    'render': function (data, type, row) {
+                                                        return '<span id="' + row.CampoReporteId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelReporteCampor(this)"></span>'
+                                                    }
+                                                },
+                                                { data: "CampoReporteId" },
+                                                { data: "Placeholder" },
+                                                { data: "Titulo" },
+                                                { data: "Orden" },
+                                                { data: "IsPrincipal" }
+                                            ],
+                                            columnDefs: [
+                                                {
+                                                    targets: [1],
+                                                    visible: false
+                                                },
+                                                { targets: [5], type: Date, render: function (data) { if (data === true) { return "Principal"; } else { return "NoPrincipal"; } } },
+                                            ],
+                                            language: { url: obtenerURL("/Json/Spanish.json") },
+                                            lengthMenu: [5],
+                                            bLengthChange: false,
+                                            searching: true
+                                        });
+
+                                        $('#dtListasCampoR tbody').on('click', 'tr', function () {
+                                            $("#dtListasCampoR tr.selected").removeClass();
+                                            $(this).addClass('selected');
+                                        });
+                                    }
+                                })
+                                alertify.confirm().destroy();
+                                alertify.alert().destroy();
+                                alertify.alert('Confirmación', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                            }
+                            else {
+                                alertify.alert().destroy();
+                                alertify.alert('Advertencia ',listado.Mensaje);
+                                alertify.alert().setting('basic', true);
+                            }
+                        })
+                }
+                else {                    
+                    alertify.alert().destroy();
+                    alertify.alert('Llenar todos los campos obligatorios');
+                    alertify.alert().setting('modal', true);
+                }
+            }
+
+            function GuardaReporteRol() {
+                var relparametrojson = JSON.stringify({ "RolId": $("#ddlrelRol").val(), "ReporteId": vreporteId });
+                var url = obtenerURL('/Mantenimiento/GuardarRelReporteRol?reljson=' + relparametrojson);
+
+                $.post(url)
+                    .done(function (data) {
+                        var listado = JSON.parse(data);
+                        if (listado.Resultado === "true") {
+                            $('#reporterol').empty();
+                            var url = obtenerURL("/Mantenimiento/_ListaRolRep");
+                            $('#reporterol').load(url, function (response, status, xhr) {
+                                if (status === "success") {
+                                    table = $('#dtListasRolR').dataTable({
+                                        ajax: {
+                                            url: obtenerURL('/Mantenimiento/ObtenerRelacionRepRol?reporteId=' + vreporteId),
+                                            dataSrc: "",
+                                        },
+                                        rowId: 'RolId',
+                                        retrieve: true,
+                                        columns: [
+                                            {
+                                                'data': null,
+                                                'render': function (data, type, row) {
+                                                    return '<span id="' + row.RolId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelReporteRol(this)"></span>'
+                                                }
+                                            },
+                                            { data: "RolId" }
+                                            //{ data: "Descripcion" }
+                                        ],
+                                        columnDefs: [
+                                            //{
+                                            //    targets: [1],
+                                            //    visible: false
+                                            //},
+                                        ],
+                                        language: { url: obtenerURL("/Json/Spanish.json") },
+                                        lengthMenu: [5],
+                                        bLengthChange: false,
+                                        searching: true
+                                    });
+
+                                    $('#dtListasRolR tbody').on('click', 'tr', function () {
+                                        $("#dtListasRolR tr.selected").removeClass();
+                                        $(this).addClass('selected');
+                                    });
+                                }
+                            })
+                            alertify.confirm().destroy();
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+            }
+
+            function GuardaReporteParametro() {
+                showalertify();
+                var relparametrojson = JSON.stringify({ "ReporteId": vreporteId, "ParametroId": $('#ddlrelParametro').val() });
+                var url = obtenerURL('/Mantenimiento/GuardarRelTramiteFormato?reljson=' + relparametrojson);
+
+                $.post(url)
+                    .done(function (data) {
+                        var listado = JSON.parse(data);
+                        if (listado.Resultado === "true") {
+                            $('#reporteparametro').empty();
+                            var url = obtenerURL("/Mantenimiento/_ListaParametroR");
+                            $('#reporteparametro').load(url, function (response, status, xhr) {
+                                if (status === "success") {
+                                    table = $('#dtListasParametroR').dataTable({
+                                        ajax: {
+                                            url: obtenerURL('/Mantenimiento/ObtenerRelacionRepPar?reporteId=' + vreporteId), //+ '&Proyecto=' + $('#txtProyecto').val()
+                                            dataSrc: "",
+                                        },
+                                        rowId: 'ParametroId',
+                                        retrieve: true,
+                                        columns: [
+                                            {
+                                                'data': null,
+                                                'render': function (data, type, row) {
+                                                    return '<span id="' + row.ParametroId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelReporteParametro(this)"></span>'
+                                                }
+                                            },
+                                            { data: "ParametroId" },
+                                            { data: "Descripcion" }
+                                        ],
+                                        columnDefs: [
+                                            {
+                                                targets: [1],
+                                                visible: false
+                                            },
+                                        ],
+                                        language: { url: obtenerURL("/Json/Spanish.json") },
+                                        lengthMenu: [5],
+                                        bLengthChange: false,
+                                        searching: true
+                                    });
+
+                                    $('#dtListasParametroR tbody').on('click', 'tr', function () {
+                                        $("#dtListasParametroR tr.selected").removeClass();
+                                        $(this).addClass('selected');
+                                    });
+                                }
+                            })
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia'
+                                , listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+            }
+
+            $(document).ready(function () {
+                $('#gridDetalleReporte').empty();
+                $('#gridDetalleReporte').load(obtenerURL("/Mantenimiento/ObtenerListaReporte"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasReporte').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObtenerReporte"),
+                                dataSrc: "",
+                            },
+                            rowId: 'ReporteId',
+                            retrieve: true,
+                            columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.ReporteId + '" class="icon mif-pencil mif-1x fg-green" onclick="obtenerReporte(this)"></span>'
+                                            }
+                                        },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.ReporteId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarReporte(this)"></span>'
+                                            }
+                                        },
+                                        { data: "ReporteId" },
+                                        { data: "Descripcion" },
+                                        { data: "NombreReporte" },
+                                        { data: "SistemaId" },
+                                        { data: "Modulo" },
+                                        { data: "Activo"}
+                            ],
+                            columnDefs: [{ targets: [7], type: Date, render: function (data) { if (data === true) { return "Activo"; } else { return "Inactivo"; } } }],
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf',orientation: 'landscape', pageSize: 'LEGAL'} ,{ extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }
+                            ],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasReporte tbody').on('click', 'tr', function () {
+                            $("#dtListasReporte tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+, true);
+}

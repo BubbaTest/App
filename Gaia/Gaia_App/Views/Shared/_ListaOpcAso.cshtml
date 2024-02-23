@@ -1,0 +1,118 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+
+    td {font-size: 12px;}
+</style>
+
+<div id="documentosOpcAso">
+    <table id="dtListasOpcAso" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column">Nivel</th>
+                <th class="sortable-column">PadreId</th>
+                <th class="sortable-column">Opcion</th>
+                <th class="sortable-column">OpcionTipo</th>
+                <th class="sortable-column">Mapeo</th>
+                <th class="sortable-column">NombreIcono</th>
+                <th class="sortable-column">Descripción</th>
+                <th class="sortable-column">Activo</th>
+            </tr>
+        </thead>
+        <thead id="table-tfoot">
+            <tr class="table-header">
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>Nivel</th>
+                <th></th>
+                <th>Opcion</th>
+                <th>OpcionTipo</th>
+                <th>Mapeo</th>
+                <th></th>     
+                <th>Descripción</th>           
+                <th></th>
+            </tr>
+        </thead> 
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+    {
+        Html.AddScriptBlock(
+            @<script type="text/javascript">
+                function eliminaOpcAso(obj) {
+                    showalertify();
+                    vopcionId = $(obj).attr('id');
+                    var url = obtenerURL('/Mantenimiento/eliminaOpcAso?opcionjson=' + vopcionId);
+                    $.post(url)
+                        .done(function (data) {
+                            var listado = JSON.parse(data);
+                            if (listado.Resultado === "true") {
+                                alertify.alert().destroy();
+                                alertify.alert('Confirmación', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                                $('#frOpcAso').empty();
+                                $('#frOpcAso').load(obtenerURL("/Mantenimiento/ListaOpcAso"));
+                            }
+                            else {
+                                alertify.alert().destroy();
+                                alertify.alert('Advertencia', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                            }
+                        })
+                    closealertify();
+                }
+
+                function obtenerOpcAso(obj) {
+                    showalertify();
+                    vopcionId = $(obj).attr('id');                
+                    var url = obtenerURL('/Mantenimiento/ObtenerOpcAso?OpcionId=' + vopcionId + "&Proyecto=" + $('#txtProyecto').val());
+                        $.getJSON(url)
+                           .done(function (data) {
+                               var Listado = (JSON.stringify(data));
+                               encabezdo = (Listado);
+                               iniciarValoresOpcAso();
+                               closealertify();
+                           })
+                        closealertify();
+                }
+
+                $(document).ready(function () {
+                    $('#table-tfoot th').each(function () {                    
+                        $(this).html('<input type="text" placeholder="Buscar" style="display: none;" />');
+                        $('#dtListasOpcAso thead tr:eq(1) th:eq(0)').empty();
+                        $('#dtListasOpcAso thead tr:eq(1) th:eq(1)').empty();
+                        $('#dtListasOpcAso thead tr:eq(1) th:eq(2)').empty();
+                        $('#dtListasOpcAso thead tr:eq(1) th:eq(4)').empty();
+                        $('#dtListasOpcAso thead tr:eq(1) th:eq(8)').empty();
+                        $('#dtListasOpcAso thead tr:eq(1) th:eq(9)').empty();
+                        $('#dtListasOpcAso thead tr:eq(1) th:eq(10)').empty();
+                    });
+                })            
+        </script>
+    , true);
+}

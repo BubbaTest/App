@@ -1,0 +1,75 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleParametro">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetParametro">Detalle</a></li>
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetParametro">
+                @Html.Partial("_ParametroMant")
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            $(document).ready(function () {
+                $('#gridDetalleParametro').empty();
+                $('#gridDetalleParametro').load(obtenerURL("/Mantenimiento/ObtenerListaParametro"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasParametro').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObtenerParametro"),
+                                dataSrc: "",                                
+                            },
+                            rowId: 'ParametroId',
+                            retrieve: true,
+                            columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.ParametroId + '" class="icon mif-pencil mif-1x fg-green" onclick="obtenerParametro(this)"></span>'
+                                            }
+                                        },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.ParametroId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarParametro(this)"></span>'
+                                            }
+                                        },
+                                        { data: "ParametroId" },
+                                        { data: "Descripcion" },                                        
+                                        { data: "Valor" }
+                            ],
+                            columnDefs: [                                
+                            ],
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf',orientation: 'landscape', pageSize: 'LEGAL'} ,{ extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }
+                            ],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasParametro tbody').on('click', 'tr', function () {
+                            $("#dtListasParametro tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+, true);
+}
+

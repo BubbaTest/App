@@ -1,0 +1,56 @@
+﻿@*@model IEnumerable<PJN.DAL.Model.GENERAL.catOpcion>*@
+@model IEnumerable<PJN.DAL.Model.LeCatOpcion>
+@{ int contador = 0; bool tienehijos = false;}
+@ShowTreeMenu(Model, contador, tienehijos)
+@*@helper ShowTreeMenu(IEnumerable<PJN.DAL.Model.GENERAL.catOpcion> opcion, int contador, bool tienehijos)*@
+@helper ShowTreeMenu(IEnumerable<PJN.DAL.Model.LeCatOpcion> opcion, int contador, bool tienehijos)
+{
+    contador = contador + 1;
+    {
+        foreach (var o in opcion)
+        {
+            if (o.OpcionesHijo.Any())
+            {
+                <li>
+                    <label for="drop-@o.OpcionId.ToString()" class="toggleee">@Html.DisplayFor(modelItem => o.Opcion)</label>
+                    <a href="#">@Html.DisplayFor(modelItem => o.Opcion)</a>
+                    <input type="checkbox" id="drop-@o.OpcionId.ToString()" />
+                    <ul>
+                        @ShowTreeMenu(o.OpcionesHijo, contador, true)
+                    </ul>
+                </li>
+            }
+            else
+            {
+                if (!o.OpcionTipo.ToUpper().Contains("LINK"))
+                {
+                    if (o.OpcionTipo.ToUpper().Contains("ALERTIFY"))
+                    {
+                        <li>
+                            <a href="#" onclick='Alertify("@o.Mapeo");'>
+                                @o.Opcion
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <a href="~/@o.Mapeo"
+                               data-clic="data-clic" data-ajax="true" data-ajax-method="GET" data-ajax-mode="replace"
+                               data-ajax-update="#cell-content">
+                                @o.Opcion
+                            </a>
+                        </li>
+                    }
+
+                }
+                else
+                {
+                    <li>
+                        <a href="~/@o.Mapeo">@o.Opcion</a>
+                    </li>
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,71 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleRolSap">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetRolSap">Detalle</a></li>            
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetRolSap">
+                @Html.Partial("_RolSapMant")
+            </div>            
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            $(document).ready(function () {
+                $('#gridDetalleRolSap').empty();
+                $("#gridDetalleRolSap").load(obtenerURL("/Mantenimiento/ObtenerListaRolSap"), function (response, status, xhr) {
+                    if (status === "success") {                        
+                        table = $('#dtListasRolSap').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObteneRolSap"),
+                                dataSrc: "",
+                            },
+                            rowId: 'id_rol',
+                            retrieve: true,
+                            columns: [
+                                {
+                                    'data': null,
+                                    'render': function (data, type, row) {
+                                        return '<span id="' + row.id_rol + '" class="icon mif-pencil mif-1x fg-blue" onclick="obtenerRolSap(this)"></span>'
+                                    }
+                                },
+                                { data: "id_rol" },
+                                { data: "nombre" },
+                                { data: "descripcion" },
+                                { data: "dtFechaInsercion" },
+                                { data: "esIndefinido" },
+                                { data: "DeBaja" },
+                                { data: "blnActivo" }
+                            ],
+                            columnDefs: [{targets: [4], type: Date, render: function (data) {if (data === null) { return "";}
+                            else { var date = new Date(data); var month = date.getMonth() + 1; var day = date.getUTCDate(); return ((day < 10 ? '0' + day : '' + day) + "/" + (month < 10 ? '0' + month : '' + month) + "/" + date.getFullYear()); }}}, { targets: [5], type: Date, render: function (data) { if (data === "0") { return "No"; } else { return "Si"; } } }, { targets: [6], type: Date, render: function (data) { if (data === "0") { return "Alta"; } else { return "Baja"; } } },{ targets: [7], type: Date, render: function (data) { if (data === "0") { return "Pasivo"; } else { return "Activo"; } } },],
+                            dom: 'Bfrtip',
+                            buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasRolSap tbody').on('click', 'tr', function () {
+                            $("#dtListasRolSap tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+    , true);
+}
+

@@ -1,0 +1,168 @@
+﻿@model  Gaia.DAL.Model.catTipoObjeto
+
+<div class="content">
+    <div class="flex-grid">
+        <div class="row padding10 flex-jus-center">
+            <div class="cell size8 padding10 no-padding-left">
+                <div data-role="window" class="window">
+                    <div class="window-caption">
+                        <span class="window-caption-title">TipoObjeto</span>
+                    </div>
+                    <div class="window-content">
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.TextBoxFor(model => model.TipoObjetoId, new { id = "txtTipoObjetoId", PlaceHolder = "TipoObjetoId" })
+                                    @Html.ValidationMessage("tipoobjetoid", "* Campo Requerido *", new { id = "lbltipoobjetoid", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.TextBoxFor(model => model.Descripcion, new { id = "txtDescripcionTipoObjeto", PlaceHolder = "Descripcion" })
+                                    @Html.ValidationMessage("descripcionto", "* Campo Requerido *", new { id = "lbldescripciontipoobjeto", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>                        
+                        <div class="row flex-just-center" id="ActivoTipObj">
+                            <label class="input-control checkbox small-check">
+                                <input type="checkbox" id="activotipobj" value="true" checked>
+                                <span class="check"></span>
+                                <span class="caption">Activo</span>
+                            </label>
+                            <label class="input-control checkbox small-check">
+                                <input type="checkbox" id="inactivotipobj" value="false">
+                                <span class="check"></span>
+                                <span class="caption">Inactivo</span>
+                            </label>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="toolbar">
+                                <div class="toolbar-section">
+                                    <button class="image-button ribbed-darkBlue" data-tabcontinuar="data-tabcontinuar" id="btnGuardaTipoObjeto" onclick="AgregarTipoObjeto()">
+                                        <span class="fg-white">Guardar</span>
+                                        <span class="icon mif-floppy-disk fg-white bg-darkBlue"></span>
+                                    </button>
+                                    <button class="image-button ribbed-darkOrange" data-tabcontinuar="data-tabcontinuar" id="btnActualizarTipoObjeto" onclick="ActualizarTipoObjeto()" style="display: none">
+                                        <span class="fg-white">Actualizar</span>
+                                        <span class="icon mif-pencil fg-white bg-darkOrange"></span>
+                                    </button>
+                                    <button class="image-button ribbed-darkEmerald" data-tabcontinuar="data-tabcontinuar" id="btnNuevoTipoObjeto" onclick="NuevaTipoObjeto()">
+                                        <span class="fg-white">Nuevo</span>
+                                        <span class="icon mif-plus fg-white bg-darkEmerald"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+                function ActualizarTipoObjeto() {
+                    var bandera = true;                    
+                    if ($('#txtTipoObjetoId').val().toString().length < 1) {
+                        $("#lbltipoobjetoid").show();
+                        bandera = false;
+                    }
+                    if ($('#txtDescripcionTipoObjeto').val().toString().length < 1) {
+                        $("#lbldescripciontipoobjeto").show();
+                        bandera = false;
+                    }                    
+
+                    if (bandera == true) {                        
+                        $("#lbltipoobjetoid").hide();
+                        $("#lbldescripciontipoobjeto").hide();
+
+                        var listaCheck = $("#ActivoTipObj input[type='checkbox']");
+                        $.each(listaCheck, function (index, value) {
+                            if ($(value).prop('checked') === true) {
+                                Activo = value.value                                
+                            }
+                        })
+
+                        var tipoobjetojson = JSON.stringify({ "TipoObjetoId": $.trim($('#txtTipoObjetoId').val()), "Descripcion": $('#txtDescripcionTipoObjeto').val().toString(), "Activo": Activo });
+                        var url = obtenerURL('/Mantenimiento/ActualizarTipoObjeto?tipoobjetojson=' + tipoobjetojson);
+                        $.post(url)
+                            .done(function (data) {
+                                var listado = JSON.parse(data);
+                                if (listado.Resultado === "true") {
+                                    alertify.alert().destroy();
+                                    alertify.alert('Confirmación', listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                    $('#frTipObj').empty();
+                                    $('#frTipObj').load(obtenerURL("/Mantenimiento/ListaTipoObjeto"))
+                                }
+                                else {
+                                    alertify.alert().destroy();
+                                    alertify.alert('Advertencia', listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                }
+                            })
+                    }
+                }
+
+                function AgregarTipoObjeto() {
+                    var bandera = true;                    
+                    if ($('#txtDescripcionTipoObjeto').val().toString().length < 1) {
+                        $("#lbldescripciontipoobjeto").show();
+                        bandera = false;
+                    } 
+                    if (bandera == true) {
+                        $("#lbldescripciontipoobjeto").hide();
+
+                        var listaCheck = $("#ActivoTipObj input[type='checkbox']");
+                        $.each(listaCheck, function (index, value) {
+                            if ($(value).prop('checked') === true) {
+                                Activo = value.value
+                            }
+                        })
+
+                        var tipoobjetojson = JSON.stringify({ "Descripcion": $('#txtDescripcionTipoObjeto').val().toString(), "Activo": Activo }); //"TipoObjetoId": $.trim($('#txtTipoObjetoId').val()),
+                        var url = obtenerURL('/Mantenimiento/AgregarTipoObjeto?tipoobjetojson=' + tipoobjetojson);
+                        $.post(url)
+                            .done(function (data) {
+                                var listado = JSON.parse(data);
+                                if (listado.Resultado === "true") {
+                                    alertify.alert().destroy();
+                                    alertify.alert('Confirmación', listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                    $('#frTipObj').empty();
+                                    $('#frTipObj').load(obtenerURL("/Mantenimiento/ListaTipoObjeto"))
+                               }
+                               else {
+                                   alertify.alert().destroy();
+                                   alertify.alert('Advertencia', listado.Mensaje);
+                                   alertify.alert().setting('modal', true);
+                               }
+                           })                        
+                    }
+                }
+
+                function NuevaTipoObjeto() {
+                    $('#txtTipoObjetoId').prop("disabled", true);
+                    $('#txtTipoObjetoId').val("");
+                    $('#txtDescripcionTipoObjeto').val("");                    
+                    $('#ActivoTipObj input[type=checkbox]').prop("checked", false);
+                    $('#activotipobj').prop('checked', true);
+                    $('#btnActualizarTipoObjeto').hide();
+                    $('#btnGuardaTipoObjeto').show();                    
+                }
+
+                $(document).ready(function () {
+                    $('#txtTipoObjetoId').prop("disabled", true);
+                    $('#ActivoTipObj input[type=checkbox]').click(function () {
+                        $('#ActivoTipObj input[type=checkbox]').prop("checked", false);
+                        $(this).prop("checked", true);
+                    });
+                })
+        </script>
+    , true);
+}

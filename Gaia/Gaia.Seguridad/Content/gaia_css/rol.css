@@ -1,0 +1,37 @@
+.listarol {
+    display: block;
+    margin: auto;
+    width: 90%;
+    border-radius: 8px 8px 0px 0px;
+    -moz-border-radius: 8px 8px 8px 8px;
+    -webkit-border-radius: 8px 8px 8px 8px;
+    border: 1px solid #cccccc;
+    padding: 10px;
+    font-family: Arial;
+}
+
+.listarol a {
+    text-decoration: none;
+    color: #2086bf;
+}
+
+.listarol .titulo {
+    font-weight: 700;
+    text-align: center;
+    padding-bottom: 20px;
+    padding-top: 10px;
+    color: #00356a;
+}
+
+.listarol .opcion {
+    border: solid 1px #cccccc;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px 8px 8px 8px;
+    text-align: center;
+}
+
+.listarol .opcion:hover {
+    background-color: #CEECF5;
+    border: solid 1px #81DAF5;
+}

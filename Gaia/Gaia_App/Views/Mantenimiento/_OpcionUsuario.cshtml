@@ -1,0 +1,28 @@
+﻿<div class="content">
+    <div class="flex-grid">
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control select full-size" data-placeholder="Seleccione una Opción" data-allow-clear="true">
+                    @Html.DropDownList("proyecto", new SelectList(ViewBag.Proyecto as System.Collections.IEnumerable, "Opcion", "Opcion"),
+                                    "Selecciona Proyecto", new { id = "ddlrelProyecto", @style = "width:100%;" })
+                </div>
+            </div>
+        </div>
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control select full-size" data-role="select" data-placeholder="Seleccione Opción Asociada">
+                    <select id="ddlrelOpcAso" class="js-select full-size" tabindex="-1" style="display: none; width:100%;"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+        </script>
+    , true);
+}
+

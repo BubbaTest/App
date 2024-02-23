@@ -1,0 +1,99 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+
+    td {
+        font-size: 12px;
+    }
+</style>
+
+<div id="documentosUsuarioSap">
+    <table id="dtListasUsuarioSap" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column">Identificación</th>                
+                <th class="sortable-column">Tipo Identificación</th>
+                <th class="sortable-column">Nombre Completo</th>
+                <th class="sortable-column">Entidad</th>
+                <th class="sortable-column">Fecha Inserción</th>
+                <th class="sortable-column">DeBaja</th>                
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">    
+            function obtenerUsuarioSap(obj) {
+                showalertify();
+                vidusuario = $(obj).attr('id');
+                var url = obtenerURL('/Mantenimiento/ObtenerUsuarioSap?UsuarioId=' + vidusuario);
+                $.getJSON(url)
+                    .done(function (data) {                        
+                        iniciarValoresUsuarioSAP(data);
+
+                        $('#baba').empty();
+                        var url = obtenerURL("/Mantenimiento/_ListaRolSR");
+                        $('#baba').load(url, function (response, status, xhr) {
+                            if (status === "success") {
+                                table = $('#dtListasRolSR').dataTable({
+                                    ajax: {
+                                        url: obtenerURL('/Mantenimiento/ObtenerRelacionRolUsuarioS?UsuarioId=' + vidusuario), 
+                                        dataSrc: "",
+                                    },
+                                    rowId: 'Id_Usuario_Rol',
+                                    retrieve: true,
+                                    columns: [
+                                        { data: "id_rol" },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.id_rol + "/" + row.Id_Usuario_Rol + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioRolS(this)"></span>'
+                                            }
+                                        },
+                                        { data: "descripcion" }
+                                    ],
+                                    columnDefs: [{ targets: [0], visible: false },],
+                                    language: { url: obtenerURL("/Json/Spanish.json") },
+                                    lengthMenu: [5],
+                                    bLengthChange: false,
+                                    searching: true
+                                });
+
+                                $('#dtListasRolSR tbody').on('click', 'tr', function () {
+                                    $("#dtListasRolSR tr.selected").removeClass();
+                                    $(this).addClass('selected');
+                                });
+                            }
+                            $("#usurol").show();
+                        })
+                    })
+                closealertify();
+            }
+        </script>
+    , true);
+}

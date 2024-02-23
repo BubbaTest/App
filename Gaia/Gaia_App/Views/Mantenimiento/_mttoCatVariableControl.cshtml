@@ -1,0 +1,24 @@
+﻿<div class="panel">
+    <div class="heading">
+        <span class="title">Catálogo Variable de Control</span>
+    </div>
+</div>
+<div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+    <ul class="tabs">
+        <li class="active"><a href="#frVariableControl">VariableControl</a></li>
+    </ul>
+    <div class="frames">
+        <div class="frame" id="frVariableControl" style="display:none;">
+            @Html.Partial("ListaVariableControl")
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            var vvariablecontrolId;           
+        </script>
+, true);
+}

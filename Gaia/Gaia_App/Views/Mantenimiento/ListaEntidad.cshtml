@@ -1,0 +1,184 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleEntidad">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetEntidad">Detalle</a></li>
+            <li id="entmat" style="display: none"><a href="#frDetEntMat">EntidadMateria</a></li>            
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetEntidad">
+                @Html.Partial("_EntidadMant")
+            </div>
+            <div class="frame" id="frDetEntMat">
+                <div class="container">
+                    <div class="example">
+                        <div class="flex-grid">
+                            <h5 style="align-self:center" id="btnEntidadMateria">
+                                Relación Entidad Materia
+                                <button class="image-button ribbed-darkGreen" data-tabcontinuar="data-tabcontinuar" id="btnrelEntMat" onclick="relMateria()">
+                                    <span class="fg-white">Agregar</span>
+                                    <span class="icon mif-plus fg-white bg-darkGreen"></span>
+                                </button>
+                            </h5>
+                            <div class="row flex-just-center">
+                                <div class="cell size8" id="guineaoriental">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+    {
+        Html.AddScriptBlock(
+            @<script type="text/javascript">
+                function relMateria() {
+                    var contenido;
+                    var div = $("#ModalGenerico");
+                    alertify.defaults.theme.ok = "success button";
+                    alertify.defaults.theme.cancel = "danger button";
+                    alertify.confirm().destroy();
+                    div.load(obtenerURL("/Mantenimiento/_relEntidadMateria"), function () {
+                        contenido = div.html();
+                        div.empty();
+                        var modal = alertify.confirm()
+                            .setHeader('<h4> Relacionar Entidad a Materia</h4> ')
+                            .setContent(contenido)
+                            .set({ 'startMaximized': false, 'maximizable': true, 'resizable': true, 'labels': { ok: '< Guardar >', cancel: '< Salir >' } })
+                            .resizeTo(160, 250)
+                            .set('oncancel', function (closeEvent) { })
+                            .set('onok', function (closeEvent) { GuardaEntidadMateria(); })
+                            .show();
+                        var select2 = $(modal.elements.root).find("select");
+                        select2.select2().on("select2:open", function (e) {
+                            var id = e.target.id;
+                            var div_results = "#select2-" + id + "-results";
+                            $(div_results).parents(".select2-container").css({ 'z-index': '3000' });
+                        });
+                    })
+                }
+
+                function GuardaEntidadMateria() {                    
+                    var reljson = JSON.stringify({ "EntidadId": ventidadId, "MateriaId": $('#ddlrelMateria').val() });
+                    var url = obtenerURL('/Mantenimiento/GuardarRelEntidadMateria?reljson=' + reljson);
+                    $.post(url)
+                        .done(function (data) {
+                            var listado = JSON.parse(data);
+                            if (listado.Resultado === "true") {
+                                alertify.alert().destroy();
+                                alertify.alert('Confirmación', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                                $('#guineaoriental').empty();
+                                var url = obtenerURL("/Mantenimiento/_ListaEntidadMat");
+                                $("#guineaoriental").load(url, function (response, status, xhr) {
+                                    if (status === "success") {
+                                        table = $('#dtListasEntidadMat').dataTable({
+                                            ajax: {
+                                                url: obtenerURL('/Mantenimiento/ObtenerRelacionEntidadMateria?EntidadId=' + ventidadId),
+                                                dataSrc: "",
+                                            },
+                                            rowId: 'Llave',
+                                            retrieve: true,
+                                            columns: [
+                                                { data: "MateriaId" },
+                                                {
+                                                    'data': null,
+                                                    'render': function (data, type, row) {
+                                                        return '<span id="' + row.EntidadId + ";" + row.MateriaId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelEntidadMateria(this)"></span>'
+                                                    }
+                                                },
+                                                { data: "Descripcion" }
+                                            ],
+                                            columnDefs: [ { targets: [0], visible: false },],
+                                            dom: 'Bfrtip',
+                                            buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                            language: { url: obtenerURL("/Json/Spanish.json") },
+                                            lengthMenu: [5],
+                                            bLengthChange: false,
+                                            searching: true
+                                        });
+
+                                        $('#dtListasEntidadMat tbody').on('click', 'tr', function () {
+                                            $("#dtListasEntidadMat tr.selected").removeClass();
+                                            $(this).addClass('selected');
+                                        });
+                                    }
+                                })
+                            }
+                            else {
+                                alertify.alert().destroy();
+                                alertify.alert('Advertencia', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                            }
+                        })                    
+                }  
+
+                $(document).ready(function () {
+                    $('#gridDetalleEntidad').empty();
+                    $("#gridDetalleEntidad").load(obtenerURL("/Mantenimiento/ObtenerListaEntidad"), function (response, status, xhr) {
+                        if (status === "success") {
+                            table = $('#dtListasEntidad').dataTable({
+                                ajax: {
+                                    url: obtenerURL("/Mantenimiento/ObtenerEntidad?Proyecto=" + $('#txtProyecto').val()),
+                                    dataSrc: "",
+                                    beforeSend: showalertify(),
+                                    complete: closealertify(),
+                                },
+                                rowId: 'EntidadId',
+                                retrieve: true,
+                                columns: [                                        
+                                            {
+                                                'data': null,
+                                                'render': function (data, type, row) {
+                                                    return '<span id="' + row.EntidadId + '" class="icon mif-pencil mif-1x fg-red" onclick="obtenerEntidad(this)"></span>'
+                                                }
+                                            },
+                                            {
+                                                'data': null,
+                                                'render': function (data, type, row) {
+                                                    return '<span id="' + row.EntidadId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminaEntidad(this)"></span>'
+                                                }
+                                            },                                        
+                                            { data: "EntidadId" },                                        
+                                            { data: "Descripcion" },
+                                            { data: "strDepartamento" },
+                                            { data: "strMunicipio" },
+                                            //{ data: "Domicilio" },
+                                            //{ data: "Telefonos" },
+                                            //{ data: "Estado" },
+                                            //{ data: "Circuito" },
+                                            { data: "DescripcionCorta" },
+                                            { data: "SedeJudicial" },
+                                            { data: "strEntidad" },
+                                            { data: "DescripcionEdificio" },
+                                            { data: "Activo" }
+                                ],
+                                columnDefs: [{ targets: [10], type: Date, render: function (data) { if (data === true) { return "Activo"; } else { return "Inactivo"; } } }, ],
+                                dom: 'Bfrtip',
+                                buttons: [{extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf',orientation: 'landscape', pageSize: 'LEGAL'} ,{ extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                language: { url: obtenerURL("/Json/Spanish.json") },
+                                lengthMenu: [5],
+                                bLengthChange: false,
+                                searching: true
+                            });
+
+                            $('#dtListasEntidad tbody').on('click', 'tr', function () {
+                                $("#dtListasEntidad tr.selected").removeClass();
+                                $(this).addClass('selected');
+                            });
+                        }
+                    })
+                })
+        </script>
+    , true);
+}

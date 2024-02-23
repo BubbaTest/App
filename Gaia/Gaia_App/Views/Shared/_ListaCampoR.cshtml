@@ -1,0 +1,117 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+        table.cell-border th {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        table.cell-border thead th {
+            text-align: center;
+            background: #66a9bd;
+        }
+
+        table.cell-border tbody td {
+            text-align: center;
+        }
+</style>
+
+<div id="documentosCampoR">
+    <table id="dtListasCampoR" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">CampoReporteId</th>                
+                <th class="sortable-column">Placehoder</th>
+                <th class="sortable-column">Titulo</th>
+                <th class="sortable-column">Orden</th>
+                <th class="sortable-column">IsPrincipal</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function eliminarelReporteCampor(obj) {
+                vcamporeporteId = $(obj).attr('id');
+
+                alertify.defaults.theme.ok = "button warning";
+                alertify.defaults.theme.cancel = "button primary";
+                alertify.confirm().destroy();
+                alertify.confirm('Advertencia', 'Esta seguro de querer Eliminar la Relacion?'
+                , function () { //onOk                    
+                    var url = obtenerURL('/Mantenimiento/eliminaRelacion?tabla=dbo.relReporteCampo' + "&Id=" + vreporteId + "&Id2=" + vcamporeporteId);
+                    $.post(url)
+                       .done(function (data) {
+                           var listado = JSON.parse(data);
+                           if (listado.Resultado === "true") {
+                               alertify.alert().destroy();
+                               alertify.alert('Confirmación', listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                               $('#reportecampo').empty();
+                               var url = obtenerURL("/Mantenimiento/_ListaCampoR");
+                               $('#reportecampo').load(url, function (response, status, xhr) {
+                                   if (status === "success") {
+                                       table = $('#dtListasCampoR').dataTable({
+                                           ajax: {
+                                               url: obtenerURL('/Mantenimiento/ObtenerRelacionRepCam?reporteId=' + vreporteId),
+                                               dataSrc: "",
+                                           },
+                                           rowId: 'CampoReporteId',
+                                           retrieve: true,
+                                           columns: [
+                                               {
+                                                   'data': null,
+                                                   'render': function (data, type, row) {
+                                                       return '<span id="' + row.CampoReporteId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelReporteCampor(this)"></span>'
+                                                   }
+                                               },
+                                               { data: "CampoReporteId" },
+                                               { data: "Placeholder" },
+                                               { data: "Titulo" },
+                                               { data: "Orden" },
+                                               { data: "IsPrincipal" }
+                                           ],
+                                           columnDefs: [
+                                               {
+                                                   targets: [1],
+                                                   visible: false
+                                               },
+                                               { targets: [5], type: Date, render: function (data) { if (data === true) { return "Principal"; } else { return "NoPrincipal"; } } },
+                                           ],
+                                           language: { url: obtenerURL("/Json/Spanish.json") },
+                                           lengthMenu: [5],
+                                           bLengthChange: false,
+                                           searching: true
+                                       });
+
+                                       $('#dtListasCampoR tbody').on('click', 'tr', function () {
+                                           $("#dtListasCampoR tr.selected").removeClass();
+                                           $(this).addClass('selected');
+                                       });
+                                   }
+                               })
+                           }
+                           else {
+                               alertify.alert().destroy();
+                               alertify.alert('Advertencia', listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                           }
+                       })                    
+                }
+                , function () { })//onCancel
+                .set('labels', { ok: '< Si >', cancel: '< No >' });
+            }
+        </script>
+     , true);
+}

@@ -1,0 +1,111 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+</style>
+
+<div id="documentosAccPerSap">
+    <table id="dtListasAccPerSap" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Descripción</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function eliminarelPerAccSap(obj) {
+                var values = $(obj).attr('id').split("/");
+                vidaccionId = values[0];
+                var vperaccId = values[1];
+                alertify.defaults.theme.ok = "button warning";
+                alertify.defaults.theme.cancel = "button primary";
+                alertify.confirm().destroy();
+                alertify.confirm('Advertencia', 'Esta seguro de querer Eliminar la Relacion?'
+                , function () { //onOk
+                    showalertify();
+                    var fechabaja = formatFechaHoras(new Date);
+                    var reljson = JSON.stringify({ "id_permiso": vidpermiso, "IdAccion": vidaccionId, "DeBaja": "1", "FechaBaja": fechabaja, "blnActivo": "1" });                    
+                    var url = obtenerURL('/Mantenimiento/EliminarPermisoAccS?reljson=' + reljson + '&IdPermisoAccion=' + vperaccId);
+                    $.post(url)
+                       .done(function (data) {
+                           var listado = JSON.parse(data);
+                           if (listado.Resultado === "true") {
+                               alertify.alert().destroy();
+                               alertify.alert('Confirmación', listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+
+                               $('#babas').empty();
+                               var url = obtenerURL("/Mantenimiento/_ListaAccPerSap");
+                               $('#babas').load(url, function (response, status, xhr) {
+                                   if (status === "success") {
+                                       table = $('#dtListasAccPerSap').dataTable({
+                                           ajax: {
+                                               url: obtenerURL('/Mantenimiento/ObtenerRelacionPerAccSap?IdPermiso=' + vidpermiso),
+                                               dataSrc: "",
+                                           },
+                                           rowId: 'Id_PermisoAccion',
+                                           retrieve: true,
+                                           columns: [
+                                               { data: "IdAccion" },
+                                               {
+                                                   'data': null,
+                                                   'render': function (data, type, row) {
+                                                       return '<span id="' + row.IdAccion + "/" + row.Id_PermisoAccion + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelPerAccSap(this)"></span>'
+                                                   }
+                                               },
+                                               { data: "DescpAccion" }
+                                           ],
+                                           columnDefs: [{ targets: [0], visible: false },],
+                                           language: { url: obtenerURL("/Json/Spanish.json") },
+                                           lengthMenu: [5],
+                                           bLengthChange: false,
+                                           searching: true
+                                       });
+
+                                       $('#dtListasAccPerSap tbody').on('click', 'tr', function () {
+                                           $("#dtListasAccPerSap tr.selected").removeClass();
+                                           $(this).addClass('selected');
+                                       });
+                                   }
+                               })
+                           }
+                           else {
+                               alertify.alert().destroy();
+                               alertify.alert('Advertencia' , listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                           }
+                       })
+                    closealertify();
+                }
+                , function () { })//onCancel
+                .set('labels', { ok: '< Si >', cancel: '< No >' });
+            }
+        </script>
+     , true);
+}

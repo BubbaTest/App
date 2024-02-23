@@ -1,0 +1,498 @@
+﻿using System.Configuration;
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
+
+using Nicarao.DAL.Model;
+using Nicarao.DAL.Model.Vista;
+using Nicarao.DAL.Model.Asunto;
+using Nicarao.DAL.Model.Archivo;
+using Nicarao.DAL.Model.Catalogos;
+using Nicarao.DAL.Model.Tramites;
+
+namespace Nicarao.DAL
+{
+    public class NicaraoDbContext : System.Data.Entity.DbContext
+    {
+       // public NicaraoDbContext()
+       //:base(Nicarao.DAL.Properties.Settings.Default.cnnNicarao)
+       // { }
+        //public NicaraoDbContext()
+        //    : base("name=DefaultConnection") { }
+
+        public NicaraoDbContext()
+            : base("name=SedeJudicial_14") { }
+
+        public NicaraoDbContext(string stringConnection)
+            : base(stringConnection) { }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            //this.Configuration.ProxyCreationEnabled = false;
+
+            Database.SetInitializer<NicaraoDbContext>(null);
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+
+            modelBuilder.Entity<ORGANOS>().ToTable("ORGANOS");
+            modelBuilder.Entity<ORGANOS_ADSCRITOS>().ToTable("ORGANOS_ADSCRITOS");
+            modelBuilder.Entity<TABLA_BANCOS>().ToTable("TABLA_BANCOS");
+            modelBuilder.Entity<TABLA_BARRIOS>().ToTable("TABLA_BARRIOS");
+            modelBuilder.Entity<TABLA_CIRCUITOS>().ToTable("TABLA_CIRCUITOS");
+            modelBuilder.Entity<TABLA_CIUDAD>().ToTable("TABLA_CIUDAD");
+            modelBuilder.Entity<TABLA_CUENTAS_BANCARIAS>().ToTable("TABLA_CUENTAS_BANCARIAS");
+            modelBuilder.Entity<TABLA_DESTINOS_OFI>().ToTable("TABLA_DESTINOS_OFI");
+            modelBuilder.Entity<TABLA_DISTRITO>().ToTable("TABLA_DISTRITO");
+            modelBuilder.Entity<TABLA_DOMIC_NOTIF_TIPOS>().ToTable("TABLA_DOMIC_NOTIF_TIPOS");
+            modelBuilder.Entity<TABLA_ESTADOS_POLITICOS>().ToTable("TABLA_ESTADOS_POLITICOS");
+            modelBuilder.Entity<TABLA_MONEDAS>().ToTable("TABLA_MONEDAS");
+            modelBuilder.Entity<TABLA_REGION>().ToTable("TABLA_REGION");
+            modelBuilder.Entity<TABLA_RESOLUCIONES>().ToTable("TABLA_RESOLUCIONES");
+            modelBuilder.Entity<USUARIOS>().ToTable("USUARIOS");
+            modelBuilder.Entity<TABLA_SEDES_JUDICIALES>().ToTable("TABLA_SEDES_JUDICIALES");
+
+            modelBuilder.Entity<TABLA_TIPO_DOCUMENTO>().ToTable("TABLA_TIPO_DOCUMENTO"); 
+
+            modelBuilder.Entity<ASUNTOS>().HasKey(a => a.ASUNTO).ToTable("ASUNTOS");
+            modelBuilder.Entity<ASUNTOS_CAD>().HasKey(a => a.ASUNTO).ToTable("ASUNTOS_CAD");
+            modelBuilder.Entity<ASUNTOS_CIV>().HasKey(a => a.ASUNTO).ToTable("ASUNTOS_CIV");
+            modelBuilder.Entity<ASUNTOS_COM>().HasKey(a => a.ASUNTO).ToTable("ASUNTOS_COM");
+            modelBuilder.Entity<ASUNTOS_CSE>().HasKey(a => a.ASUNTO).ToTable("ASUNTOS_CSE");
+            modelBuilder.Entity<ASUNTOS_MEN>().HasKey(a => a.ASUNTO).ToTable("ASUNTOS_MEN");
+            modelBuilder.Entity<ASUNTOS_PEN>().HasKey(a => a.ASUNTO).ToTable("ASUNTOS_PEN");
+            modelBuilder.Entity<ASUNTOS_REC>().HasKey(a => a.ASUNTO).ToTable("ASUNTOS_REC");
+            modelBuilder.Entity<ASUNTOS_SOC>().HasKey(a => a.ASUNTO).ToTable("ASUNTOS_SOC");
+            modelBuilder.Entity<ASUNTOS_SOL>().HasKey(a => a.ASUNTO).ToTable("ASUNTOS_SOL");
+            modelBuilder.Entity<ASUNTOS_TRI>().HasKey(a => a.ASUNTO).ToTable("ASUNTOS_TRI");
+
+            modelBuilder.Entity<TABLA_ASUNTOS_TIPO>().HasKey(o => o.ASUNTO_TIPO).ToTable("TABLA_ASUNTOS_TIPO");
+            modelBuilder.Entity<TABLA_CLASES>().HasKey(o => o.CLASE).ToTable("TABLA_CLASES");
+            modelBuilder.Entity<TABLA_DENUNCIA_ORIGEN>().ToTable("TABLA_DENUNCIA_ORIGEN");
+            modelBuilder.Entity<TABLA_ESTADOS>().HasKey(o => o.ESTADO).ToTable("TABLA_ESTADOS");
+            modelBuilder.Entity<TABLA_ESTADOS_TERMINACION>().HasKey(o => o.TERMINACION).ToTable("TABLA_ESTADOS_TERMINACION");
+            modelBuilder.Entity<TABLA_FASES>().HasKey(o => o.FASE).ToTable("TABLA_FASES");
+            modelBuilder.Entity<TABLA_FISCALIA_TIPO>().ToTable("TABLA_FISCALIA_TIPO");
+            modelBuilder.Entity<TABLA_FISCALIAS>().HasKey(o => o.FISCALIA).ToTable("TABLA_FISCALIAS");
+            modelBuilder.Entity<TABLA_JURISDICCIONES>().HasKey(o => o.JURISDICCION).ToTable("TABLA_JURISDICCIONES");
+            modelBuilder.Entity<TABLA_MAGISTRADO_TIPOS>().ToTable("TABLA_MAGISTRADO_TIPOS");
+            modelBuilder.Entity<TABLA_MAGISTRADOS>().HasKey(o => o.MAGISTRADO).ToTable("TABLA_MAGISTRADOS");
+            modelBuilder.Entity<TABLA_MATERIAS>().HasKey(o => o.MATERIA).ToTable("TABLA_MATERIAS");
+            modelBuilder.Entity<TABLA_MOTIVOS_ASUNTO>().HasKey(o => o.MOTIVO).ToTable("TABLA_MOTIVOS_ASUNTO");
+            modelBuilder.Entity<TABLA_POLICIA>().HasKey(o => o.POLICIA).ToTable("TABLA_POLICIA");
+            modelBuilder.Entity<TABLA_PONENCIAS>().HasKey(o => o.PONENCIA).ToTable("TABLA_PONENCIAS");
+            modelBuilder.Entity<TABLA_PROCEDIMIENTOS>().HasKey(o => o.PROCEDIMIENTO).ToTable("TABLA_PROCEDIMIENTOS");
+            modelBuilder.Entity<TABLA_PROCURADORIA>().HasKey(o => o.PROCURADOR).ToTable("TABLA_PROCURADORIA");
+            modelBuilder.Entity<TABLA_TIUF>().HasKey(o => o.TIUF).ToTable("TABLA_TIUF");
+            modelBuilder.Entity<TABLA_UBICACION_TIPO>().ToTable("TABLA_UBICACION_TIPO");
+            modelBuilder.Entity<UBICACIONES>().ToTable("UBICACIONES");
+            modelBuilder.Entity<UBICACIONES_TEMP>().ToTable("UBICACIONES_TEMP");
+            //modelBuilder.Entity<TABLA_SEDES_JUDICIALES>().ToTable("TABLA_SEDES_JUDICIALES"); //Cazado 30-Junio-2016
+            modelBuilder.Entity<TABLA_ORGANO_TIPOS>().ToTable("TABLA_ORGANO_TIPOS");//Cazado 07-Julio-2016
+            modelBuilder.Entity<REL_TIUF_CLASE>().HasKey(r => new { r.CLASE, r.TIUF }).ToTable("REL_TIUF_CLASE");//Cazado 09-Julio-2016
+            modelBuilder.Entity<REL_CLASE_MOTIVO>().HasKey(r => new { r.MOTIVO, r.CLASE }).ToTable("REL_CLASE_MOTIVO");//Cazado 09-Julio-2016
+            modelBuilder.Entity<REL_TIUF_ORGANO>().HasKey(r => new { r.ORGANO, r.TIUF }).ToTable("REL_TIUF_ORGANO");//Cazado 09-Julio-2016
+            modelBuilder.Entity<REL_TIUF_SALA>().HasKey(r => new { r.SALA, r.TIUF }).ToTable("REL_TIUF_SALA");//Cazado 13-Julio-2016  
+            modelBuilder.Entity<REL_TIUF_AUDIENCIA>().HasKey(rta => new { rta.AUDIENCIA, rta.TIUF }).ToTable("REL_TIUF_AUDIENCIA");
+            modelBuilder.Entity<REL_USUARIONIC_PJN>().ToTable("REL_USUARIONIC_PJN");
+            modelBuilder.Entity<TABLA_AUDIENCIA_TIPO>().HasMany<TABLA_SALAS>(tt => tt.TABLA_SALAS)
+                                                                        .WithMany(o => o.TABLA_AUDIENCIA_TIPO)
+                                                                        .Map(to =>
+                                                                                {
+                                                                                    to.MapLeftKey("TABLA_AUDIENCIA_TIPO");
+                                                                                    to.MapRightKey("TABLA_SALAS");
+                                                                                    to.ToTable("REL_TIPO_AUDIENCIA_SALA");
+                                                                                });//Cazado 14-Julio-2016
+
+            #region SACS: Cazado 30-Junio-2016
+            modelBuilder.Entity<TABLA_AUDIENCIA_TIPO>().ToTable("TABLA_AUDIENCIA_TIPO");
+            modelBuilder.Entity<SALA_AUDIENCIAS>().HasKey(a => a.CODIGO).ToTable("SALA_AUDIENCIAS");
+            modelBuilder.Entity<TABLA_SALA_CANCELACION>().ToTable("TABLA_SALA_CANCELACION");
+            modelBuilder.Entity<TABLA_SALA_ESTADOS>().ToTable("TABLA_SALA_ESTADOS");
+            modelBuilder.Entity<TABLA_SALAS>().ToTable("TABLA_SALAS");
+            modelBuilder.Entity<TABLA_TIPO_AUDIENCIA_EXTRAORDINARIA>().ToTable("TABLA_TIPO_AUDIENCIA_EXTRAORDINARIA");
+            modelBuilder.Entity<TABLA_COMPLEJIDAD>().ToTable("TABLA_COMPLEJIDAD");
+            modelBuilder.Entity<TABLA_TIPO_JUICIO>().ToTable("TABLA_TIPO_JUICIO");
+            #endregion
+
+            modelBuilder.Entity<DELITOS>().ToTable("DELITOS");
+            modelBuilder.Entity<INTERVINIENTE_APELATIVO>().HasKey(a => a.ID_Relacion).ToTable("INTERVINIENTE_APELATIVO");
+            modelBuilder.Entity<INTERVINIENTE_CAUCION_ECONOMICA>().HasKey(a => new { a.ASUNTO, a.ORDEN_INTERVINIENTE }).ToTable("INTERVINIENTE_CAUCION_ECONOMICA");
+            modelBuilder.Entity<INTERVINIENTE_CENTRO_PENITENCIARIO>().HasKey(a => a.CODIGO).ToTable("INTERVINIENTE_CENTRO_PENITENCIARIO");
+            modelBuilder.Entity<INTERVINIENTE_FAMILIAR>().HasKey(a => a.CODIGO).ToTable("INTERVINIENTE_FAMILIAR");
+            modelBuilder.Entity<INTERVINIENTE_PARENTESCO>().HasKey(a => a.ID_RELACION).ToTable("INTERVINIENTE_PARENTESCO");
+            modelBuilder.Entity<INTERVINIENTE_RESOLUCION>().ToTable("INTERVINIENTE_RESOLUCION");
+            modelBuilder.Entity<INTERVINIENTES>().HasKey(a => a.ORDEN).ToTable("INTERVINIENTES");
+            modelBuilder.Entity<INTERVINIENTES_ABOGADOS>().HasKey(a => new { a.ORDEN_INTERVINIENTE, a.ABOGADO }).ToTable("INTERVINIENTES_ABOGADOS");
+            modelBuilder.Entity<INTERVINIENTES_HUELLA_DIGITAL>().ToTable("INTERVINIENTES_HUELLA_DIGITAL");
+            modelBuilder.Entity<MEDIDAS_PRESENTACION>().ToTable("MEDIDAS_PRESENTACION");
+            modelBuilder.Entity<MEDIDAS_PREVENTIVAS>().ToTable("MEDIDAS_PREVENTIVAS");
+            modelBuilder.Entity<REGIMEN_PRESENTACION>().ToTable("REGIMEN_PRESENTACION");
+            modelBuilder.Entity<TABLA_ABOGADO_TIPO>().HasKey(a => a.ABOGADO_TIPO).ToTable("TABLA_ABOGADO_TIPO");
+            modelBuilder.Entity<TABLA_ABOGADOS>().HasKey(a => a.ABOGADO).ToTable("TABLA_ABOGADOS");
+            modelBuilder.Entity<TABLA_APELATIVO_TIPO>().HasKey(a => a.ID_APELATIVO).ToTable("TABLA_APELATIVO_TIPO");
+            modelBuilder.Entity<TABLA_CENTROS_PENITENCIARIOS>().HasKey(a => a.CENTRO_PENITENCIARIO).ToTable("TABLA_CENTROS_PENITENCIARIOS");
+            modelBuilder.Entity<TABLA_DELITOS>().ToTable("TABLA_DELITOS");
+            modelBuilder.Entity<TABLA_DELITOS_RESPONSABILIDAD>().ToTable("TABLA_DELITOS_RESPONSABILIDAD");
+            modelBuilder.Entity<TABLA_EDADES_ADOLESCENTES>().HasKey(a => a.EDAD).ToTable("TABLA_EDADES_ADOLESCENTES");
+            modelBuilder.Entity<TABLA_ESTADOS_CIVILES>().HasKey(a => a.ESTADO_CIVIL).ToTable("TABLA_ESTADOS_CIVILES");
+            modelBuilder.Entity<TABLA_GRADOS_RESPONSABILIDAD>().ToTable("TABLA_GRADOS_RESPONSABILIDAD");
+            modelBuilder.Entity<TABLA_IDENTIFICACIONES_TIPOS>().HasKey(a => a.IDENTIFICADOR_TIPO).ToTable("TABLA_IDENTIFICACIONES_TIPOS");
+            modelBuilder.Entity<TABLA_INTERVENCIONES>().HasKey(a => a.INTERVENCION).ToTable("TABLA_INTERVENCIONES");
+            modelBuilder.Entity<TABLA_MOTIVOS_ABOGADOS>().ToTable("TABLA_MOTIVOS_ABOGADOS");
+            modelBuilder.Entity<TABLA_NACIONALIDADES>().HasKey(a => a.NACIONALIDAD).ToTable("TABLA_NACIONALIDADES");
+            modelBuilder.Entity<TABLA_NIVEL_ESCOLARIDAD>().ToTable("TABLA_NIVEL_ESCOLARIDAD");
+            modelBuilder.Entity<TABLA_PARENTESCO>().HasKey(a => a.CODIGO).ToTable("TABLA_PARENTESCO");
+            modelBuilder.Entity<TABLA_PENAS>().ToTable("TABLA_PENAS");
+            modelBuilder.Entity<TABLA_PERSONERIAS>().HasKey(a => a.PERSONERIA).ToTable("TABLA_PERSONERIAS");
+            modelBuilder.Entity<TABLA_PROFESIONES>().HasKey(a => a.PROFESION).ToTable("TABLA_PROFESIONES");
+            modelBuilder.Entity<TABLA_SEXOS>().HasKey(a => a.SEXO).ToTable("TABLA_SEXOS");
+            modelBuilder.Entity<TABLA_SITUACIONES_LIBERTAD>().HasKey(a => a.SITUACION).ToTable("TABLA_SITUACIONES_LIBERTAD");
+            modelBuilder.Entity<TABLA_TIPO_JUICIO>().ToTable("TABLA_TIPO_JUICIO");
+            modelBuilder.Entity<TABLA_TIPO_PARTE>().ToTable("TABLA_TIPO_PARTE");
+            modelBuilder.Entity<TABLA_TIPO_PRESENTACION>().ToTable("TABLA_TIPO_PRESENTACION");
+
+            modelBuilder.Entity<TABLA_TIPO_DOCUMENTO>().ToTable("TABLA_TIPO_DOCUMENTO");            
+
+            modelBuilder.Entity<AcontecimientoDocumento>().HasKey(a => a.Orden).ToTable("waAcontecimientoDocumento");
+            modelBuilder.Entity<ACONTECIMIENTOS>().HasKey(a => a.ORDEN).ToTable("ACONTECIMIENTOS");
+            modelBuilder.Entity<DOCUMENTOS_ACTUACION>().ToTable("DOCUMENTOS_ACTUACION");
+            modelBuilder.Entity<DOCUMENTOS_BBDD>().ToTable("DOCUMENTOS_BBDD");
+            modelBuilder.Entity<TABLA_ACONTECIMIENTO_ESTADOS>().HasKey(a => a.ESTADO).ToTable("TABLA_ACONTECIMIENTO_ESTADOS");
+            modelBuilder.Entity<TABLA_ACONTECIMIENTO_TIPOS>().HasKey(a => a.ACONTECIMIENTO_TIPO).ToTable("TABLA_ACONTECIMIENTO_TIPOS");
+
+            modelBuilder.Entity<vwTablaAudienciaTipoConOrgano>().ToTable("vwTablaAudienciaTipoConOrgano");
+            modelBuilder.Entity<VARIABLE_CONTROL>().ToTable("VARIABLE_CONTROL");
+            modelBuilder.Entity<REL_TIPO_AUDIENCIA_COMPLEJIDAD>().ToTable("REL_TIPO_AUDIENCIA_COMPLEJIDAD");
+            modelBuilder.Entity<USUARIO_ORGANOS>().ToTable("USUARIO_ORGANOS");
+
+            //Vista lbarrera
+            modelBuilder.Entity<VISTA_FLDJUEZ>().ToTable("VISTA_FLDJUEZ");
+            modelBuilder.Entity<VISTA_JURISDICCION_TIUF>().ToTable("VISTA_JURISDICCION_TIUF");
+            modelBuilder.Entity<vwAudienciaExtraEstados>().ToTable("vwAudienciaExtraEstados");
+            modelBuilder.Entity<vwAudienciasEspeciales>().ToTable("vwAudienciasEspeciales");
+            modelBuilder.Entity<vwSalaMotivoCancelacionCtrlSala>().ToTable("vwSalaMotivoCancelacionCtrlSala");
+            modelBuilder.Entity<vwSesionesDisponibles>().ToTable("vwSesionesDisponibles");
+            //modelBuilder.Entity<organos_adscritos>().ToTable("organos_adscritos");
+            modelBuilder.Entity<urdd_adscritas>().ToTable("urdd_adscritas");
+            modelBuilder.Entity<vwTablaSala>().ToTable("vwTablaSala");
+            modelBuilder.Entity<TABLA_DIAS_ASUETOS>().ToTable("TABLA_DIAS_ASUETOS");
+            modelBuilder.Entity<TABLA_TIPO_DIFERIDO>().ToTable("TABLA_TIPO_DIFERIDO", "dbo");
+
+            modelBuilder.Entity<VIEW_TABLA_ORGANOS>().ToTable("VIEW_TABLA_ORGANOS","dbo");
+            modelBuilder.Entity<vwSalaMotivoCancelacion>().ToTable("vwSalaMotivoCancelacion","dbo");
+
+            modelBuilder.Entity<vwTablaMaterias>().ToTable("vwTablaMaterias", "nicaraostore");
+            modelBuilder.Entity<vwTablaclases>().ToTable("vwTablaclases", "nicaraostore");
+            modelBuilder.Entity<vwTablaSedesJudiciales>().ToTable("vwTablaSedesJudiciales", "nicaraostore");
+            modelBuilder.Entity<vwTiufItineracion>().ToTable("vwTiufItineracion", "nicaraostore");
+            modelBuilder.Entity<vwTablaIdentificacionesTipos>().ToTable("vwTablaIdentificacionesTipos", "nicaraostore");
+            modelBuilder.Entity<vwTablaNacionalidades>().ToTable("vwTablaNacionalidades", "nicaraostore");
+            modelBuilder.Entity<vwTablaIntervenciones>().ToTable("vwTablaIntervenciones", "nicaraostore");
+            modelBuilder.Entity<vwTablaMotivo>().ToTable("vwTablaMotivo","nicaraostore");
+
+            modelBuilder.Entity<TABLA_ACONTECIMIENTO_FORMATO>().ToTable("TABLA_ACONTECIMIENTO_FORMATO","dbo");
+            modelBuilder.Entity<vwCtlDateRange>().ToTable("vwCtlDateRange", "nicaraostore");
+            modelBuilder.Entity<vwConsultaPonencia>().ToTable("vwConsultaPonencia","nicaraostore");
+            modelBuilder.Entity<vwConsultaMagistrado>().ToTable("vwConsultaMagistrado", "nicaraostore");
+            modelBuilder.Entity<vwTablaMotivosItineracion>().ToTable("vwTablaMotivosItineracion", "nicaraostore");
+
+            modelBuilder.Entity<vwDelitoLista>().ToTable("vwDelitoLista", "dbo");
+            modelBuilder.Entity<vwModalidadLista>().ToTable("vwModalidadLista", "dbo"); 
+
+            modelBuilder.Entity<VISTA_IMPRESION_DISTRIBUCION>().ToTable("VISTA_IMPRESION_DISTRIBUCION","dbo");
+            /*Esquema Archivo Nicarao.App MVC*/
+            modelBuilder.Entity<catEstado>().ToTable("catEstado", "archivo");
+            modelBuilder.Entity<Solicitud>().ToTable("Solicitud", "archivo");
+            modelBuilder.Entity<Movimiento>().ToTable("Movimiento", "archivo");
+            modelBuilder.Entity<catArchivo>().ToTable("catArchivo", "archivo");
+            modelBuilder.Entity<catClassCss>().ToTable("catClaseCss", "archivo");
+            modelBuilder.Entity<catUbicacion>().ToTable("catUbicacion", "archivo");
+            modelBuilder.Entity<catPrioridad>().ToTable("catPrioridad", "archivo");
+            modelBuilder.Entity<relRolArchivo>().ToTable("relRolArchivo", "archivo");
+            modelBuilder.Entity<catMotivoEstado>().ToTable("catMotivoEstado", "archivo");
+            modelBuilder.Entity<VariableControl>().ToTable("VariableControl", "archivo");
+            modelBuilder.Entity<catUbicacionTipo>().ToTable("catUbicacionTipo", "archivo");
+            modelBuilder.Entity<UbicacionDetalle>().ToTable("UbicacionDetalle", "archivo");
+            modelBuilder.Entity<relEstadoMotivoEstado>().ToTable("relEstadoMotivoEstado", "archivo");
+
+            /*Esquema Archivo Nicarao.App MVC Vistas*/
+            modelBuilder.Entity<vwUsuario>().ToTable("vwUsuario", "archivo");
+            modelBuilder.Entity<vwUbicacion>().ToTable("vwUbicacion", "archivo");
+            modelBuilder.Entity<vwLibroTipo>().ToTable("vwLibroTipo", "archivo");
+            modelBuilder.Entity<vwProtocoloTipo>().ToTable("vwProtocoloTipo", "archivo");
+            modelBuilder.Entity<vwEntidadArchivo>().ToTable("vwEntidadArhivo", "archivo");
+            modelBuilder.Entity<vwMovimientoExpediente>().ToTable("vwMovimientoExpediente", "archivo");
+            modelBuilder.Entity<vwAbogadoNotarioEstado>().ToTable("vwAbogadoNotarioEstado", "archivo");
+            modelBuilder.Entity<vwBuscarUbicacionDetalle>().ToTable("vwBuscarUbicacionDetalle", "archivo");
+            modelBuilder.Entity<vwLogUbicacionDetalle>().ToTable("vwUbicacionDetalle", "archivolog");
+            modelBuilder.Entity<vwExpedienteSituacion>().ToTable("vwExpedienteSituacion", "archivo"); 
+
+            modelBuilder.Entity<vwConsultaAcontecimientoListado>().ToTable("vwConsultaAcontecimientoListado", "nicaraostore");
+            modelBuilder.Entity<VISTA_FLDMOTIVO_ASUNTO>().ToTable("VISTA_FLDMOTIVO_ASUNTO", "dbo");
+            modelBuilder.Entity<VIEW_TABLA_ESTADOS>().ToTable("VIEW_TABLA_ESTADOS","dbo");
+            modelBuilder.Entity<VISTA_fldFASE_TIUF>().ToTable("VISTA_fldFASE_TIUF", "dbo");
+            modelBuilder.Entity<vwConsultaOrganoListado>().ToTable("vwConsultaOrganoListado", "nicaraostore");
+            modelBuilder.Entity<VISTA_USUARIOS>().ToTable("VISTA_USUARIOS", "dbo");
+            modelBuilder.Entity<vwTipoJucio>().ToTable("vwTipoJucio","dbo");
+            modelBuilder.Entity<VISTA_fldACO_TIPO>().ToTable("VISTA_fldACO_TIPO", "dbo");
+            modelBuilder.Entity<VISTA_fldPROCEDIMIENTO>().ToTable("VISTA_fldPROCEDIMIENTO", "dbo");
+            modelBuilder.Entity<VISTA_CLASE_TIUF>().ToTable("VISTA_CLASE_TIUF", "dbo");
+            modelBuilder.Entity<VISTA_IMPRESION_ACONTE>().ToTable("VISTA_IMPRESION_ACONTE", "nicaraostore");
+            modelBuilder.Entity<vwAsuntosItineracionBloqueo>().ToTable("vwAsuntosItineracionBloqueo", "nicaraostore");
+            modelBuilder.Entity<VISTA_fldPROCEDIMIENTO>().ToTable("VISTA_fldPROCEDIMIENTO", "dbo");
+            modelBuilder.Entity<vwMotivoItineracion>().ToTable("vwMotivoItineracion", "nicaraostore");
+            modelBuilder.Entity<TipoRepresentante>().ToTable("TipoRepresentante", "nicaraostore");
+            modelBuilder.Entity<MotivoCancelacionRepresentante>().ToTable("MotivoCancelacionRepresentante", "nicaraostore");
+            modelBuilder.Entity<EstadoRepresentante>().ToTable("EstadoRepresentante", "nicaraostore");
+            modelBuilder.Entity<vwOrganosAsuntoAntiguo>().ToTable("vwOrganosAsuntoAntiguo", "dbo");
+            modelBuilder.Entity<VISTA_ZONA_BARRIOS_UAC>().ToTable("VISTA_ZONA_BARRIOS_UAC", "dbo");
+
+            // ONC
+            modelBuilder.Entity<DAL.Model.Vistas.vwEntidadNotifica>().ToTable("vwEntidadNotifica", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwEntidadPropietario>().ToTable("vwEntidadPropietario", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwNotificacionTipo>().ToTable("vwNotificacionTipo", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwZona>().ToTable("vwZona", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwBarrio>().ToTable("vwBarrio", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwNotificador>().ToTable("vwNotificador", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwEstado>().ToTable("vwEstado", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwCiudad>().ToTable("vwCiudad", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwEstadoPolitico>().ToTable("vwEstadoPolitico", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.ZonaBarrio>().ToTable("relZonaBarrio","notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwDaconot>().ToTable("vwDaconot", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwResultado>().ToTable("vwResultado", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.ZonaNotificador>().ToTable("relZonaNotificador", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwPonencia>().ToTable("vwPonencia", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.UsuarioEntidadNotifica>().ToTable("relUsuarioEntidadNotifica", "notificacion");
+            modelBuilder.Entity<DAL.Model.Vistas.vwUsuarioNicaraoApp>().ToTable("vwUsuario", "notificacion");
+            //TRAMITES
+            modelBuilder.Entity<DAL.Model.Tramites.Formato>().ToTable("catFormato", "dbo");
+            modelBuilder.Entity<DAL.Model.Tramites.Marca>().ToTable("catMarca", "dbo");
+        }
+
+        public DbSet<ORGANOS> ORGANOS { get; set; }
+        public DbSet<TABLA_BANCOS> TABLA_BANCOS { get; set; }
+        public DbSet<TABLA_BARRIOS> TABLA_BARRIOS { get; set; }
+        public DbSet<TABLA_CIRCUITOS> TABLA_CIRCUITOS { get; set; }
+        public DbSet<TABLA_CIUDAD> TABLA_CIUDAD { get; set; }
+        public DbSet<TABLA_CUENTAS_BANCARIAS> TABLA_CUENTAS_BANCARIAS { get; set; }
+        public DbSet<TABLA_DESTINOS_OFI> TABLA_DESTINOS_OFI { get; set; }
+        public DbSet<TABLA_DISTRITO> TABLA_DISTRITO { get; set; }
+        public DbSet<TABLA_DOMIC_NOTIF_TIPOS> TABLA_DOMIC_NOTIF_TIPOS { get; set; }
+        public DbSet<TABLA_ESTADOS_POLITICOS> TABLA_ESTADOS_POLITICOS { get; set; }
+        public DbSet<TABLA_MONEDAS> TABLA_MONEDAS { get; set; }
+        public DbSet<TABLA_REGION> TABLA_REGION { get; set; }
+        public DbSet<TABLA_RESOLUCIONES> TABLA_RESOLUCIONES { get; set; }
+        public DbSet<USUARIOS> USUARIOS { get; set; }
+        public DbSet<TABLA_SEDES_JUDICIALES> TABLA_SEDES_JUDICIALES { get; set; }
+
+        public DbSet<TABLA_TIPO_DOCUMENTO> TABLA_TIPO_DOCUMENTO { get; set; }        
+
+        public DbSet<ASUNTOS> ASUNTOS { get; set; }
+        public DbSet<ASUNTOS_CAD> ASUNTOS_CAD { get; set; }
+        public DbSet<ASUNTOS_CIV> ASUNTOS_CIV { get; set; }
+        public DbSet<ASUNTOS_COM> ASUNTOS_COM { get; set; }
+        public DbSet<ASUNTOS_CSE> ASUNTOS_CSE { get; set; }
+        public DbSet<ASUNTOS_MEN> ASUNTOS_MEN { get; set; }
+        public DbSet<ASUNTOS_PEN> ASUNTOS_PEN { get; set; }
+        public DbSet<ASUNTOS_REC> ASUNTOS_REC { get; set; }
+        public DbSet<ASUNTOS_SOC> ASUNTOS_SOC { get; set; }
+        public DbSet<ASUNTOS_SOL> ASUNTOS_SOL { get; set; }
+        public DbSet<ASUNTOS_TRI> ASUNTOS_TRI { get; set; }
+
+        public DbSet<TABLA_ASUNTOS_TIPO> TABLA_ASUNTOS_TIPO { get; set; }
+        public DbSet<TABLA_CLASES> TABLA_CLASES { get; set; }
+        public DbSet<TABLA_DENUNCIA_ORIGEN> TABLA_DENUNCIA_ORIGEN { get; set; }
+        public DbSet<TABLA_ESTADOS> TABLA_ESTADOS { get; set; }
+        public DbSet<TABLA_ESTADOS_TERMINACION> TABLA_ESTADOS_TERMINACION { get; set; }
+        public DbSet<TABLA_FASES> TABLA_FASES { get; set; }
+        public DbSet<TABLA_FISCALIA_TIPO> TABLA_FISCALIA_TIPO { get; set; }
+        public DbSet<TABLA_FISCALIAS> TABLA_FISCALIAS { get; set; }
+        public DbSet<TABLA_JURISDICCIONES> TABLA_JURISDICCIONES { get; set; }
+        public DbSet<TABLA_MAGISTRADO_TIPOS> TABLA_MAGISTRADO_TIPOS { get; set; }
+        public DbSet<TABLA_MAGISTRADOS> TABLA_MAGISTRADOS { get; set; }
+        public DbSet<TABLA_MATERIAS> TABLA_MATERIAS { get; set; }
+        public DbSet<TABLA_MOTIVOS_ASUNTO> TABLA_MOTIVOS_ASUNTO { get; set; }
+        public DbSet<TABLA_POLICIA> TABLA_POLICIA { get; set; }
+        public DbSet<TABLA_PONENCIAS> TABLA_PONENCIAS { get; set; }
+        public DbSet<TABLA_PROCEDIMIENTOS> TABLA_PROCEDIMIENTOS { get; set; }
+        public DbSet<TABLA_PROCURADORIA> TABLA_PROCURADORIA { get; set; }
+        public DbSet<TABLA_TIUF> TABLA_TIUF { get; set; }
+        public DbSet<TABLA_UBICACION_TIPO> TABLA_UBICACION_TIPO { get; set; }
+        public DbSet<UBICACIONES> UBICACIONES { get; set; }
+        public DbSet<UBICACIONES_TEMP> UBICACIONES_TEMP { get; set; }
+        public DbSet<TABLA_ORGANO_TIPOS> TABLA_ORGANO_TIPOS { get; set; }//Cazado 09-Julio-2016
+        public DbSet<REL_TIUF_CLASE> REL_TIUF_CLASE { get; set; }//Cazado 09-Julio-2016
+        public DbSet<REL_CLASE_MOTIVO> REL_CLASE_MOTIVO { get; set; }//Cazado 09-Julio-2016
+        public DbSet<REL_TIUF_ORGANO> REL_TIUF_ORGANO { get; set; }//Cazado 09-Julio-2016
+        public DbSet<REL_TIUF_SALA> REL_TIUF_SALA { get; set; }//Cazado 13-Julio-2016
+        public DbSet<REL_TIUF_AUDIENCIA> REL_TIUF_AUDIENCIA { get; set; }
+        public DbSet<REL_USUARIONIC_PJN> REL_USUARIONIC_PJN { get; set; }
+
+        #region  Dbset - SACS: Cazado 30-Junio-2016
+        public DbSet<TABLA_AUDIENCIA_TIPO> TABLA_AUDIENCIA_TIPO { get; set; }
+        public DbSet<SALA_AUDIENCIAS> SALA_AUDIENCIAS { get; set; }
+        public DbSet<TABLA_SALA_CANCELACION> TABLA_SALA_CANCELACION { get; set; }
+        public DbSet<TABLA_SALA_ESTADOS> TABLA_SALA_ESTADOS { get; set; }
+        public DbSet<TABLA_SALAS> TABLA_SALAS { get; set; }
+        public DbSet<TABLA_TIPO_AUDIENCIA_EXTRAORDINARIA> TABLA_TIPO_AUDIENCIA_EXTRAORDINARIA { get; set; }
+        public DbSet<TABLA_COMPLEJIDAD> TABLA_COMPLEJIDAD { get; set; }
+        public DbSet<ORGANOS_ADSCRITOS> ORGANOS_ADSCRITOS { get; set; }
+        #endregion
+
+        public DbSet<DELITOS> DELITOS { get; set; }
+        public DbSet<INTERVINIENTE_APELATIVO> INTERVINIENTE_APELATIVO { get; set; }
+        public DbSet<INTERVINIENTE_CAUCION_ECONOMICA> INTERVINIENTE_CAUCION_ECONOMICA { get; set; }
+        public DbSet<INTERVINIENTE_CENTRO_PENITENCIARIO> INTERVINIENTE_CENTRO_PENITENCIARIO { get; set; }
+        public DbSet<INTERVINIENTE_FAMILIAR> INTERVINIENTE_FAMILIAR { get; set; }
+        public DbSet<INTERVINIENTE_PARENTESCO> INTERVINIENTE_PARENTESCO { get; set; }
+        public DbSet<INTERVINIENTE_RESOLUCION> INTERVIENTE_RESOLUCION { get; set; }
+        public DbSet<INTERVINIENTES> INTERVINIENTES { get; set; }
+        public DbSet<INTERVINIENTES_ABOGADOS> INTERVINIENTES_ABOGADOS { get; set; }
+        public DbSet<INTERVINIENTES_HUELLA_DIGITAL> INTERVINIENTES_HUELLA_DIGITAL { get; set; }
+        public DbSet<MEDIDAS_PRESENTACION> MEDIDAS_PRESENTACION { get; set; }
+        public DbSet<MEDIDAS_PREVENTIVAS> MEDIDAS_PREVENTIVAS { get; set; }
+        public DbSet<REGIMEN_PRESENTACION> REGIMEN_PRESENTACION { get; set; }
+        public DbSet<TABLA_ABOGADO_TIPO> TABLA_ABOGADO_TIPO { get; set; }
+        public DbSet<TABLA_ABOGADOS> TABLA_ABOGADOS { get; set; }
+        public DbSet<TABLA_APELATIVO_TIPO> TABLA_APELATIVO_TIPO { get; set; }
+        public DbSet<TABLA_CENTROS_PENITENCIARIOS> TABLA_CENTROS_PENITENCIARIOS { get; set; }
+        public DbSet<TABLA_DELITOS> TABLA_DELITOS { get; set; }
+        public DbSet<TABLA_DELITOS_RESPONSABILIDAD> TABLA_DELITOS_RESPONSABILIDAD { get; set; }
+        public DbSet<TABLA_EDADES_ADOLESCENTES> TABLA_EDADES_ADOLESCENTES { get; set; }
+        public DbSet<TABLA_ESTADOS_CIVILES> TABLA_ESTADOS_CIVILES { get; set; }
+        public DbSet<TABLA_GRADOS_RESPONSABILIDAD> TABLA_GRADOS_RESPONSABILIDAD { get; set; }
+        public DbSet<TABLA_IDENTIFICACIONES_TIPOS> TABLA_IDENTIFICACIONES_TIPOS { get; set; }
+        public DbSet<TABLA_INTERVENCIONES> TABLA_INTERVENCIONES { get; set; }
+        public DbSet<TABLA_NACIONALIDADES> TABLA_NACIONALIDADES { get; set; }
+        public DbSet<TABLA_NIVEL_ESCOLARIDAD> TABLA_NIVEL_ESCOLARIDAD { get; set; }
+        public DbSet<TABLA_PARENTESCO> TABLA_PARENTESCO { get; set; }
+        public DbSet<TABLA_PENAS> TABLA_PENAS { get; set; }
+        public DbSet<TABLA_PERSONERIAS> TABLA_PERSONERIAS { get; set; }
+        public DbSet<TABLA_PROFESIONES> TABLA_PROFESIONES { get; set; }
+        public DbSet<TABLA_SEXOS> TABLA_SEXOS { get; set; }
+        public DbSet<TABLA_SITUACIONES_LIBERTAD> TABLA_SITUACIONES_LIBERTAD { get; set; }
+        public DbSet<TABLA_TIPO_JUICIO> TABLA_TIPO_JUICIO { get; set; }
+        public DbSet<TABLA_TIPO_PARTE> TABLA_TIPO_PARTE { get; set; }
+        public DbSet<TABLA_TIPO_PRESENTACION> TABLA_TIPO_PRESENTACION { get; set; }
+
+        public DbSet<AcontecimientoDocumento> AcontecimientoDocumento { get; set; }
+        public DbSet<ACONTECIMIENTOS> ACONTECIMIENTOS { get; set; }
+        public DbSet<DOCUMENTOS_ACTUACION> DOCUMENTOS_ACTUACION { get; set; }
+        public DbSet<DOCUMENTOS_BBDD> DOCUMENTOS_BBDD { get; set; }
+        public DbSet<TABLA_ACONTECIMIENTO_ESTADOS> TABLA_ACONTECIMIENTO_ESTADOS { get; set; }
+        public DbSet<TABLA_ACONTECIMIENTO_TIPOS> TABLA_ACONTECIMIENTO_TIPOS { get; set; }
+        public DbSet<vwSalaMotivoCancelacionCtrlSala> vwSalaMotivoCancelacionCtrlSala { get; set; }
+
+        public DbSet<vwTablaAudienciaTipoConOrgano> vwTablaAudienciaTipoConOrgano { get; set; }
+		public DbSet<VARIABLE_CONTROL> VARIABLE_CONTROL { get; set; }
+        public DbSet<REL_TIPO_AUDIENCIA_COMPLEJIDAD> REL_TIPO_AUDIENCIA_COMPLEJIDAD { get; set; }
+        public DbSet<USUARIO_ORGANOS> USUARIO_ORGANOS { get; set; }
+
+        //vistas lbarrera
+        public DbSet<VISTA_FLDJUEZ> VISTA_FLDJUEZ { get; set; }
+        public DbSet<VISTA_JURISDICCION_TIUF> VISTA_JURISDICCION_TIUF { get; set; }
+        public DbSet<vwAudienciaExtraEstados> vwAudienciaExtraEstados { get; set; }
+        public DbSet<vwAudienciasEspeciales> vwAudienciasEspeciales { get; set; }
+        public DbSet<vwSesionesDisponibles> vwSesionesDisponibles { get; set; }
+        //public DbSet<organos_adscritos> organos_adscritos { get; set; }
+        public DbSet<urdd_adscritas> urdd_adscritas { get; set; }
+        public DbSet<vwTablaSala> vwTablaSala { get; set; }
+        public DbSet<TABLA_DIAS_ASUETOS> TABLA_DIAS_ASUETOS { get; set; }
+        public DbSet<TABLA_TIPO_DIFERIDO> TABLA_TIPO_DIFERIDO { get; set; }
+
+        public DbSet<VIEW_TABLA_ORGANOS> VIEW_TABLA_ORGANOS { get; set; }
+        public DbSet<vwSalaMotivoCancelacion> vwSalaMotivoCancelacion { get; set; }
+
+        public DbSet<vwTablaMaterias> vwTablaMaterias { get; set; }
+        public DbSet<vwTablaclases> vwTablaclases { get; set; }
+        public DbSet<vwTablaSedesJudiciales> vwTablaSedesJudiciales { get; set; }
+        public DbSet<vwTiufItineracion> vwTiufItineracion { get; set; }
+        public DbSet<vwTablaIdentificacionesTipos> vwTablaIdentificacionesTipos { get; set; }
+        public DbSet<vwTablaNacionalidades> vwTablaNacionalidades { get; set; }
+        public DbSet<vwTablaIntervenciones> vwTablaIntervenciones { get; set; }
+        public DbSet<vwTablaMotivo> vwTablaMotivo { get; set; }
+
+        public DbSet<TABLA_ACONTECIMIENTO_FORMATO> TABLA_ACONTECIMIENTO_FORMATO { get; set; }
+        public DbSet<vwCtlDateRange> vwCtlDateRange { get; set; }
+        public DbSet<vwConsultaPonencia> vwConsultaPonencia { get; set; }
+        public DbSet<vwConsultaMagistrado> vwConsultaMagistrado { get; set; }
+        public DbSet<vwTablaMotivosItineracion> vwTablaMotivosItineracion { get; set; }
+        public DbSet<VISTA_IMPRESION_DISTRIBUCION> VISTA_IMPRESION_DISTRIBUCION { get; set; }
+
+        /*Esquema Archivo Nicarao.App MVC*/
+        public DbSet<catEstado> catEstado { get; set; }
+        public DbSet<Solicitud> Solicitud { get; set; }
+        public DbSet<Movimiento> Movimiento { get; set; }
+        public DbSet<catArchivo> catArchivo { get; set; }
+        public DbSet<catClassCss> catClassCss { get; set; }
+        public DbSet<catUbicacion> catUbicacion { get; set; }
+        public DbSet<catPrioridad> catPrioridad { get; set; }
+        public DbSet<relRolArchivo> relRolArchivo { get; set; }
+        public DbSet<catMotivoEstado> catMotivoEstado { get; set; }
+        public DbSet<VariableControl> VariableControl { get; set; }
+        public DbSet<UbicacionDetalle> UbicacionDetalle { get; set; }
+        public DbSet<catUbicacionTipo> catUbicacionTipo { get; set; }
+        public DbSet<relEstadoMotivoEstado> relEstadoMotivoEstado { get; set; }
+
+        /*Esquema Archivo Nicarao.App MVC Vistas*/
+        public DbSet<vwUsuario> vwUsuario { get; set; }
+        public DbSet<vwUbicacion> vwUbicacion { get; set; }
+        public DbSet<vwLibroTipo> vwLibroTipo { get; set; }
+        public DbSet<vwProtocoloTipo> vwProtocoloTipo { get; set; }
+        public DbSet<vwEntidadArchivo> vwEntidadArchivo { get; set; }
+        public DbSet<vwMovimientoExpediente> vwMovimientoExpediente { get; set; }
+        public DbSet<vwLogUbicacionDetalle> vwLogUbicacionDetalle { get; set; }
+        public DbSet<vwAbogadoNotarioEstado> vwAbogadoNotarioEstado { get; set; }
+        public DbSet<vwBuscarUbicacionDetalle> vwBuscarUbicacionDetalle { get; set; }
+        public DbSet<vwExpedienteSituacion> vwExpedienteSituacion { get; set; }
+        
+
+        public DbSet<vwConsultaAcontecimientoListado> vwConsultaAcontecimientoListado { get; set; }
+        public DbSet<VISTA_FLDMOTIVO_ASUNTO> VISTA_FLDMOTIVO_ASUNTO { get; set; }
+        public DbSet<VIEW_TABLA_ESTADOS> VIEW_TABLA_ESTADOS { get; set; }
+        public DbSet<VISTA_fldFASE_TIUF> VISTA_fldFASE_TIUF { get; set; }
+        public DbSet<vwConsultaOrganoListado> vwConsultaOrganoListado { get; set;}
+        public DbSet<VISTA_USUARIOS> VISTA_USUARIOS { get; set; }
+        public DbSet<vwTipoJucio> vwTipoJucio { get; set; }
+        public DbSet<VISTA_fldACO_TIPO> VISTA_fldACO_TIPO { get; set; }
+        public DbSet<VISTA_CLASE_TIUF> VISTA_CLASE_TIUF { get; set; }
+        public DbSet<VISTA_IMPRESION_ACONTE> VISTA_IMPRESION_ACONTE { get; set; }
+        
+        public DbSet<VISTA_fldPROCEDIMIENTO> VISTA_fldPROCEDIMIENTO { get; set; }
+        public DbSet<vwAsuntosItineracionBloqueo> vwAsuntosItineracionBloqueo { get; set; }
+        public DbSet<vwMotivoItineracion> vwMotivoItineracion { get; set; }
+
+        public DbSet<TipoRepresentante> TipoRepresentante { get; set; }
+        public DbSet<MotivoCancelacionRepresentante> MotivoCancelacionRepresentante { get; set; }
+        public DbSet<EstadoRepresentante> EstadoRepresentante { get; set; }
+        public DbSet<vwOrganosAsuntoAntiguo> vwOrganosAsuntoAntiguo { get; set; }
+        public DbSet<VISTA_ZONA_BARRIOS_UAC> VISTA_ZONA_BARRIOS_UAC { get; set; }
+
+        public DbSet<Model.Vistas.vwEntidadNotifica> vwEntidadNotifica { get; set; }
+        public DbSet<Model.Vistas.vwEntidadPropietario> vwEntidadPropietario { get; set; }
+        public DbSet<Model.Vistas.vwNotificacionTipo> vwNotificacionTipo { get; set; }
+        public DbSet<Model.Vistas.vwZona> vwZona { get; set; }
+        public DbSet<Model.Vistas.vwBarrio> vwBarrio { get; set; }
+        public DbSet<Model.Vistas.vwNotificador> vwNotificador { get; set; }
+        public DbSet<Model.Vistas.vwEstado> vwEstado { get; set; }
+        public DbSet<Model.Vistas.vwCiudad> vwCiudad { get; set; }
+        public DbSet<Model.Vistas.vwEstadoPolitico> vwEstadoPolitico { get; set; }
+        public DbSet<Model.Vistas.ZonaBarrio> ZonaBarrio { get; set; }
+        public DbSet<Model.Vistas.vwDaconot> vwDaconot { get; set; }
+        public DbSet<Model.Vistas.vwResultado> vwResultado { get; set; }
+        public DbSet<Model.Vistas.ZonaNotificador> ZonaNotificador { get; set; }
+        public DbSet<Model.Vistas.vwPonencia> vwPonencia { get; set; }
+        public DbSet<Model.Vistas.UsuarioEntidadNotifica> UsuarioEntidadNotifica { get; set; }
+<<<<<<< HEAD
+
+        public DbSet<vwOrganosAsuntoAntiguo> vwOrganosAsuntoAntiguo { get; set; }
+
+
+=======
+        public DbSet<Model.Vistas.vwUsuarioNicaraoApp> vwUsuarioNicaraoApp { get; set; }
+>>>>>>> origin/AUC.2023.vdes.1
+        //TRAMITES
+        public DbSet<Model.Tramites.Formato> Formato { get; set; }
+        public DbSet<Model.Tramites.Marca> Marca { get; set; }
+        public DbSet<Model.Vista.vwDelitoLista> vwDelitoLista { get; set; }
+        public DbSet<Model.Vista.vwModalidadLista> vwModalidadLista { get; set; }
+    }
+}

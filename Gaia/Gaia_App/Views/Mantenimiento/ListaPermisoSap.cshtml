@@ -1,0 +1,170 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetallePermisoSap">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetPermisoSap">Detalle</a></li>
+            <li id="peracc" style="display: none"><a href="#frDetPerAcc">RelPermisoAccion</a></li>
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetPermisoSap">
+                @Html.Partial("_PermisoSapMant")
+            </div>
+            <div class="frame" id="frDetPerAcc">
+                <div class="container">
+                    <div class="example">
+                        <div class="flex-grid">
+                            <h5 style="align-self:center" id="btnPermisoAcciones">
+                                Relación Permiso Acciones
+                                <button class="image-button ribbed-darkGreen" data-tabcontinuar="data-tabcontinuar" id="btnrelAcciones" onclick="relPerAcc()">
+                                    <span class="fg-white">Agregar</span>
+                                    <span class="icon mif-plus fg-white bg-darkGreen"></span>
+                                </button>
+                            </h5>
+                            <div class="row flex-just-center">
+                                <div class="cell size8" id="babas">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+
+            function GuardaPermisoOpciones() {
+                showalertify();
+                var reljson = JSON.stringify({ "id_permiso": vidpermiso, "IdAccion": $("#ddlrelAccionSap").val(), "DeBaja": "0", "blnActivo": "1"});
+                var url = obtenerURL('/Mantenimiento/GuardarRelPermisoAccS?reljson=' + reljson);
+                $.post(url)
+                    .done(function (data) {
+                        var listado = JSON.parse(data);
+                        if (listado.Resultado === "true") {
+                            alertify.alert().destroy();
+                            alertify.alert('Confirmación', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                            $('#babas').empty();
+                            var url = obtenerURL("/Mantenimiento/_ListaAccPerSap");
+                            $('#babas').load(url, function (response, status, xhr) {
+                                if (status === "success") {
+                                    table = $('#dtListasAccPerSap').dataTable({
+                                        ajax: {
+                                            url: obtenerURL('/Mantenimiento/ObtenerRelacionPerAccSap?IdPermiso=' + vidpermiso),
+                                            dataSrc: "",
+                                        },
+                                        rowId: 'Id_PermisoAccion',
+                                        retrieve: true,
+                                        columns: [
+                                            { data: "IdAccion" },
+                                            {
+                                                'data': null,
+                                                'render': function (data, type, row) {
+                                                    return '<span id="' + row.IdAccion + "/" + row.Id_PermisoAccion + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelPerAccSap(this)"></span>'
+                                                }
+                                            },
+                                            { data: "DescpAccion" }
+                                        ],
+                                        columnDefs: [{ targets: [0], visible: false },],
+                                        language: { url: obtenerURL("/Json/Spanish.json") },
+                                        lengthMenu: [5],
+                                        bLengthChange: false,
+                                        searching: true
+                                    });
+
+                                    $('#dtListasAccPerSap tbody').on('click', 'tr', function () {
+                                        $("#dtListasAccPerSap tr.selected").removeClass();
+                                        $(this).addClass('selected');
+                                    });
+                                }                                
+                            })
+                        }
+                        else {
+                            alertify.alert().destroy();
+                            alertify.alert('Advertencia', listado.Mensaje);
+                            alertify.alert().setting('modal', true);
+                        }
+                    })
+                closealertify();
+            }
+
+            function relPerAcc() {
+                var contenido;
+                var div = $("#ModalGenerico");
+                alertify.defaults.theme.ok = "success button";
+                alertify.defaults.theme.cancel = "danger button";
+                alertify.confirm().destroy();
+                div.load(obtenerURL("/Mantenimiento/_AccPerSap?IdPermiso=" + vidpermiso), function () {
+                    contenido = div.html();
+                    div.empty();
+                    var modal = alertify.confirm()
+                        .setHeader('<h4> Relacionar Permiso a Acción</h4> ')
+                        .setContent(contenido)
+                        .set({ 'startMaximized': false, 'maximizable': true, 'resizable': true, 'labels': { ok: '< Guardar >', cancel: '< Salir >' } })
+                        .resizeTo(200, 260)
+                        .set('oncancel', function (closeEvent) { })
+                        .set('onok', function (closeEvent) { GuardaPermisoOpciones(); })
+                        .show();
+                    var select2 = $(modal.elements.root).find("select");
+                    select2.select2().on("select2:open", function (e) {
+                        var id = e.target.id;
+                        var div_results = "#select2-" + id + "-results";
+                        $(div_results).parents(".select2-container").css({ 'z-index': '3000' });
+                    });
+                })
+            }
+
+            $(document).ready(function () {
+                $('#gridDetallePermisoSap').empty();
+                $("#gridDetallePermisoSap").load(obtenerURL("/Mantenimiento/ObtenerListaPermisoSap"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasPermisoSap').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObtenerPermisoSap"),
+                                dataSrc: "",
+                            },
+                            rowId: 'id_permiso',
+                            retrieve: true,
+                            columns: [
+                                {
+                                    'data': null,
+                                    'render': function (data, type, row) {
+                                        return '<span id="' + row.id_permiso + '" class="icon mif-pencil mif-1x fg-blue" onclick="obtenerPermisoSap(this)"></span>'
+                                    }
+                                },
+                                { data: "id_permiso" },
+                                { data: "descripcion" },
+                                { data: "codigo" },
+                                { data: "FechaInsercion" },
+                                { data: "DeBaja" },
+                                { data: "blnActivo" }
+                            ],                            
+                            columnDefs: [{ targets: [5], type: Date, render: function (data) { if (data === "0") { return "No"; } else { return "Si"; } } }, { targets: [6], type: Date, render: function (data) { if (data === "0") { return "Pasivo"; } else { return "Activo"; } } },],
+                            dom: 'Bfrtip',
+                            buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasPermisoSap tbody').on('click', 'tr', function () {
+                            $("#dtListasPermisoSap tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+    , true);
+}

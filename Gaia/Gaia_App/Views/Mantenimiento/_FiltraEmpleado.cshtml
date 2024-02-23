@@ -1,0 +1,26 @@
+﻿@model Gaia.DAL.Model.Usuario
+
+<div class="content">
+    <div class="flex-grid">
+        <div class="row flex-just-center">
+            <div class="cell size6">
+                <label class="input-control text full-size">
+                    @Html.TextBoxFor(model => model.EmpleadoId, new { id = "txtNombre", PlaceHolder = "Nombres" })
+                </label>
+            </div>
+            <div class="cell size6">
+                <label class="input-control text full-size">
+                    @Html.TextBoxFor(model => model.EmpleadoId, new { id = "txtApellido", PlaceHolder = "Apellidos" })
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+        </script>
+    , true);
+}

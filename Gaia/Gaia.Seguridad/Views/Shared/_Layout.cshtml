@@ -1,0 +1,350 @@
+﻿@using Forloop.HtmlHelpers
+
+@{
+    //ICollection<PJN.DAL.Model.GENERAL.catOpcion> opciones = ViewBag.Opciones;
+    ICollection<PJN.DAL.Model.LeCatOpcion> opciones = ViewBag.Opciones;
+    String TituloApp = ViewBag.Titulo;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>@TituloApp</title>
+    <style type="text/css">
+        /*Color de Background y Border Purple*/
+        .border-purple-secondary {
+            border-color: #aa66cc !important;
+        }
+
+        .bg-purple-secondary {
+            background-color: #aa66cc !important;
+        }
+
+        a.bg-purple-secondary:focus, a.bg-purple-secondary:hover {
+            background-color: #aa66cc !important;
+        }
+
+        /* Estilo Fernando para el input de password */
+
+        .cont-inputpass{
+		    position: relative;
+	    }
+	    .password{
+		    height: 37px;
+		    width: 100%;
+	    }
+	    .ico{
+		    display: none;
+		    position: absolute;
+		    top: 50%;
+		    right: 12px;
+		    background: #dddddd; 
+		    border-radius:8px; 
+		    padding:3px;
+		    transform: translate(0%, -50%);
+           -webkit-transform: translate(0%, -50%);
+	    }
+	    .password:hover + .ico, .ico:hover{ 
+		    display: block;
+		    cursor: pointer;
+	    }
+        /* Fin del estilo de fernando para el input de password */
+
+    </style>
+    @Styles.Render("~/Content/gaia_css/menu.css")
+    @Styles.Render("~/Content/gaia_css/formulario.css")
+    @Styles.Render("~/Content/css/template")
+    @Styles.Render("~/Content/css/select2")
+    @Styles.Render("~/Content/css/tooltip")
+    @Styles.Render("~/Content/css/alertify")
+    @Styles.Render("~/Content/css/datatables")
+    @Styles.Render("~/Content/css/app")
+
+    @*@Html.Raw(JSNLog.JavascriptLogging.Configure())*@
+
+
+</head>
+@*bg-grayLighter*@
+@*class="bd-docs"*@
+<body>
+    @*navbar-dark bg-dark*@
+    <div class="menugaia">
+        <nav id='cssmenu' style="z-index:1048;position:fixed;width:100%;">
+            <label for="drop" class="toggleee">Menu</label>
+            <input type="checkbox" id="drop" />
+            <ul>
+                <li class="nav-item"><a class="nav-link" onclick="fnHome()"><spam class="fa fa-home"></spam>  Iniciar</a></li>
+            </ul>
+            <ul class="menuResponsive">
+                <!-- Empieza lógica para el menú -->
+                @{Html.RenderPartial("_OpcionesPorRol", opciones);}
+
+            </ul>
+            @*<ul id="ulPerfil">
+            <li class="nav-item"><a class="nav-link" onclick="CerrarSesion()"><spam class="fa fa-sign-out"></spam> Salir</a></li>
+        </ul>*@
+
+        <ul id="ulPerfil">
+            @*<li>
+                <a href="~/Censoencuesta/ContenedorCensoEncuesta" class="nav-link"
+                   data-clic="data-clic" data-ajax="true" data-ajax-method="GET" data-ajax-mode="replace"
+                   data-ajax-update="#cell-content">
+                   Censo
+                </a>
+            </li>*@
+            <li>
+                <a href="~/CodificarCp/DescargaManual" class="nav-link"
+                   data-clic="data-clic" data-ajax="true" data-ajax-method="GET" data-ajax-mode="replace"
+                   data-ajax-update="#cell-content">
+                    Manual
+                </a>
+            </li>
+            @*Empieza el menu del perfil*@
+            @Html.Partial("_DatosUsuario")
+        </ul>
+            <input type="hidden" id="sUsuario" name="sUsuario" value="@ViewBag.sUsuario" />
+            <input type="hidden" id="uRol" name="uRol" value="@ViewBag.sRol" />
+            <input type="hidden" id="uCorreo" name="uCorreo" value="@ViewBag.sCorreo" />
+            <input type="hidden" id="mUsuario" name="mUsuario" value="@ViewBag.UsuarioMaquina" />
+            <input type="hidden" id="mIp" name="mIp" value="@ViewBag.Ip" />
+            @*<input type="hidden" id="sUsuario" name="sUsuario" value="@ViewBag.sUsuario" />
+        <input type="hidden" id="IPADDRESS" value="" />
+
+        <input type="hidden" id="hUsuarioId" value="@ViewBag.Usuario" />
+        <input type="hidden" id="hRolId" value="@ViewBag.RolId" />
+        <input type="hidden" id="hEntidadId" value="@ViewBag.EntidadId" />*@
+        </nav>
+    </div>
+
+    <main role="main">       
+        <div>
+            <div id="cell-content" style="padding-top: 5%;">
+                @RenderBody()
+            </div>
+        </div>
+    </main>
+
+    <div id="ModalGenerico" style="display:none"></div>
+
+    @using (Html.BeginScriptContext())
+            {
+                Html.AddScriptBlock(
+                    @<script type="text/javascript">
+
+                        function SessionActivate() {
+                            var CONTROLADOR = "SesionActiva.ashx";
+                            var head = document.getElementsByTagName('head').item(0);
+                            script = document.createElement('script');
+                            script.src = CONTROLADOR;
+                            script.setAttribute('type', 'text/javascript');
+                            script.defer = true;
+                            head.appendChild(script);
+                        }
+
+                        function TieneAutorizacion(titulo) {
+                            /*
+                            alertify.defaults.theme.ok = "success button";
+                            alertify.defaults.theme.cancel = "danger button";
+
+                            alertify.confirm().destroy();
+                            //'Debe seleccionar todos los requisitos'
+                            alertify.confirm('Advertencia', titulo,
+                                function(){
+                                    var vmodal = alertify.alert()
+                                        .setContent('<div class="grid-fluid"><div class="row"><div class="cell"><div class="login-form padding20 block-shadow"><h3 class="text-center"><span class="icon mif-security bg-white"></span>Autorización</h3><div class="input-control text full-size" data-role="input"><span class="mif-user prepend-icon"></span><input type="text" id="txtModalUsuarioId" /><button class="button helper-button clear"><span class="mif-cross"></span></button></div><div class="input-control password full-size" data-role="input"><span class="mif-key prepend-icon"></span><input type="password" id="txtPasswordModal" /><button class="button helper-button reveal"><span class="mif-looks"></span></button></div><button class="button primary input-control full-size" id="btnVmodalGuardar"><span class="mif-user-check"></span>Autorizar</button></div></div></div></div>')
+                                        .set({ 'startMaximized': false, 'maximizable': false })
+                                        .set('modal', false)
+                                        .set('basic', true)
+                                        .resizeTo(300, 400)
+                                        .set('onok', function (closeEvent) { return false; })
+                                        .show();
+
+                                    var UsuarioId = $("#UsuarioId").text();
+                                    //var AsuntoDefensoria = datos.ASUNTODEFENSORIA;
+                                    //var AccionId = datos.MOTIVO;
+                                    var UsuarioAutorizaId = $(vmodal.elements.root).find("#txtModalUsuarioId");
+                                    //var EntidadId = datos.ORGANO;
+                                    var PasswordModal = $(vmodal.elements.root).find("#txtPasswordModal");
+
+                                    $("#btnVmodalGuardar").on("click", function(){
+                                        if (UsuarioAutorizaId.val() === "" && PasswordModal.val() === "")
+                                        {
+                                            alertify.set('notifier','position', 'top-right');
+                                            alertify.error('Campos Vacios');
+
+                                            return false;
+                                        }else if (UsuarioAutorizaId.val() === "")
+                                        {
+                                            alertify.set('notifier','position', 'top-right');
+                                            alertify.error('Campo Usuario Vacio');
+
+                                            return false;
+                                        }else if (PasswordModal.val() === "")
+                                        {
+                                            alertify.set('notifier','position', 'top-right');
+                                            alertify.error('Campo Contraseña Vacia');
+
+                                            return false;
+                                        }else
+                                        {
+                                            var pUsuarioAutoriza = UsuarioId;
+                                            //var pAsuntoDefensoria = AsuntoDefensoria;
+                                            //var pAccionId = AccionId;
+                                            ////
+                                            //pUsuarioAutoriza = UsuarioAutorizaId.val();
+                                            var url = obtenerURL("/Usuario/TieneAutorizacion?UsuarioId=" +UsuarioAutorizaId.val() + "&Password=" + PasswordModal.val());
+                                            //console.log(url)
+                                            $.get(url).done(function (dataResult) {
+                                                //console.log(dataResult)
+                                                if (dataResult === "True") {
+                                                    //Mandamos a insertar en el LOG
+                                                    //var desbloqueopor = "Requisitos";
+                                                    //var ip_address = $("#IPADDRESS").val();
+                                                    //var JSONAccion = JSON.stringify({ "AsuntoDefensoria": pAsuntoDefensoria, "AccionId": pAccionId, "Desbloqueo": desbloqueopor, "UsuarioAutoriza": pUsuarioAutoriza });
+
+                                                    //insertarLOGAlexa(JSONAccion, "Seguridad", ip_address);
+
+                                                    alertify.alert().destroy();
+                                                    alertify.alert().close();
+                                                    alertify.set('notifier','position', 'top-right');
+                                                    alertify.success("Autorización Exitosa!")
+
+                                                    //validacionUsuarios(datos);
+
+                                                } else {
+
+                                                    alertify.alert().destroy();
+                                                    alertify.set('notifier','position', 'top-right');
+                                                    alertify.error("Datos incorrectos!")
+                                                }
+                                            });
+                                        }
+                                        return false;
+                                    });
+                                },
+                            function(){ })
+                            .set('labels', { ok: '< Desbloquear >', cancel: '< Ok >' }); */
+                        }
+
+                        $(document).ajaxStart(function () {
+                            //showalertify();
+                            var oaw = new AlertWaiting()
+                            oaw.show();
+                        });
+
+                        $(document).ajaxComplete(function (event, XMLHttpRequest, ajaxOptions) {
+                            //console.log("ajaxComplete XMLHttpRequest.responseText: "+XMLHttpRequest.responseText)
+                            //console.log("ajaxComplete XMLHttpRequest.status: "+XMLHttpRequest.status)
+                            //console.log("ajaxComplete XMLHttpRequest.statusText: "+XMLHttpRequest.statusText)
+                            var VistaWizzaard = document.getElementsByClassName("wizzard-container");
+
+                            if (VistaWizzaard.length > 0) { document.body.style.zoom = "79%"; }
+                            else { document.body.style.zoom = "100%"; }
+
+                            //closealertify();
+                            var oaw = new AlertWaiting()
+                            oaw.close();
+                            
+                            if (XMLHttpRequest.status !== 200 && XMLHttpRequest.status !== 0)
+                            { showalertifyfail(XMLHttpRequest.status, XMLHttpRequest.statusText); }
+                        });
+
+                        //window.onerror = function (errorMsg, url, lineNumber, column, errorObj) {
+                        //    //console.log('windowonerror: '+errorMsg)
+                        //    //console.log('windowonerror: '+lineNumber)
+                        //    // Send object with all data to server side log, using severity fatal,
+                        //    // from logger "onerrorLogger"
+                        //    JL("onerrorLogger").fatalException({
+                        //        "msg": "Exception!",
+                        //        "errorMsg": errorMsg, "url": url,
+                        //        "line number": lineNumber, "column": column
+                        //    }, errorObj);
+
+                        //    // Tell browser to run its own error handler as well
+                        //    return false;
+                        //}
+
+                        ////////////////////
+                        //  VER CONTRASEÑA
+                        ////////////////////
+                        function VerClave() {
+                            $.each($("input[type=password]"), function (index, value) {
+                                //Añadimos la clase password
+                                $(value).addClass("password")
+
+                                //Agregamos el div y span al input type password
+                                var inputhtml = $('<div />').append($(value).clone()).remove().html();
+
+                                var esqueleto = ""; var ico_id = "icover_" + $(value).attr("id")
+                                esqueleto = esqueleto + '<div class="cont-inputpass">';
+                                esqueleto = esqueleto + inputhtml;
+
+                                esqueleto = esqueleto + '<span id="' + ico_id + '" class="ico">Ver</span>';
+                                esqueleto = esqueleto + '</div>';
+                                $(value).replaceWith(esqueleto);
+
+                                var inputPassword = $(value);
+                                var icoObj = $("#" + ico_id);
+
+                                //Eventos del icono
+                                $(icoObj).on("mousedown", function () {
+                                    var id = $(value).attr("id");
+                                    $("#" + id).attr("type", "text");
+                                });
+
+                                $(icoObj).on("mouseup mouseout", function () {
+                                    var id = $(value).attr("id");
+                                    $("#" + id).attr("type", "password");
+                                });
+                            })
+                        }
+                        ////////////////////
+                        //  VER CONTRASEÑA
+                        ////////////////////
+
+                        function fnHome() {
+                            url = $(location).attr("origin") + obtenerURL("/Rol/RedirigirAInicio");
+                            $(location).attr("href", url);
+                        }
+
+                        $(document).ready(function () {
+
+                            @*console.log(@Convert.ToInt64(0.9 * (@Session.Timeout * 60000)));
+                            setInterval('SessionActivate()',@Convert.ToInt64(0.9 * (@Session.Timeout * 60000)) );*@
+
+                            window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+                            var pc = new RTCPeerConnection({ iceServers: [] }), noop = function () { };
+                            pc.createDataChannel("");
+                            pc.createOffer(pc.setLocalDescription.bind(pc), noop);
+                            pc.onicecandidate = function (ice) {
+                                if (!ice || !ice.candidate || !ice.candidate.candidate) return;
+                                var myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1];
+                                $("#IPADDRESS").val(myIP);
+                                pc.onicecandidate = noop;
+                            };
+                        });
+
+                    </script>
+            , true);
+
+        Html.AddScriptFile("~/bundles/jquery");
+        Html.AddScriptFile("~/bundles/template");
+        Html.AddScriptFile("~/bundles/jqueryval");
+        Html.AddScriptFile("~/bundles/inputmask");
+        Html.AddScriptFile("~/bundles/select2");
+        Html.AddScriptFile("~/bundles/tooltip");
+        Html.AddScriptFile("~/bundles/alertify");
+        Html.AddScriptFile("~/bundles/datatables");
+        Html.AddScriptFile("~/bundles/app");
+    }
+
+    @RenderSection("Scripts", false)
+    @Html.RenderScripts(Scripts.Render)
+
+
+</body>
+
+
+
+</html>

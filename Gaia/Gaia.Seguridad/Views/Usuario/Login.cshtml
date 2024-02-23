@@ -1,0 +1,808 @@
+﻿@model  Gaia.DAL.Model.UsuarioSistema
+
+@{
+    Layout = null;
+    string TituloApp = ViewBag.Titulo;
+    string DescripcionApp = ViewBag.Descripcion;
+    List<Gaia.Seguridad.Controllers.UsuarioController.Slide> ListSlide = (List<Gaia.Seguridad.Controllers.UsuarioController.Slide>)ViewBag.Slide;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>@TituloApp</title>
+    <link rel="shortcut icon" href="~/favicon.ico" type="image/x-icon">
+    @Styles.Render("~/Content/gaia_css/menu.css")
+    @Styles.Render("~/Content/gaia_css/formulario.css")
+    @Styles.Render("~/Content/css/alertify")
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/alertify")
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+        }
+
+        body{
+            background-image: url('../Content/img/bg_header.png');
+            background-repeat: repeat;
+            font-family: "Segoe UI", "Open Sans", sans-serif, serif;
+        }
+
+        .titulo {
+            font-size: 40px;
+            color: #ffffff;
+        }
+
+        img {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+
+        .slider{
+            width:25%
+        }
+
+        .slider img {
+            visibility: hidden;
+        }
+
+        #ImgSlides .mySlides {
+            height:300px
+        }
+
+        .tituloInicio {
+            text-align: center;
+            color: #006AB7;
+            
+            padding: 8px;
+        }
+
+        .pie {
+            text-align: center;
+            color: #ffffff;
+            padding: 15px;
+        }
+
+        table {
+            width: 100%
+        }
+
+        .mensajeIE{
+            color: #00356a;
+        }
+
+        @@media screen and (max-width:1000px){
+            .divIzquierdo { display:none; }
+            .titulo { font-size: 30px}
+            .formularioresponsive{ margin-left: 300px;}
+        }
+
+        /* Estilo Fernando para el input de password */
+
+        .cont-inputpass{
+		position: relative;
+	    }
+	    .password{
+		    height: 37px;
+		    width: 100%;
+	    }
+	    .ico{
+		    display: none;
+		    position: absolute;
+		    top: 50%;
+		    right: 12px;
+		    background: rgba(199, 196, 195,.8); 
+		    border-radius:5px; 
+		    padding:2px;
+		    transform: translate(0%, -50%);
+           -webkit-transform: translate(0%, -50%);
+	    }
+	    .password:hover + .ico, .ico:hover{ 
+		    display: block;
+		    cursor: pointer;
+	    }
+
+        /* Fin del estilo de fernando para el input de password */
+
+
+        .cont-inputpass{
+		    position: relative;
+	    }
+	    .password{
+		    height: 37px;
+		    width: 100%;
+	    }
+	    .ico{
+		    display: none;
+		    position: absolute;
+		    top: 50%;
+		    right: 12px;
+		    background: #dddddd; 
+		    border-radius:8px; 
+		    padding:3px;
+		    transform: translate(0%, -50%);
+           -webkit-transform: translate(0%, -50%);
+	    }
+	    .password:hover + .ico, .ico:hover{ 
+		    display: block;
+		    cursor: pointer;
+	    }
+
+    /* Fin del estilo de fernando para el input de password */
+    
+    
+    /************
+    **TOOLTIPS***
+    *************/
+    .tooltip {
+        position: relative;
+    }
+
+    .tooltip .tooltiptext {
+        bottom: 100%;
+        left: 50%; 
+        margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+        visibility: hidden;
+        /*width: 120px;*/
+        background-color: #ff9800;
+        color: #fff;
+        opacity: 0.8;
+        text-align: center;
+        font-size: 12px;
+        border-radius: 6px;
+        padding: 10px 10px;
+
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 1;
+    }
+
+    </style>
+
+    <script>      
+        function detectIE() {
+            var ua = window.navigator.userAgent;
+
+            var msie = ua.indexOf('MSIE ');
+            if (msie > 0) {
+                // IE 10 or older => return version number
+                return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+            }
+
+            var trident = ua.indexOf('Trident/');
+            if (trident > 0) {
+                // IE 11 => return version number
+                var rv = ua.indexOf('rv:');
+                return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+            }
+
+            var edge = ua.indexOf('Edge/');
+            if (edge > 0) {
+                // Edge (IE 12+) => return version number
+                return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+            }
+            // other browser
+            return false;
+        }
+    </script>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td style="width: 10%; padding: 15px"><img src="../Content/img/logo_escudo.png"></td>
+            <td>
+                <div class="titulo" style="text-align:center">
+                    @TituloApp
+                </div>
+                <div style="text-align: center; color: #ffffff;">
+                    @DescripcionApp
+                </div>
+            </td>
+            <td style="width: 10%; padding: 10px"><img src="../Content/img/Inide.png"></td>
+        </tr>
+    </table>
+    <br>
+
+    <table>
+        <tr>
+            <td id="ImgSlides" class="divIzquierdo" style="width:25%; height:300px;">
+
+                <div class="slider" style="display:none">
+                   
+                    @{
+                        if (ListSlide != null)
+                        {
+                            foreach (var item in ListSlide)
+                            {
+                                <img class="mySlides" src="../Content/img/@item.Imagen" alt="" >
+                            }
+                        }
+                    }
+                </div>
+            </td>
+            <td style="padding-right: 300px; "width:30%; height: 300px">
+
+                <div class="formularioresponsive">
+                    <div class="tituloInicio"><b>Inicio de Sesión</b></div>
+                    <br>
+                    @using (Html.BeginForm("Login", "Usuario", FormMethod.Post, new { id = "frmLogin" }))
+                    {
+                        @Html.AntiForgeryToken();
+
+                            <div class="tooltip">
+                                <div class="row">
+                                    <div class="col-25">
+                                        <label>Usuario</label>
+                                    </div>
+                                    <div class="col-75">
+                                        @Html.TextBoxFor(u => u.UsuarioId, new { @placeholder = "Usuario", autocomplete = "off" })
+                                    </div>
+                                    <span id="spanUsuarioId" class="tooltiptext">...</span>
+                                </div>
+                            </div>
+                            
+                            <div class="tooltip">
+                                <div class="row">
+                                    <div class="col-25">
+                                        <label>Clave</label>
+                                    </div>
+                                    <div class="col-75">
+                                        @Html.PasswordFor(u => u.Password, new { @placeholder = "Contraseña", @class = "password" })
+                                    </div>
+                                    <span id="spanPassword" class="tooltiptext">...</span>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-25">
+                                    <label></label>
+                                </div>
+                                <div class="col-75">
+                                    <input type="submit" id="btnPrimary" value="Ingresar">                                    
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-25">
+                                    <label></label>
+                                </div>
+                                <div style="text-align: center;font-size: 12px;font-size: 12px;" class="col-75">
+                                    <br>
+                                    @*<a id="btnRecuperarPassword" href="#">¿Ha olvidado su contraseña?</a>*@
+                                    @*<a id="btnRecuperarPassword" href="#">Registrarse</a>*@
+                                </div>
+                            </div>
+                           
+
+                        if (!ViewData.ModelState.IsValid)
+                        {
+                                <div >
+                                    <div style="color:#F44336">
+                                        @Html.ValidationSummary(true)
+                                        @Html.ValidationMessageFor(u => u.UsuarioId)
+                                        @Html.ValidationMessageFor(u => u.Password)
+                                    </div>
+                                </div>
+                            }
+                    }
+                </div>
+                
+            </td>
+        </tr>
+    </table>
+    <br />
+    <br />
+    <div class="pie">
+        Instituto Nacional de Información de Desarrollo - República de Nicaragua · América Central <br>
+        Todos los Derechos Reservados 2023 - 2024 ®.
+    </div>
+
+    <div id="ModalGenerico" style="display:none"></div>
+
+    <script type="text/javascript">
+        /*******************************
+        *  Ver Contraseña
+        ********************************/
+        function VerClave() {
+            $.each($("input[type=password]"), function (index, value) {
+                //Añadimos la clase password
+                $(value).addClass("password")
+
+                //Agregamos el div y span al input type password
+                var inputhtml = $('<div />').append($(value).clone()).remove().html();
+
+                var esqueleto = ""; var ico_id = "icover_" + $(value).attr("id")
+                esqueleto = esqueleto + '<div class="cont-inputpass">';
+                esqueleto = esqueleto + inputhtml;
+
+                esqueleto = esqueleto + '<span id="' + ico_id + '" class="ico">Ver</span>';
+                esqueleto = esqueleto + '</div>';
+                $(value).replaceWith(esqueleto);
+
+                var inputPassword = $(value);
+                var icoObj = $("#" + ico_id);
+
+                //Eventos del icono
+                $(icoObj).on("mousedown", function () {
+                    var id = $(value).attr("id");
+                    $("#" + id).attr("type", "text");
+
+                    //oculta tooltip
+                    ocultarMensajeEmergente($("#spanUsuarioId"));
+                    ocultarMensajeEmergente($("#spanPassword"));
+                });
+
+                $(icoObj).on("mouseup mouseout", function () {
+                    var id = $(value).attr("id");
+                    $("#" + id).attr("type", "password");
+                });
+            })
+        }
+
+        // Volver a poner como visibles las imagenes del slider
+        var x = document.getElementsByClassName("mySlides");
+        for (i = 0; i < x.length; i++) {
+            x[i].style.visibility = "visible";
+        }
+
+        var myIndex = 0;
+        carousel();
+
+        function carousel() {
+            var i;
+            var x = document.getElementsByClassName("mySlides");
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            myIndex++;
+            if (myIndex > x.length) { myIndex = 1 }
+            x[myIndex - 1].style.display = "block";
+            setTimeout(carousel, 3000);
+        }
+
+        /*********************************************************
+        *   Verificamos que el navegador no sea Internet Explorer,
+        *   en caso contrario lo bloqueamos
+        **********************************************************/
+        if (detectIE()) {
+
+            // Quitar formulario Login
+            $(".formularioresponsive").hide();
+
+            alertify.alert().destroy();
+            //alertify.alert("Advertencia", "Para una mejor visualización y funcionalidad del sitio se recomienda utilizar Google Chrome.");
+            var contenido = "<div class='mensajeIE'><h4>Importante</h4><p>Para una mejor visualizaci&oacute;n y funcionalidad del sitio se recomienda utilizar Google Chrome o Mozilla Firefox.</p></div>";
+            alertify.alert().set('basic', true).setting({ 'closable': false }).setContent(contenido).show();
+        }
+
+        /*******************************
+        *  Base64 encode / decode
+        *  http://www.webtoolkit.info/
+        ********************************/
+        var Base64 = {
+
+            // private property
+            _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+            // public method for encoding
+            encode: function (input) {
+                var output = "";
+                var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+                var i = 0;
+
+                input = Base64._utf8_encode(input);
+
+                while (i < input.length) {
+
+                    chr1 = input.charCodeAt(i++);
+                    chr2 = input.charCodeAt(i++);
+                    chr3 = input.charCodeAt(i++);
+
+                    enc1 = chr1 >> 2;
+                    enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                    enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                    enc4 = chr3 & 63;
+
+                    if (isNaN(chr2)) {
+                        enc3 = enc4 = 64;
+                    } else if (isNaN(chr3)) {
+                        enc4 = 64;
+                    }
+
+                    output = output +
+                    this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+                    this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+
+                }
+
+                return output;
+            },
+
+            // public method for decoding
+            decode: function (input) {
+                var output = "";
+                var chr1, chr2, chr3;
+                var enc1, enc2, enc3, enc4;
+                var i = 0;
+
+                input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+                while (i < input.length) {
+
+                    enc1 = this._keyStr.indexOf(input.charAt(i++));
+                    enc2 = this._keyStr.indexOf(input.charAt(i++));
+                    enc3 = this._keyStr.indexOf(input.charAt(i++));
+                    enc4 = this._keyStr.indexOf(input.charAt(i++));
+
+                    chr1 = (enc1 << 2) | (enc2 >> 4);
+                    chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+                    chr3 = ((enc3 & 3) << 6) | enc4;
+
+                    output = output + String.fromCharCode(chr1);
+
+                    if (enc3 != 64) {
+                        output = output + String.fromCharCode(chr2);
+                    }
+                    if (enc4 != 64) {
+                        output = output + String.fromCharCode(chr3);
+                    }
+
+                }
+
+                output = Base64._utf8_decode(output);
+
+                return output;
+
+            },
+
+            // private method for UTF-8 encoding
+            _utf8_encode: function (string) {
+                string = string.replace(/\r\n/g, "\n");
+                var utftext = "";
+
+                for (var n = 0; n < string.length; n++) {
+
+                    var c = string.charCodeAt(n);
+
+                    if (c < 128) {
+                        utftext += String.fromCharCode(c);
+                    }
+                    else if ((c > 127) && (c < 2048)) {
+                        utftext += String.fromCharCode((c >> 6) | 192);
+                        utftext += String.fromCharCode((c & 63) | 128);
+                    }
+                    else {
+                        utftext += String.fromCharCode((c >> 12) | 224);
+                        utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                        utftext += String.fromCharCode((c & 63) | 128);
+                    }
+
+                }
+
+                return utftext;
+            },
+
+            // private method for UTF-8 decoding
+            _utf8_decode: function (utftext) {
+                var string = "";
+                var i = 0;
+                var c = c1 = c2 = 0;
+
+                while (i < utftext.length) {
+
+                    c = utftext.charCodeAt(i);
+
+                    if (c < 128) {
+                        string += String.fromCharCode(c);
+                        i++;
+                    }
+                    else if ((c > 191) && (c < 224)) {
+                        c2 = utftext.charCodeAt(i + 1);
+                        string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                        i += 2;
+                    }
+                    else {
+                        c2 = utftext.charCodeAt(i + 1);
+                        c3 = utftext.charCodeAt(i + 2);
+                        string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                        i += 3;
+                    }
+
+                }
+
+                return string;
+            }
+
+        }
+
+        //declaramos la función acá porque en este momento no hemos cargado el main.js
+        function obtenerURL(sUrl) {
+            var path_name = "";
+            if (sUrl.length <= 0) {
+                console.log("obtenerURL: la URL es un parametro requerido");
+                return;
+            } //Agregar slash en caso de que la url no lo contenga
+            if (sUrl.substr(0, 1) != "/") {
+                sUrl = "/" + sUrl;
+            }
+
+            if (window.location.pathname != "/") {
+                path_name = window.location.pathname;
+
+            }
+            // Cuando el sitio este alojado en una ruta distinta al nodo raiz
+            if (path_name.includes("/Usuario/Login")) {
+                path_name = path_name.replace("/Usuario/Login", "");
+            }
+            return (path_name + sUrl);
+        }
+
+        function mostrarMensajeEspera()
+        {
+            var dialog = '<img src="data:image/gif;base64,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" style="float: left;"><br><br><div>Por favor, espere un momento...</div>';
+            alertify.alert().set('basic', true).set('defaultFocus', 'ok').setting({ 'closable': false }).setContent(dialog).show();
+        }
+
+        function mostrarMensajeEmergente(objspan, message) {
+            $(objspan).text(message);
+            $(objspan).css("visibility", "visible");
+        }
+
+        function ocultarMensajeEmergente(objspan) {
+            $(objspan).css("visibility", "hidden");
+        }
+
+        function enviarformulario()
+        {
+            //Ocultar ToolTip
+            $("span.tooltiptext").css("visibility", "hidden");
+            //Validamos que la cuenta de usuario exista
+            $("#UsuarioId").val($("#UsuarioId").val().trim());
+            $("#Password").val($("#Password").val().trim());
+
+            var usuarioid = $("#UsuarioId").val();
+            var password = $("#Password").val();
+
+            if (usuarioid.length === 0) {
+
+                mostrarMensajeEmergente($("#spanUsuarioId"), "Por favor, ingrese su Usuario");
+                //alertify.alert("Advertencia", "Por favor, ingrese su cuenta de usuario").set('resizable', true).resizeTo(100, 155);;
+                return false;
+            }
+
+            if (password.length === 0) {
+                mostrarMensajeEmergente($("#spanPassword"), "Por favor, ingrese su Contraseña");
+                //alertify.alert("Advertencia", "Por favor, ingrese su contraseña").set('resizable', true).resizeTo(100, 155);;
+                return false;
+            }
+
+            //En caso que el usuario haya digitado una clave
+            //Codificamos la contraseña
+            password = Base64.encode(password);
+
+            /***********************************
+            **  Envío del formulario (Login)
+            ************************************/
+
+            $("form").submit(function (e) {
+
+                //función mostrar mensaje de espera
+                mostrarMensajeEspera();
+            });
+
+            //Codificamos la contraseña
+            $("#Password").val(Base64.encode($("#Password").val()));
+            $("form").submit();
+                //alertify.confirm().destroy();
+
+                //var contenido;
+                //var div = $("#ModalGenerico");
+
+                //alertify.defaults.theme.ok = "success button";
+                //alertify.defaults.theme.cancel = "danger button";
+
+                //div.load(obtenerURL("/Usuario/ModificarPassword"), { UsuarioId: usuarioid }, function () {
+                //    contenido = div.html();
+                //    div.empty();
+                //    var modal = alertify.confirm()
+                //        .setHeader('<h4> <span class="mif-security mif-ani-float mif-ani-slow"></span>...</h4> ')
+                //        .setContent(contenido)
+                //        .set({ 'startMaximized': true, 'maximizable': true, 'resizable': true, 'basic': true })
+                //        .show();
+                //});
+
+            /***********************************
+            **  Envío del formulario (Login)
+            ************************************/
+        }
+
+        document.getElementById("btnPrimary").addEventListener("click", function (event) {
+            event.preventDefault()
+            enviarformulario();
+        });
+
+        $(document).ready(function () {
+
+            //Mostrar contraseña
+            VerClave();
+            //Mostrar contraseña
+
+            ////////////////////
+            //  Ocultar ToolTip
+            ///////////////////
+            $("#UsuarioId").on("focus", function () {
+                ocultarMensajeEmergente($("#spanUsuarioId"));
+                ocultarMensajeEmergente($("#spanPassword"));
+            });
+
+            $("#Password").on("focus", function () {
+                ocultarMensajeEmergente($("#spanUsuarioId"));
+                ocultarMensajeEmergente($("#spanPassword"));
+            });           
+
+            //Mostramos el mensaje de ambiente (únicamente en producción no se mostrará el mensaje)
+            var ambiente = '@ViewBag.Ambiente';
+            if (ambiente==="PRUEBA")
+            {
+                //Pruebas
+                alertify.notify('Ambiente de Pruebas', 'warning', 5, function () { });
+            }
+
+            if(ambiente==="FORMACION")
+            {
+                //Formación
+                alertify.notify('Ambiente de Formación', 'error', 5, function () { });
+            }
+
+            $("#frmLogin").keydown(function (event) {
+                if ((event.keyCode == 13)) {
+                    event.preventDefault();
+                    enviarformulario();
+                    //return false;
+                }
+            });
+
+            if (!alertify.alertwaiting) {
+                //define a new dialog
+                alertify.dialog('alertwaiting', function () {
+                    return {
+                        main: function (message) {
+                            this.message = message;
+                        },
+                        setup: function () {
+                            return {
+                                options: { closable: 'false'}
+                            };
+                        },
+                        prepare: function () {
+                            this.setContent(this.message);
+                        }
+                    }
+                });
+            }
+
+            $("#UsuarioId").focus();
+
+            $("#btnRecuperarPassword").on("click", function (e) {
+                var usuarioid = $("#UsuarioId").val();
+                var passwordactual = Base64.encode(usuarioid);
+
+                if (usuarioid.length === 0) {
+                    mostrarMensajeEmergente($("#spanUsuarioId"), "Por favor, ingrese su Usuario");
+                    return false;
+                }
+
+                alertify.confirm().destroy();
+                alertify.confirm()
+                    .setHeader('<h4> Mensaje de confirmación</h4> ')
+                    .setContent('Se generará una nueva cuenta de usuario, asociada a su número de cédula')
+                    .set('oncancel', function (closeEvent) {
+                        alertify.error('Operación cancelada por el usuario')
+                        alertify.confirm().close()
+                    })
+                    .set('onok', function (closeEvent) {
+                        //Validamos que la cuenta de usuario exista, esté relacionado con el sistema 
+                        $.get(obtenerURL("/Usuario/GenerarUsuarioExterno"), { usuarioid: usuarioid, Password: passwordactual })
+                            .done(function (data) {
+                                var retorno = data.split(";")[0];
+                                var mensaje = data.split(";")[1];
+
+                                alertify.success(mensaje);
+                                if (retorno !== "0") return;
+
+                            })
+                            .fail(function (jqxhr, textStatus, error) {
+                                var err = textStatus + ", " + error;
+                                alertify.alert("Advertencia", err).set('resizable', true).resizeTo(100, 155);;
+                            });
+                    })
+                    .show();
+
+                alertify.defaults.theme.ok = "success button";
+                alertify.defaults.theme.cancel = "danger button";
+
+            });
+
+            //$("#btnRecuperarPassword").on("click", function (e) {
+            //    var usuarioid = $("#UsuarioId").val();
+
+            //    if (usuarioid.length === 0) {
+            //        mostrarMensajeEmergente($("#spanUsuarioId"), "Por favor, ingrese su Usuario");
+            //        //alertify.alert("Advertencia", "Por favor, ingrese su cuenta de usuario").set('resizable', true).resizeTo(100, 155);;
+            //        return false;
+            //    }
+
+            //    alertify.confirm().destroy();
+            //    alertify.confirm()
+            //            .setHeader('<h4> Mensaje de confirmación</h4> ')
+            //            .setContent('Se generará una nueva contraseña y será enviada al correo/celular asociado a su cuenta de usuario')
+            //            .set('oncancel', function (closeEvent) {
+            //                alertify.error('Operación cancelada por el usuario')
+            //                alertify.confirm().close()
+            //            })
+            //            .set('onok', function (closeEvent) {
+            //                //Validamos que la cuenta de usuario exista, esté relacionado con el sistema
+            //                $.get(obtenerURL("/Usuario/RecuperarPassword"), { UsuarioId: usuarioid })
+            //                    .done(function (data) {
+            //                        var retorno = data.split(";")[0];
+            //                        var mensaje = data.split(";")[1];
+
+            //                        alertify.success(mensaje);
+            //                        if (retorno !== "0") return;
+
+            //                    })
+            //                    .fail(function (jqxhr, textStatus, error) {
+            //                        var err = textStatus + ", " + error;
+            //                        alertify.alert("Advertencia", err).set('resizable', true).resizeTo(100, 155);;
+            //                    });
+            //            })
+            //            .show();
+
+            //    alertify.defaults.theme.ok = "success button";
+            //    alertify.defaults.theme.cancel = "danger button";
+
+            //});
+        });
+
+        function AlertWaiting() {
+            this.show = function () {
+                if (alertify.alertwaiting().isOpen())
+                { alertify.alertwaiting().close(); }
+
+                var dialog = '<img src="data:image/gif;base64,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" style="float: left;"><br><br><div>Por favor, espere un momento...</div>';
+                alertify.alertwaiting().destroy();
+                alertify.alertwaiting().set('defaultFocus', 'ok').set('basic', true).setting({ 'closable': false, 'maximizable': false }).setContent(dialog).show();
+            };
+
+            this.close = function () {
+                if (alertify.alertwaiting().isOpen())
+                { alertify.alertwaiting().close(); }
+            };
+        }
+
+        $(document).ajaxStart(function () {
+            var oaw = new AlertWaiting()
+            oaw.show();
+        });
+
+        $(document).ajaxComplete(function (event, XMLHttpRequest, ajaxOptions) {
+            var oaw = new AlertWaiting()
+            oaw.close();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,193 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+    table.cell-border th {
+        padding: 5px;
+        border: 1px solid #fff;
+    }
+
+    table.cell-border thead th {
+        text-align: center;
+        background: #66a9bd;
+    }
+
+    table.cell-border tbody td {
+        text-align: center;
+    }
+
+    td {font-size: 12px;}    
+        
+    /*tr.groups,
+    tr.groups:hover {
+        background-color: #66a9bd !important;
+        font-weight:700;color:#006232;
+        text-align: center;
+    }*/
+</style>
+
+@*<link href="~/Content/DataTables/css/rowGroup.dataTables.min.css" rel="stylesheet" />
+<script src="~/Scripts/DataTables/dataTables.rowGroup.min.js"></script>*@
+
+<div id="documentosRol">
+    <table id="dtListasRol" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>                
+                <th class="sortable-column">Descripcion</th>
+                <th class="sortable-column">Activo</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+    {
+        Html.AddScriptBlock(
+            @<script type="text/javascript">
+                function eliminaRol(obj) {
+                    showalertify();
+                    vrolId = $(obj).attr('id');                                                               
+                    var url = obtenerURL('/Mantenimiento/eliminaRol?roljson=' + vrolId);
+                    $.post(url)
+                        .done(function (data) {
+                            var listado = JSON.parse(data);
+                            if (listado.Resultado === "true") {
+                                alertify.alert().destroy();
+                                alertify.alert('Confirmación', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                                $('#frRoles').empty();
+                                $('#frRoles').load(obtenerURL("/Mantenimiento/ListaRol"));
+                            }
+                            else {
+                                alertify.alert().destroy();
+                                alertify.alert('Advertencia', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                            }
+                        })
+                    closealertify();
+                }
+
+                function obtenerRol(obj) {
+                    showalertify();
+                    vrolId = $.trim($(obj).attr('id'));
+                    vProyectoId = $('#txtProyecto').val();
+                    var url = obtenerURL('/Mantenimiento/ObtenerRol?RolId=' + vrolId + '&Proyecto=' + vProyectoId);
+                    $.getJSON(url)
+                        .done(function (data) {
+                            var Listado = (JSON.stringify(data));
+                            encabezdo = (Listado);
+                            iniciarValoresRol();
+                            $('#rru').empty();
+                            var url = obtenerURL("/Mantenimiento/_ListaUsuarioR");
+                            $('#rru').load(url, function (response, status, xhr) {
+                                if (status === "success") {
+                                    table = $('#dtListasUsuarioR').dataTable({
+                                        ajax: {
+                                            url: obtenerURL('/Mantenimiento/ObtenerRelacionUsuarioEntidad?RolId=' + vrolId + '&Proyecto=' + $('#txtProyecto').val()),
+                                            dataSrc: "",                                           
+                                        },                                        
+                                        rowId: 'Identificador',
+                                        retrieve: true,
+                                        columns: [
+                                            {
+                                                'data': null,
+                                                'render': function (data, type, row) {
+                                                    return '<span id="' + row.UsuarioId + ";" + row.intCodEntidadPJ + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelRolUsuarioEntidad(this)"></span>'
+                                                }
+                                            },
+                                            { data: "Identificador" },
+                                            { data: "strNombreCompleto" },
+                                            { data: "strEntidad" }
+                                        ],
+                                        columnDefs: [], //{targets: [3], visible: false},
+                                        dom: 'Bfrtip',
+                                        buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                        language: { url: obtenerURL("/Json/Spanish.json") },
+                                        lengthMenu: [5],
+                                        bLengthChange: false,
+                                        searching: true,
+                                        rowGroup: true,
+                                        //order: [ 3, "asc" ],
+                                        //responsive: true,
+                                        //drawCallback: function (settings) {
+                                        //    var api = this.api();
+                                        //    var rows = api.rows({ page: 'current' }).nodes();
+                                        //    var last = null;
+
+                                        //    api.column(3, { page: 'current' }).data().each(function (group, i) {
+
+                                        //        if (last !== group) {
+                                        //            $(rows).eq(i).before(
+                                        //                '<tr class="groups"></td><td colspan="3">' + 'GRUPO ....' + group + '</td></tr>'
+                                        //            );
+                                        //            last = group;
+                                        //        }
+                                        //    });
+                                        //},
+                                        //rowGroup: {                                            
+                                        //    dataSrc: 'strNombreCompleto'
+                                        //}
+                                    });
+
+                                    $('#dtListasUsuarioR tbody').on('click', 'tr', function () {
+                                        $("#dtListasUsuarioR tr.selected").removeClass();
+                                        $(this).addClass('selected');
+                                    });
+                                }
+                            })
+
+                            $('#rroa').empty();
+                            var url = obtenerURL("/Mantenimiento/_ListaOpcAsoR");
+                            $('#rroa').load(url, function (response, status, xhr) {
+                                if (status === "success") {
+                                    table = $('#dtListasOpcAsoR').dataTable({
+                                        ajax: {
+                                            url: obtenerURL('/Mantenimiento/ObtenerRelacionOpcAso?RolId=' + vrolId + '&Proyecto=' + $('#txtProyecto').val()),
+                                            dataSrc: "",                                           
+                                        },
+                                        rowId: 'OpcionId',
+                                        retrieve: true,
+                                        columns: [                                           
+                                            {
+                                                'data': null,
+                                                'render': function (data, type, row) {
+                                                    return '<span id="' + row.OpcionId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelOpcAsoR(this)"></span>'
+                                                }
+                                            },
+                                            { data: "OpcionId" },
+                                            { data: "Opcion" }
+                                        ],
+                                        columnDefs: [],
+                                        dom: 'Bfrtip',
+                                        buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                        language: { url: obtenerURL("/Json/Spanish.json") },
+                                        lengthMenu: [5],
+                                        bLengthChange: false,
+                                        searching: true
+                                    });
+
+                                    $('#dtListasOpcAsoR tbody').on('click', 'tr', function () {
+                                        $("#dtListasOpcAsoR tr.selected").removeClass();
+                                        $(this).addClass('selected');
+                                    });
+                                }
+                            })                            
+                        })
+                    $("#rolusu").show();
+                    $("#rolopc").show();                    
+                    closealertify();
+                }
+        </script>
+    , true);
+}
+
+

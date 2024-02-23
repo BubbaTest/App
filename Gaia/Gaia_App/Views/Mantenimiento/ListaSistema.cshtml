@@ -1,0 +1,238 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleSistema">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetSistema">Detalle</a></li>
+            <li id="sisusu" style="display: none"><a href="#frDetUsuSis">SistemaUsuario</a></li>            
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetSistema">
+                @Html.Partial("_UsuarioSistemaMant")
+            </div>
+            <div class="frame" id="frDetUsuSis">
+                <div class="container">
+                    <div class="example">
+                        <div class="flex-grid">
+                            <h5 style="align-self:center" id="btnSistemaUsuario">
+                                Relación Sistema Usuario
+                                <button class="image-button ribbed-darkGreen" data-tabcontinuar="data-tabcontinuar" id="btnrelSisUsu" onclick="relSistema()">
+                                    <span class="fg-white">Agregar</span>
+                                    <span class="icon mif-plus fg-white bg-darkGreen"></span>
+                                </button>
+                            </h5>
+                            <div class="row flex-just-center">
+                                <div class="cell size8" id="guinea">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            var alg;
+            var key;
+
+            function GuardaSistemaUsuario() {
+                showalertify();
+                var url = obtenerURL('/Mantenimiento/obtenerCifrado?Sistema=' + vsistemaId);
+                $.getJSON(url)
+                    .done(function (data) {
+                        $.each(data, function (i, item) {
+                            key = item.LlaveCifrado
+                            alg = item.AlgoritmoCifrado;
+                            
+                            if (key == null) {var url = obtenerURL('/Mantenimiento/GuardarRelUsuarioSistema?UsuarioId=' + $('#ddlrelUsuario').val().toString() + '&SistemaId=' + vsistemaId + '&Password=' + $('#txtPassword').val().toString() + '&alg=' + alg);}
+                            else {var url = obtenerURL('/Mantenimiento/GuardarRelUsuarioSistema?UsuarioId=' + $('#ddlrelUsuario').val().toString() + '&SistemaId=' + vsistemaId + '&Password=' + $('#txtPassword').val().toString() + '&alg=' + alg + '&key=' + key);}
+                            
+                            $.post(url)
+                               .done(function (data) {
+                                   var listado = JSON.parse(data);
+                                   if (listado.Resultado === "true") {                                       
+                                       $('#guinea').empty();
+                                       var url = obtenerURL("/Mantenimiento/_ListaSistemaR");
+                                       $('#guinea').load(url, function (response, status, xhr) {
+                                           if (status === "success") {
+                                               table = $('#dtListasSisR').dataTable({
+                                                   ajax: {
+                                                       url: obtenerURL('/Mantenimiento/ObtenerRelacionSisusu?SistemaId=' + vsistemaId), //+ '&Proyecto=' + $('#txtProyecto').val()
+                                                       dataSrc: "",
+                                                   },
+                                                   rowId: 'UsuarioId',
+                                                   retrieve: true,
+                                                   columns: [
+                                                       { data: "UsuarioId" },
+                                                           {
+                                                               'data': null,
+                                                               'render': function (data, type, row) {
+                                                                   return '<span id="' + row.UsuarioId + ";" + row.Id + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioSistema(this)"></span>'
+                                                               }
+                                                           },
+                                                           { data: "UsuarioId" },
+                                                           { data: "Password" },
+                                                           {
+                                                               'data': null,
+                                                               'render': function (data, type, row) {
+                                                                   return (data ? '<button id="' + row.UsuarioId + ";" + row.Id + '"class="button rounded bg-blue fg-white" onclick=ResetearPassword(this)> Resetear Password</button>' : '')
+                                                               }
+                                                           },
+                                                   ],
+                                                   columnDefs: [
+                                                       {
+                                                           targets: [0],
+                                                           visible: false
+                                                       },
+                                                   ],
+                                                   dom: 'Bfrtip',
+                                                   buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                                   language: { url: obtenerURL("/Json/Spanish.json") },
+                                                   lengthMenu: [5],
+                                                   bLengthChange: false,
+                                                   searching: true
+                                               });
+
+                                               $('#dtListasSisR tbody').on('click', 'tr', function () {
+                                                   $("#dtListasSisR tr.selected").removeClass();
+                                                   $(this).addClass('selected');
+                                               });
+                                           }
+                                       })
+                                       alertify.alert().destroy();
+                                       alertify.alert('Confirmación', listado.Mensaje);
+                                       alertify.alert().setting('modal', true);
+                                   }
+                                   else {
+                                       alertify.alert().destroy();
+                                       alertify.alert('Advertencia'
+                                           , listado.Mensaje);
+                                       alertify.alert().setting('modal', true);
+                                   }
+                               })
+                            //En caso de error
+                            .fail(function (jqxhr, textStatus, error) {
+                                showalertifyfail(jqxhr.status, error);
+                            });
+                            //En caso de error
+                            //closealertify();
+                        })
+                    })
+                    //En caso de error
+                    .fail(function (jqxhr, textStatus, error) {
+                        showalertifyfail(jqxhr.status, error);
+                    });                    
+            }
+
+            function relSistema() {
+                var contenido;
+                var div = $("#ModalGenerico");
+                alertify.defaults.theme.ok = "success button";
+                alertify.defaults.theme.cancel = "danger button";
+                alertify.confirm().destroy();
+                div.load(obtenerURL("/Mantenimiento/_relSistemaUsuario"), function () {
+                    contenido = div.html();
+                    div.empty();
+                    var modal = alertify.confirm()
+                        .setHeader('<h4> Relacionar Usuario a Sistema</h4> ')
+                        .setContent(contenido)
+                        .set({ 'startMaximized': false, 'maximizable': true, 'resizable': true, 'labels': { ok: '< Guardar >', cancel: '< Salir >' } })
+                                .resizeTo(160, 250)
+                        .set('oncancel', function (closeEvent) { })
+                        .set('onok', function (closeEvent) { GuardaSistemaUsuario(); })
+                        .show();
+                    var select2 = $(modal.elements.root).find("select");
+                    select2.select2().on("select2:open", function (e) {
+                        var id = e.target.id;
+                        var div_results = "#select2-" + id + "-results";
+                        $(div_results).parents(".select2-container").css({ 'z-index': '3000' });
+                    });
+
+                    $('#ddlrelUsuario').select2({
+                        ajax: {
+                            url: obtenerURL("/Mantenimiento/FiltrarUsuario"),
+                            dataType: 'json',
+                            delay: 250,
+                            type: "GET",
+                            data: function (params) { return { nombre: params.term }; },
+                            processResults: function (data) {
+                                return {
+                                    results: $.map(data, function (obj) { return { id: obj.USUARIOID, text: obj.NOMBRE }; })
+                                };
+                            }
+                        },
+                        width: '220px', minimumInputLength: 4, placeholder: "Seleccione un Usuario", allowClear: true
+                    });
+                })
+            }
+
+            $(document).ready(function () {
+                $('#gridDetalleSistema').empty();
+                $("#gridDetalleSistema").load(obtenerURL("/Mantenimiento/ObtenerListaSistema"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasSistema').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObtenerSistema"),
+                                dataSrc: "",
+                                beforeSend: showalertify(),
+                                complete: closealertify(),
+                            },
+                            rowId: 'SistemaId',
+                            retrieve: true,
+                            columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.SistemaId + '" class="icon mif-pencil mif-1x fg-red" onclick="obtenerSistema(this)"></span>'
+                                            }
+                                        },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.SistemaId + ";" + row.OpcionId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminaSistema(this)"></span>'
+                                            }
+                                        },
+                                        { data: "SistemaId" },
+                                        { data: "OpcionId" },
+                                        { data: "Descripcion" },
+                                        { data: "LlaveCifrado" },
+                                        { data: "AlgoritmoCifrado" },
+                                        { data: "Activo" }
+                                        
+                            ],
+                            columnDefs: [{ targets: [7], type: Date, render: function (data) { if (data === true) { return "Activo"; } else { return "Pasivo"; } } }, ],
+                            dom: 'Bfrtip',
+                            buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasSistema tbody').on('click', 'tr', function () {
+                            $("#dtListasSistema tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+, true);
+}
+
+
+
+
+
+
+

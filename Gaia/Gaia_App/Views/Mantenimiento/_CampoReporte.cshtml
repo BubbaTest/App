@@ -1,0 +1,61 @@
+﻿
+<div class="content">
+    <h4> Relacionar Reporte a Campo</h4>
+    <div class="flex-grid">
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control select full-size" data-placeholder="Seleccione Campo" data-allow-clear="true">
+                    @Html.DropDownList("campo", new SelectList(ViewBag.Campo as System.Collections.IEnumerable, "CampoReporteId", "Placeholder"),
+                                    "Selecciona Campo", new { id = "ddlrelCampo", @style = "width:100%;" })
+                </div>
+            </div>
+        </div>
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control full-size">
+                    @Html.TextBox("orden","", new { id = "txtOrden", PlaceHolder = "Orden", @class = "mask" })
+                </div>
+            </div>
+        </div>
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control select full-size" data-placeholder="Seleccione Requerido" data-allow-clear="true">
+                    @Html.DropDownList("requerido", new SelectList(ViewBag.valoresddl as System.Collections.IEnumerable, "Value", "Text"),
+                                    "Selecciona Requerido", new { id = "ddlrelRequerido", @style = "width:100%;" })
+                    @Html.ValidationMessage("crrequerido", "* Campo Requerido *", new { id = "lblcrrequerido", @style = "color:red; display: none;" })
+                </div>
+            </div>
+        </div>
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size6">
+                <div class="input-control select full-size" data-placeholder="Seleccione IsPrincipal" data-allow-clear="true">
+                    @Html.DropDownList("isprincipal", new SelectList(ViewBag.valoresddl as System.Collections.IEnumerable, "Value", "Text"),
+                                    "Selecciona IsPrincipal", new { id = "ddlrelIsPrincipal", @style = "width:100%;" })
+                    @Html.ValidationMessage("crprincipal", "* Campo Requerido *", new { id = "lblprincipal", @style = "color:red; display: none;" })
+                </div>
+            </div>
+        </div>
+        <div class="row flex-just-center">
+            <div class="toolbar">
+                <div class="toolbar-section">
+                    <button class="image-button ribbed-darkBlue" data-tabcontinuar="data-tabcontinuar" onclick="GuardaReporteCampo()" id="btnGuardaRepCam" style="display:none">
+                        <span class="fg-white">Guardar</span>
+                        <span class="icon mif-floppy-disk fg-white bg-darkBlue"></span>
+                    </button>                    
+                    <button class="image-button ribbed-darkEmerald" data-tabcontinuar="data-tabcontinuar" id="btnCerrarRepCam" onclick="CerrarModalReporte()">
+                        <span class="fg-white">Cerrar</span>
+                        <span class="icon mif-cross fg-white bg-darkEmerald"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+        </script>
+    , true);
+}

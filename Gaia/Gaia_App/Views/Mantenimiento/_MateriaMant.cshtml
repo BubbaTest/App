@@ -1,0 +1,147 @@
+﻿@model  Gaia.DAL.Model.catMateriaG
+
+<div class="content">
+    <div class="flex-grid">
+        <div class="row padding10 flex-jus-center">
+            <div class="cell size8 padding10 no-padding-left">
+                <div data-role="window" class="window">
+                    <div class="window-caption">
+                        <span class="window-caption-title">Materia</span>
+                    </div>
+                    <div class="window-content">
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.TextBoxFor(model => model.MateriaId, new { id = "txtIdMateria", PlaceHolder = "MateriaId" })
+                                    @Html.ValidationMessage("materiaid", "* Campo Requerido *", new { id = "lblmateriaid", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="cell size6">
+                                <label class="input-control text full-size">
+                                    @Html.TextBoxFor(model => model.Descripcion, new { id = "txtDescripcionMateria", PlaceHolder = "Descripcion" })
+                                    @Html.ValidationMessage("descripcion", "* Campo Requerido *", new { id = "lbldescripcionm", @style = "color:red; display: none;" })
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row flex-just-center">
+                            <div class="toolbar">
+                                <div class="toolbar-section">
+                                    <button class="image-button ribbed-darkBlue" data-tabcontinuar="data-tabcontinuar" id="btnGuardaMateria" onclick="AgregarMateria()">
+                                        <span class="fg-white">Guardar</span>
+                                        <span class="icon mif-floppy-disk fg-white bg-darkBlue"></span>
+                                    </button>
+                                    <button class="image-button ribbed-darkOrange" data-tabcontinuar="data-tabcontinuar" id="btnActualizarMateria" onclick="ActualizarMateria()" style="display: none">
+                                        <span class="fg-white">Actualizar</span>
+                                        <span class="icon mif-pencil fg-white bg-darkOrange"></span>
+                                    </button>
+                                    <button class="image-button ribbed-darkEmerald" data-tabcontinuar="data-tabcontinuar" id="btnNuevoMateria" onclick="NuevaMateria()">
+                                        <span class="fg-white">Nuevo</span>
+                                        <span class="icon mif-plus fg-white bg-darkEmerald"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+                function ActualizarMateria() {
+                    var bandera = true;
+                    
+                    if ($('#txtIdMateria').val().toString().length < 1) {
+                        $("#lblmateriaid").show();
+                        bandera = false;
+                    }
+
+                    if ($('#txtDescripcionMateria').val().toString().length < 1) {
+                        $("#lbldescripcionm").show();
+                        bandera = false;
+                    }
+
+                    
+                    if (bandera == true) {                        
+                        $("#lblmateriaid").hide();
+                        $("#lbldescripcionm").hide();                        
+
+                        var materiajson = JSON.stringify({ "MateriaId": $.trim($('#txtIdMateria').val()), "Descripcion": $('#txtDescripcionMateria').val().toString() });
+                        var url = obtenerURL('/Mantenimiento/ActualizarMateria?materiajson=' + materiajson);
+                        $.post(url)
+                            .done(function (data) {
+                                var listado = JSON.parse(data);
+                                if (listado.Resultado === "true") {
+                                    alertify.alert().destroy();
+                                    alertify.alert('Confirmación', listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                    $('#frMateria').empty();
+                                    $('#frMateria').load(obtenerURL("/Mantenimiento/ListaMateria"))
+                                }
+                                else {
+                                    alertify.alert().destroy();
+                                    alertify.alert('Advertencia', listado.Mensaje);
+                                    alertify.alert().setting('modal', true);
+                                }
+                            })
+                        closealertify();
+                    }
+                }
+
+                function AgregarMateria() {
+                    var bandera = true;
+                    
+                    if ($('#txtIdMateria').val().toString().length < 1) {
+                        $("#lblmateriaid").show();
+                        bandera = false;
+                    }
+
+                    if ($('#txtDescripcionMateria').val().toString().length < 1) {
+                        $("#lbldescripcionm").show();
+                        bandera = false;
+                    }
+
+
+                    if (bandera == true) {
+                        $("#lblmateriaid").hide();
+                        $("#lbldescripcionm").hide();
+
+                        var materiajson = JSON.stringify({ "MateriaId": $.trim($('#txtIdMateria').val()), "Descripcion": $('#txtDescripcionMateria').val().toString() });
+                        var url = obtenerURL('/Mantenimiento/AgregarMateria?materiajson=' + materiajson);
+                        $.post(url)
+                           .done(function (data) {
+                               var listado = JSON.parse(data);
+                               if (listado.Resultado === "true") {
+                                   $('#frMateria').empty();
+                                   $('#frMateria').load(obtenerURL("/Mantenimiento/ListaMateria"))
+                                   alertify.alert().destroy();
+                                   alertify.alert('Confirmación', listado.Mensaje);
+                                   alertify.alert().setting('modal', true);
+                               }
+                               else {
+                                   alertify.alert().destroy();
+                                   alertify.alert('Advertencia', listado.Mensaje);
+                                   alertify.alert().setting('modal', true);
+                               }
+                           })
+                        closealertify();
+                    }
+                }
+
+                function NuevaMateria() {
+                    $('#txtIdMateria').prop("disabled", false);
+                    $('#txtIdMateria').val("");
+                    $('#txtDescripcionMateria').val("");                    
+                    $('#btnActualizarMateria').hide();
+                    $('#btnGuardaMateria').show();                    
+                }
+        </script>
+    , true);
+}
+

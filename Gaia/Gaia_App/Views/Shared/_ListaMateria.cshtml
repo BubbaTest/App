@@ -1,0 +1,90 @@
+﻿<style>
+    .dataTables_empty {
+        display: none;
+    }
+
+    table.cell-border {
+        width: 100%;
+        clear: both;
+    }
+
+        table.cell-border th {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        table.cell-border thead th {
+            text-align: center;
+            background: #66a9bd;
+        }
+
+        table.cell-border tbody td {
+            text-align: center;
+        }
+
+    .text-wrap {
+        white-space: normal;
+    }
+
+    .width-200 {
+        width: 200px;
+    }
+</style>
+
+<div id="documentosMateria">
+    <table id="dtListasMateria" class="cell-border" cellspacing="0" style="width:100%;">
+        <thead>
+            <tr>
+                <th class="sortable-column"></th>
+                <th class="sortable-column"></th>
+                <th class="sortable-column">Id</th>
+                <th class="sortable-column">Descripción</th>                
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function eliminaMateria(obj) {
+                showalertify();
+                vmateriaId = $(obj).attr('id');
+
+                var url = obtenerURL('/Mantenimiento/eliminaMateria?materiajson=' + vmateriaId);
+                    $.post(url)
+                       .done(function (data) {
+                           var listado = JSON.parse(data);
+
+                           if (listado.Resultado === "true") {
+                               $('#frMateria').empty();
+                               $('#frMateria').load(obtenerURL("/Mantenimiento/ListaMateria"));
+                               alertify.alert().destroy();
+                               alertify.alert('Confirmación', listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                           }
+                           else {
+                               alertify.alert().destroy();
+                               alertify.alert('Advertencia', listado.Mensaje);
+                               alertify.alert().setting('modal', true);
+                           }
+                       })
+                    closealertify();
+            }
+
+            function obtenerMateria(obj) {
+                showalertify();
+                vmateriaId = $(obj).attr('id');
+
+                var url = obtenerURL('/Mantenimiento/ObtenerMateria?MateriaId=' + vmateriaId);
+                    $.getJSON(url)
+                       .done(function (data) {                           
+                           encabezdo = (data);
+                           iniciarValoresMateria();
+                       })
+                    closealertify();
+            }
+        </script>
+     , true);
+}

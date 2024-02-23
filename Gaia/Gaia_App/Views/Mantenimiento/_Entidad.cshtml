@@ -1,0 +1,25 @@
+﻿@model Gaia.DAL.Model.EntidadG
+
+<div class="content">
+    <div class="flex-grid">
+        <div class="row">
+            <div class="cell no-padding-bottom">
+                <div class="input-control text" data-placeholder="Seleccione una Opción" data-allow-clear="true">
+                    @Html.DropDownListFor(model => model.EntidadId, new SelectList(ViewBag.Entidad as System.Collections.IEnumerable, "EntidadId", "Descripcion"),
+                                    "Selecciona Entidad", new { id = "ddlrelEntidad" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+    {
+        Html.AddScriptBlock(
+            @<script type="text/javascript">
+            </script>
+    , true);
+}
+
+
+

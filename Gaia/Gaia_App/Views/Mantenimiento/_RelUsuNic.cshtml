@@ -1,0 +1,157 @@
+﻿@model Gaia.DAL.Model.UsuarioRolEntidad
+
+@Html.Hidden("hftxtCargoOrgano")
+<div class="content">
+    <div class="flex-grid">  
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size10">
+                <div class="input-control select full-size" data-placeholder="Seleccione una Opción" data-allow-clear="true">
+                    @Html.DropDownListFor(model => model.RolId, new SelectList(ViewBag.Rol as System.Collections.IEnumerable, "LLave", "Descripcion"),
+                                    "Selecciona Rol Gaia", new { id = "ddlrelRol", @style = "width:900px;" })
+                    @Html.ValidationMessage("rolnic", "* Campo Requerido *", new { id = "lblrolnic", @style = "color:red; display: none;" })
+                    
+                </div>                
+            </div>
+        </div>
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size10">
+                <div class="input-control select full-size" data-placeholder="Seleccione una Sede Nicarao" data-allow-clear="true">
+                    @Html.DropDownListFor(model => model.EntidadId, new SelectList(ViewBag.Sede as System.Collections.IEnumerable, "SEDE", "DESCRIPCION"),
+                                    "Selecciona Sede Nicarao", new { id = "ddlrelSede", @style = "width:900px;" })
+                    @Html.ValidationMessage("sedenic", "* Campo Requerido *", new { id = "lblsedenic", @style = "color:red; display: none;" })
+                </div>
+            </div>
+        </div>
+        <div class="row flex-just-center">
+            <div class="cell no-padding-bottom size10">
+                <label class="input-control text full-size">
+                    <select id="ddlUsuarioId" style="width:900px"></select>
+                    @Html.ValidationMessage("usunic", "* Campo Requerido *", new { id = "lblusunic", @style = "color:red; display: none;" })                    
+                </label>
+
+            </div>
+        </div>
+        <div class="row flex-just-center">
+            <div class="content">                
+                <div class="container full-size" id="gridDetalleUsuarioNic">
+                </div>
+            </div>
+        </div>
+        <div class="row flex-just-center">
+            <div class="toolbar">
+                <div class="toolbar-section">
+                    <button class="image-button ribbed-darkBlue" data-tabcontinuar="data-tabcontinuar" id="btnGuardaParametro" onclick="GuardaUsuarioRolNic()">
+                        <span class="fg-white">Guardar</span>
+                        <span class="icon mif-floppy-disk fg-white bg-darkBlue"></span>
+                    </button>                    
+                    <button class="image-button ribbed-darkRed" data-tabcontinuar="data-tabcontinuar" id="btnCerrarInterviniente" type="button" onclick=CerrarUNIC()>
+                        <span class="fg-white">Cerrar</span>
+                        <span class="icon mif-cross fg-white bg-darkRed"></span>
+                    </button>
+                </div> 
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            function GuardaUsuarioRolNic() {
+                var bandera = true;
+                if ($('#ddlrelRol').val().length < 1 || $('#ddlrelRol').val() == null || $('#ddlrelRol').val() == "") {
+                    $("#lblrolnic").show();
+                    bandera = false;
+                }
+
+                if ($('#ddlrelSede').val().length < 1 || $('#ddlrelSede').val() == null || $('#ddlrelSede').val() == "") {
+                    $("#lblsedenic").show();
+                    bandera = false;
+                }
+
+                if ($('#ddlUsuarioId').val().length < 1 || $('#ddlUsuarioId').val() == null || $('#ddlUsuarioId').val() == "") {
+                    $("#lblusunic").show();
+                    bandera = false;
+                }
+
+                if ($('#gridDetalleUsuarioNic input:checkbox:checked').length === 0) {
+                    bandera = false;
+                }
+
+                if (bandera == true) {
+                    $("#lblrolnic").hide();
+                    $("#lblsedenic").hide();
+                    $("#lblusunic").hide();
+
+                    var LlaveCodigosp = $("#hftxtCargoOrgano").val().split('-');
+                    var reljson = JSON.stringify({ "relGUID": $("#ddlrelRol").val(), "Sede": $('#ddlrelSede').val(), "UsuarioNic": $('#ddlUsuarioId').val(), "OrganoNic": LlaveCodigosp[1], "CargoNic": LlaveCodigosp[0] });
+                    var url = obtenerURL('/Mantenimiento/GuardarRelUsuarioRolNic?reljson=' + reljson);
+                    $.post(url)
+                        .done(function (data) {
+                            var listado = JSON.parse(data);
+                            if (listado.Resultado === "true") {
+                                alertify.alert().destroy();
+                                alertify.alert('Confirmación', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                                $('#babanic').empty();
+                                var url = obtenerURL("/Mantenimiento/_ListaUsuarioNic");
+                                $('#babanic').load(url, function (response, status, xhr) {
+                                    if (status === "success") {
+                                        table = $('#dtListasUsuarioNic').dataTable({
+                                            ajax: {
+                                                url: obtenerURL('/Mantenimiento/ObtenerUsuarioNicarao?UsuarioId=' + vusuarioId),
+                                                dataSrc: "",
+                                            },
+                                            retrieve: true,
+                                            columns: [
+                                                {
+                                                    'data': null,
+                                                    'render': function (data, type, row) {
+                                                        return '<span id="' + row.relGUID + ";" + row.Sede + ";" + row.UsuarioNic + ";" + row.OrganoNic + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarelUsuarioNicarao(this)"></span>'
+                                                    }
+                                                },
+                                                { data: "RolDescripcion" },
+                                                { data: "EntidadDescripcion" },
+                                                { data: "SedeDescripcion" },
+                                                { data: "UsuarioNic" },
+                                                { data: "OrganoNicDescripcion" },
+                                                { data: "CargoNicDescripcion" }
+                                            ],
+                                            columnDefs: [],
+                                            dom: 'Bfrtip',
+                                            buttons: [{ extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf', orientation: 'landscape', pageSize: 'LEGAL' }, { extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }],
+                                            language: { url: obtenerURL("/Json/Spanish.json") },
+                                            lengthMenu: [5],
+                                            bLengthChange: false,
+                                            searching: true
+                                        });
+
+                                        $('#dtListasUsuarioNic tbody').on('click', 'tr', function () {
+                                            $("#dtListasUsuarioNic tr.selected").removeClass();
+                                            $(this).addClass('selected');
+                                        });
+                                    }
+                                })
+
+                            }
+                            else {
+                                alertify.alert().destroy();
+                                alertify.alert('Advertencia', listado.Mensaje);
+                                alertify.alert().setting('modal', true);
+                            }
+                        })
+                }
+                else {
+                    alertify.alert().destroy();
+                    alertify.alert('Advertencia', 'Llenar todos los campos obligatorios');
+                    alertify.alert().setting('modal', true);
+                }
+            }
+
+            function CerrarUNIC() {
+                alertify.confirm().destroy();
+            }
+        </script>
+     , true);
+}

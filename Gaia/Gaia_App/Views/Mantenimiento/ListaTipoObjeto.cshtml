@@ -1,0 +1,73 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleTipoObjeto">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetTipObj">Detalle</a></li>            
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetTipObj">
+                @Html.Partial("_TipoObjetoMant")
+            </div>            
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            $(document).ready(function () {
+                $('#gridDetalleTipoObjeto').empty();
+                $('#gridDetalleTipoObjeto').load(obtenerURL("/Mantenimiento/ObtenerListaTipoObjeto"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasTipoObjeto').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObtenerTipoObjeto"),
+                                dataSrc: "",
+                            },
+                            rowId: 'TipoObjetoId',
+                            retrieve: true,
+                            columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.TipoObjetoId + '" class="icon mif-pencil mif-1x fg-green" onclick="obtenerTipoObjeto(this)"></span>'
+                                            }
+                                        },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.TipoObjetoId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminarTipoObjeto(this)"></span>'
+                                            }
+                                        },
+                                        { data: "TipoObjetoId" },
+                                        { data: "Descripcion" },
+                                        { data: "Activo" }
+                            ],
+                            columnDefs: [{ targets: [4], type: Date, render: function (data) { if (data === true) { return "Activo"; } else { return "Inactivo"; } } }],
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf',orientation: 'landscape', pageSize: 'LEGAL'} ,{ extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }
+                            ],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasTipoObjeto tbody').on('click', 'tr', function () {
+                            $("#dtListasTipoObjeto tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+, true);
+}

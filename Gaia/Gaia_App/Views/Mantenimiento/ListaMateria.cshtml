@@ -1,0 +1,74 @@
+﻿<div class="content">
+    <div class="example">
+        <div class="container full-size" id="gridDetalleMateria">
+        </div>
+    </div>
+</div>
+
+<div class="row flex-just-center">
+    <div class="tabcontrol2" data-role="tabcontrol">
+        <ul class="tabs">
+            <li><a href="#frDetVarCon">Detalle</a></li>
+        </ul>
+        <div class="frames">
+            <div class="frame" id="frDetVarCon">
+                @Html.Partial("_MateriaMant")
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            $(document).ready(function () {
+                $('#gridDetalleMateria').empty();
+                $("#gridDetalleMateria").load(obtenerURL("/Mantenimiento/ObtenerListaMateria"), function (response, status, xhr) {
+                    if (status === "success") {
+                        table = $('#dtListasMateria').dataTable({
+                            ajax: {
+                                url: obtenerURL("/Mantenimiento/ObtenerMateria"),
+                                dataSrc: "",
+                                beforeSend: showalertify(),
+                                complete: closealertify(),
+                            },
+                            rowId: 'MateriaId',
+                            retrieve: true,
+                            columns: [
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.MateriaId + '" class="icon mif-pencil mif-1x fg-green" onclick="obtenerMateria(this)"></span>'
+                                            }
+                                        },
+                                        {
+                                            'data': null,
+                                            'render': function (data, type, row) {
+                                                return '<span id="' + row.MateriaId + '" class="icon mif-cross mif-1x fg-red" onclick="eliminaMateria(this)"></span>'
+                                            }
+                                        },
+                                        { data: "MateriaId" },
+                                        { data: "Descripcion" }                                        
+                            ],
+                            columnDefs: [],
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {extend: 'pdfHtml5', title: 'PDF', text: 'Exportar Pdf',orientation: 'landscape', pageSize: 'LEGAL'} ,{ extend: 'excelHtml5', title: 'EXCEL', text: 'Exportar Excel' }
+                            ],
+                            language: { url: obtenerURL("/Json/Spanish.json") },
+                            lengthMenu: [5],
+                            bLengthChange: false,
+                            searching: true
+                        });
+
+                        $('#dtListasMateria tbody').on('click', 'tr', function () {
+                            $("#dtListasMateria tr.selected").removeClass();
+                            $(this).addClass('selected');
+                        });
+                    }
+                })
+            })
+        </script>
+, true);
+}

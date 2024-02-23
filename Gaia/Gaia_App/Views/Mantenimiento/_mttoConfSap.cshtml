@@ -1,0 +1,44 @@
+﻿<div class="panel">
+    <div class="heading">
+        <span class="title">Configuración SAP</span>
+    </div>
+</div>
+<div class="tabcontrol2" id="tabs" data-role="tabcontrol">
+    <ul class="tabs">
+        <li class="active"><a href="#frUsuarioSap">Usuario</a></li>
+        <li><a href="#frRolSap">Rol</a></li>
+        <li><a href="#frPermisoSap">Permisos</a></li>
+        <li><a href="#frAccionesSap">Acciones</a></li>
+        <li><a href="#frMenuSap">Menú</a></li>
+    </ul>
+    <div class="frames">
+        <div class="frame" id="frUsuarioSap" style="display: block;">
+            @Html.Partial("ListaUsuarioSap")
+        </div>
+        <div class="frame" id="frRolSap" style="display: none;">
+            @Html.Partial("ListaRolSap")
+        </div>
+        <div class="frame" id="frPermisoSap" style="display: none;">
+            @Html.Partial("ListaPermisoSap")
+        </div>
+        <div class="frame" id="frAccionesSap" style="display: none;">
+            @Html.Partial("ListaAccionesSap")
+        </div>
+        <div class="frame" id="frMenuSap" style="display: none;">
+            @Html.Partial("ListaMenuSap")
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginScriptContext())
+{
+    Html.AddScriptBlock(
+        @<script type="text/javascript">
+            var vidusuario;
+            var vrolsId;
+            var vidpermiso;
+            var vidaccionId;
+            var vidmenuId;
+        </script>
+    , true);
+}
