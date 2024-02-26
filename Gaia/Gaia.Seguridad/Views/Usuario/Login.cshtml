@@ -271,7 +271,7 @@
                                 <div class="col-25">
                                     <label></label>
                                 </div>
-                                <div class="col-75">
+                                <div class="col-65">
                                     <input type="submit" id="btnPrimary" value="Ingresar">                                    
                                 </div>
                             </div>
@@ -289,14 +289,14 @@
 
                         if (!ViewData.ModelState.IsValid)
                         {
-                                <div >
-                                    <div style="color:#F44336">
-                                        @Html.ValidationSummary(true)
-                                        @Html.ValidationMessageFor(u => u.UsuarioId)
-                                        @Html.ValidationMessageFor(u => u.Password)
-                                    </div>
+                            <div >
+                                <div style="color:#F44336">
+                                    @Html.ValidationSummary(true)
+                                    @Html.ValidationMessageFor(u => u.UsuarioId)
+                                    @Html.ValidationMessageFor(u => u.Password)
                                 </div>
-                            }
+                            </div>
+                        }
                     }
                 </div>
                 

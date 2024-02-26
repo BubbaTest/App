@@ -78,7 +78,7 @@ namespace Gaia.Seguridad.Controllers
         public ActionResult Login(PJN.DAL.Model.Utilisatrice oUsuario)
         {
             Utilisatrice u;          
-            //string JSONDatos ;
+            string JSONDatos ;
 
             try
             {
@@ -88,12 +88,12 @@ namespace Gaia.Seguridad.Controllers
                     System.IO.Stream req = Request.InputStream;
                     req.Seek(0, System.IO.SeekOrigin.Begin);
                     string jsont = new System.IO.StreamReader(req).ReadToEnd();
-                    var res = WebService.WebApipost("cuentas/Connecter?utilisatrice=" + oUsuario.UsuarioId + "&passe=" + Password, (System.Configuration.ConfigurationManager.AppSettings["apiAlexaLocal"]), HttpUtility.UrlDecode(jsont), "application/x-www-form-urlencoded", "", out Retorno, out Mensaje);
+                    JSONDatos = WebService.WebApipost("cuentas/Connecter?utilisatrice=" + oUsuario.UsuarioId + "&passe=" + Password, (System.Configuration.ConfigurationManager.AppSettings["apiAlexaLocal"]), HttpUtility.UrlDecode(jsont), "application/x-www-form-urlencoded", "", out Retorno, out Mensaje);
 
                     //UsuarioValidar(oUsuario.UsuarioId, Password, out JSONDatos);
 
-                    //JArray JObjDatosUsuario = JArray.Parse(JSONDatos);
-                    JArray JObjDatosUsuario = JArray.Parse(res);
+                    JArray JObjDatosUsuario = JArray.Parse(JSONDatos);
+                    //JArray JObjDatosUsuario = JArray.Parse(res);
 
                     if (JObjDatosUsuario[0]["Retorno"].Value<int>() == 0 && JObjDatosUsuario[0]["URL"].Value<string>().Contains("Home/Index"))
                     //if (JSONDatos != "0")

@@ -12,6 +12,7 @@ using System;
 using PJN.DAL;
 using PJN.DAL.Model;
 using Newtonsoft.Json.Linq;
+using static Gaia.Seguridad.Controllers.UsuarioController;
 
 namespace Gaia.Seguridad.Controllers
 {
@@ -56,7 +57,8 @@ namespace Gaia.Seguridad.Controllers
             var res = WebService.ApiGet(adress, baseurl, toke, out Retorno, out Mensaje);
 
             if (Retorno == 401)
-                return Json(new { Retorno, Mensaje });
+                return Json(new { Retorno = Retorno, Mensaje = "No esta autorizado para está acción." }, JsonRequestBehavior.AllowGet);
+            //return Json(new { Retorno, Mensaje });
 
             return Content(res, "application/json", Encoding.UTF8);
         }
@@ -97,7 +99,7 @@ namespace Gaia.Seguridad.Controllers
             var res = WebService.WebApipost(adress, baseurl, HttpUtility.UrlDecode(json), "application/x-www-form-urlencoded", toke, out Retorno, out Mensaje);
 
             if(Retorno == 401)
-                return Json(new { Retorno, Mensaje });
+                return Json(new { Retorno = Retorno, Mensaje = "No esta autorizado para está acción." }, JsonRequestBehavior.AllowGet);                
             
             return Content(res, "application/json", Encoding.UTF8);
         }
